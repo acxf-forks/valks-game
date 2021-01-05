@@ -1,1 +1,1 @@
-# valks-game
+Geodesic Polyhedra
