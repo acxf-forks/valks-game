@@ -9,7 +9,7 @@ using UnityEngine;
  * vertex. The + symbol indicates the valence of the vertices being increased.
  * b,c represent the subdivision description with 1,0 representing base form.
  * 
- * OCTAHEDRAL CALCULATIONS
+ * OCTAHEDRAL CALCULATIONS (for one face of the base form)
  * Triangles(T) = b^2
  * Vertices     = 4T + 2
  * Faces        = 8T
