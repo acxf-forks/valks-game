@@ -33,18 +33,20 @@ public class Planet : MonoBehaviour
 
     private void Start()
     {
+        int r = 2;
+
         /*
          * (+x) = East, (+z) = North, (+y) = Up
          * (-x) = West, (-z) = South, (-y) = Down
          */
 
         vertices = new Vector3[] {
-            new Vector3(0, 1, 0),  // UP    (0)
-            new Vector3(0, -1, 0), // DOWN  (1)
-            new Vector3(1, 0, 0),  // EAST  (2)
-            new Vector3(-1, 0, 0), // WEST  (3)
-            new Vector3(0, 0, 1),  // NORTH (4)
-            new Vector3(0, 0, -1)  // SOUTH (5)
+            new Vector3(0, r, 0),  // UP    (0)
+            new Vector3(0, -r, 0), // DOWN  (1)
+            new Vector3(r, 0, 0),  // EAST  (2)
+            new Vector3(-r, 0, 0), // WEST  (3)
+            new Vector3(0, 0, r),  // NORTH (4)
+            new Vector3(0, 0, -r)  // SOUTH (5)
         };
 
         /*
