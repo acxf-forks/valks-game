@@ -18,9 +18,13 @@ using UnityEngine;
  * Reference https://en.wikipedia.org/wiki/Geodesic_polyhedron
  */
 
+public enum Dir { UP, DOWN, EAST, WEST, NORTH, SOUTH }
+
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class Planet : MonoBehaviour
 {
+    public Transform debugPoint;
+
     private Mesh mesh;
 
     private List<Vector3> vertices;
@@ -42,12 +46,12 @@ public class Planet : MonoBehaviour
 
         vertices = new List<Vector3>() 
         {
-            new Vector3(0, r, 0),  // UP    (0)
-            new Vector3(0, -r, 0), // DOWN  (1)
-            new Vector3(r, 0, 0),  // EAST  (2)
-            new Vector3(-r, 0, 0), // WEST  (3)
-            new Vector3(0, 0, r),  // NORTH (4)
-            new Vector3(0, 0, -r)  // SOUTH (5)
+            new Vector3(0, r, 0),  // UP   
+            new Vector3(0, -r, 0), // DOWN 
+            new Vector3(r, 0, 0),  // EAST 
+            new Vector3(-r, 0, 0), // WEST 
+            new Vector3(0, 0, r),  // NORTH
+            new Vector3(0, 0, -r)  // SOUTH
         };
 
         /*
@@ -64,14 +68,14 @@ public class Planet : MonoBehaviour
 
         polygons = new List<Polygon>() 
         {
-            new Polygon(2, 0, 4), // East Up North
-            new Polygon(4, 0, 3), // West Up North
-            new Polygon(5, 0, 2), // East Up South
-            new Polygon(3, 0, 5), // West Up South
-            new Polygon(4, 1, 2), // East Down North
-            new Polygon(3, 1, 4), // West Down North
-            new Polygon(2, 1, 5), // East Down South
-            new Polygon(5, 1, 3)  // West Down South
+            new Polygon(Dir.EAST,  Dir.UP,   Dir.NORTH),
+            new Polygon(Dir.NORTH, Dir.UP,   Dir.WEST),
+            new Polygon(Dir.SOUTH, Dir.UP,   Dir.EAST),
+            new Polygon(Dir.WEST,  Dir.UP,   Dir.SOUTH),
+            new Polygon(Dir.NORTH, Dir.DOWN, Dir.EAST),
+            new Polygon(Dir.WEST,  Dir.DOWN, Dir.NORTH),
+            new Polygon(Dir.EAST,  Dir.DOWN, Dir.SOUTH),
+            new Polygon(Dir.SOUTH, Dir.DOWN, Dir.WEST) 
         };
 
         mesh.Clear(); // Remove any previous mesh data
@@ -85,6 +89,21 @@ public class Planet : MonoBehaviour
         mesh.triangles = triangles.ToArray();
 
         mesh.RecalculateNormals();
+
+        GetMidPointVertex(Dir.UP, Dir.EAST,  new Color(1, 0, 0));
+        GetMidPointVertex(Dir.UP, Dir.SOUTH, new Color(0, 1, 0));
+        GetMidPointVertex(Dir.SOUTH, Dir.EAST, new Color(0, 0, 1));
+    }
+
+    /*
+        * Gets the midpoint vector between 2 vectors.
+        */
+    private Vector3 GetMidPointVertex(Dir a, Dir b, Color c) 
+    {
+        Vector3 val = (vertices[(int)b] - vertices[(int)a]) / 2;
+        var obj = Instantiate(debugPoint, val, Quaternion.identity); // Debug
+        obj.GetComponent<Renderer>().material.color = c;
+        return val;
     }
 }
 
@@ -92,8 +111,8 @@ public class Polygon
 {
     public List<int> vertices;
 
-    public Polygon(int a, int b, int c) 
+    public Polygon(Dir vertexA, Dir vertexB, Dir vertexC) 
     {
-        vertices = new List<int>() { a, b, c };
+        vertices = new List<int>() { (int)vertexA, (int)vertexB, (int)vertexC };
     }
 }
