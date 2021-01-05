@@ -23,8 +23,8 @@ public class Planet : MonoBehaviour
 {
     private Mesh mesh;
 
-    private Vector3[] vertices;
-    private int[] triangles;
+    private List<Vector3> vertices;
+    private List<Polygon> polygons;
 
     private void Awake()
     {
@@ -40,7 +40,8 @@ public class Planet : MonoBehaviour
          * (-x) = West, (-z) = South, (-y) = Down
          */
 
-        vertices = new Vector3[] {
+        vertices = new List<Vector3>() 
+        {
             new Vector3(0, r, 0),  // UP    (0)
             new Vector3(0, -r, 0), // DOWN  (1)
             new Vector3(r, 0, 0),  // EAST  (2)
@@ -61,21 +62,38 @@ public class Planet : MonoBehaviour
          * drawing them counter-clockwise will show their rears.
          */
 
-        triangles = new int[] 
+        polygons = new List<Polygon>() 
         {
-            2, 0, 4, // East Up North
-            4, 0, 3, // West Up North
-            5, 0, 2, // East Up South
-            3, 0, 5, // West Up South
-            4, 1, 2, // East Down North
-            3, 1, 4, // West Down North
-            2, 1, 5, // East Down South
-            5, 1, 3  // West Down South
+            new Polygon(2, 0, 4), // East Up North
+            new Polygon(4, 0, 3), // West Up North
+            new Polygon(5, 0, 2), // East Up South
+            new Polygon(3, 0, 5), // West Up South
+            new Polygon(4, 1, 2), // East Down North
+            new Polygon(3, 1, 4), // West Down North
+            new Polygon(2, 1, 5), // East Down South
+            new Polygon(5, 1, 3)  // West Down South
         };
 
         mesh.Clear(); // Remove any previous mesh data
-        mesh.vertices = vertices;
-        mesh.triangles = triangles;
+        mesh.vertices = vertices.ToArray();
+
+        List<int> triangles = new List<int>();
+        for (int i = 0; i < polygons.Count; i++) 
+            for (int j = 0; j < polygons[i].vertices.Count; j++) 
+                triangles.Add(polygons[i].vertices[j]);
+
+        mesh.triangles = triangles.ToArray();
+
         mesh.RecalculateNormals();
+    }
+}
+
+public class Polygon 
+{
+    public List<int> vertices;
+
+    public Polygon(int a, int b, int c) 
+    {
+        vertices = new List<int>() { a, b, c };
     }
 }
