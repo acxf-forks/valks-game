@@ -1,4 +1,5 @@
-Geodesic Polyhedra
-
+## What are Geodesic Polyhedra?
 https://en.wikipedia.org/wiki/Geodesic_polyhedron  
-https://en.wikipedia.org/wiki/List_of_geodesic_polyhedra_and_Goldberg_polyhedra#Octahedral  
+
+## Creating Procedural Planets in Unity
+https://medium.com/@peter_winslow/creating-procedural-planets-in-unity-part-1-df83ecb12e91  
