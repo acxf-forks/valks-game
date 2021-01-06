@@ -75,7 +75,8 @@ public class Planet : MonoBehaviour
          * drawing them counter-clockwise will show their rears.
          */
 
-        polygons = new List<Polygon>() 
+        //polygons = new List<Polygon>();
+        polygons = new List<Polygon>() // For Base Form Reference
         {
             new Polygon(Dir.EAST,  Dir.UP,   Dir.NORTH),
             new Polygon(Dir.NORTH, Dir.UP,   Dir.WEST),
@@ -87,7 +88,8 @@ public class Planet : MonoBehaviour
             new Polygon(Dir.SOUTH, Dir.DOWN, Dir.WEST) 
         };
 
-        SubdivideFace((int)Dir.UP, (int)Dir.SOUTH, (int)Dir.EAST);
+        // We choose 6 because there are 6 directions of the base form, so we want the indices after that.
+        SubdivideFace((int)Dir.UP, (int)Dir.SOUTH, (int)Dir.EAST, 6, 2);
 
         // GENERATE MESH
         mesh.Clear(); // Remove any previous mesh data
@@ -103,21 +105,27 @@ public class Planet : MonoBehaviour
         mesh.RecalculateNormals();
     }
 
-    private void SubdivideFace(int top, int bottomLeft, int bottomRight)
+    private void SubdivideFace(int top, int bottomLeft, int bottomRight, int index, int n)
     {
-        vertices.Add(GetMidPointVertex(top, bottomRight, new Color(1, 0, 0)));    // R (6)
-        vertices.Add(GetMidPointVertex(top, bottomLeft, new Color(0, 1, 0)));   // G (7)
+        if (n == 0) return;
+
+        vertices.Add(GetMidPointVertex(top, bottomRight, new Color(1, 0, 0)));        // R (6)
+        vertices.Add(GetMidPointVertex(top, bottomLeft, new Color(0, 1, 0)));         // G (7)
         vertices.Add(GetMidPointVertex(bottomLeft, bottomRight, new Color(0, 0, 1))); // B (8)
 
         // G R
         //  B
 
-        int i = 6;
+        polygons.Add(new Polygon(top, index, index + 1)); // Upper
+        polygons.Add(new Polygon(index + 1, index + 2, bottomLeft)); // Lower Left
+        polygons.Add(new Polygon(index + 1, index, index + 2)); // Lower Mid
+        polygons.Add(new Polygon(index, bottomRight, index + 2)); // Lower Right
 
-        polygons.Add(new Polygon(top, i, i + 1)); // Upper
-        polygons.Add(new Polygon(i + 1, i + 2, bottomLeft)); // Lower Left
-        polygons.Add(new Polygon(i + 1, i, i + 2)); // Lower Mid
-        polygons.Add(new Polygon(i, bottomRight, i + 2)); // Lower Right
+        // Same as polygons above except 2nd and 3rd vertices swapped so its clockwise
+        SubdivideFace(top, index + 1, index,            index + 3,    n - 1);
+        SubdivideFace(index + 1, bottomLeft, index + 2, index + 6,    n - 1);
+        SubdivideFace(index + 1, index + 2, index,      index + 9,    n - 1);
+        SubdivideFace(index, index + 2, bottomRight,    index + 12,   n - 1);
     }
 
     /*
@@ -129,8 +137,8 @@ public class Planet : MonoBehaviour
         Vector3 val = (vertices[a] + vertices[b]) / 2;
 
         // DEBUG
-        var obj = Instantiate(debugPoint, val, Quaternion.identity);
-        obj.GetComponent<Renderer>().material.color = c;
+        //var obj = Instantiate(debugPoint, val, Quaternion.identity);
+        //obj.GetComponent<Renderer>().material.color = c;
 
         return val;
     }
