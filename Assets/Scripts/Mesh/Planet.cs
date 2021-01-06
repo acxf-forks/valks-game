@@ -31,16 +31,6 @@ public class Planet : MonoBehaviour
 
     public enum Dir { UP, DOWN, EAST, WEST, NORTH, SOUTH }
 
-    public Vector3 GetVertex(int index) 
-    {
-        return vertices[index];
-    }
-
-    public int GetIndex(Planet.Dir dir)
-    {
-        return (int)dir;
-    }
-
     private void Awake()
     {
         mesh = GetComponent<MeshFilter>().mesh;
@@ -88,8 +78,9 @@ public class Planet : MonoBehaviour
             new Polygon(Dir.SOUTH, Dir.DOWN, Dir.WEST) 
         };
 
-        // We choose 6 because there are 6 directions of the base form, so we want the indices after that.
-        SubdivideFace((int)Dir.UP, (int)Dir.SOUTH, (int)Dir.EAST, 6, 2);
+        // We choose 6 because there are 6 directions of the base form, so we want the vertices after that.
+        // Here we are subdividing one face of the base form octahedron.
+        SubdivideFace((int)Dir.UP, (int)Dir.SOUTH, (int)Dir.EAST, 1);
 
         // GENERATE MESH
         mesh.Clear(); // Remove any previous mesh data
@@ -105,7 +96,17 @@ public class Planet : MonoBehaviour
         mesh.RecalculateNormals();
     }
 
-    private void SubdivideFace(int top, int bottomLeft, int bottomRight, int index, int n)
+    /*
+     * Subdivides a specified triangle given the 3 points of the triangle.
+     * 
+     * top = The top vertex
+     * bottomLeft = The bottom left vertex
+     * bottomRight = The bottom right vertex
+     * index = Keep track of the vertices index
+     * nMax = The max amount of subdivisions
+     * n = Keeping track of the current subdivision
+     */
+    private void SubdivideFace(int top, int bottomLeft, int bottomRight, int n)
     {
         if (n == 0) return;
 
@@ -116,16 +117,26 @@ public class Planet : MonoBehaviour
         // G R
         //  B
 
-        polygons.Add(new Polygon(top, index, index + 1)); // Upper
-        polygons.Add(new Polygon(index + 1, index + 2, bottomLeft)); // Lower Left
-        polygons.Add(new Polygon(index + 1, index, index + 2)); // Lower Mid
-        polygons.Add(new Polygon(index, bottomRight, index + 2)); // Lower Right
+        // We subtract 3 because it's like subtracting 1 polygon because we need to account for 0 index
+        int index = vertices.Count - 3;
 
-        // Same as polygons above except 2nd and 3rd vertices swapped so its clockwise
-        SubdivideFace(top, index + 1, index,            index + 3,    n - 1);
-        SubdivideFace(index + 1, bottomLeft, index + 2, index + 6,    n - 1);
-        SubdivideFace(index + 1, index + 2, index,      index + 9,    n - 1);
-        SubdivideFace(index, index + 2, bottomRight,    index + 12,   n - 1);
+        // Only draw the last subdivision.
+        if (n == 1)
+        {
+            polygons.Add(new Polygon(top, index, index + 1)); // Upper Top R G
+            polygons.Add(new Polygon(index + 1, index + 2, bottomLeft)); // Lower Left
+            polygons.Add(new Polygon(index + 1, index, index + 2)); // Lower Mid
+            polygons.Add(new Polygon(index, bottomRight, index + 2)); // Lower Right
+        }
+
+        /*
+         * When you draw a triangle within a triangle it gets turned upside down, so that's
+         * why we have to swap the 2nd and 3rd vertices.
+         */
+        SubdivideFace(top, index + 1, index,            n - 1);
+        SubdivideFace(index + 1, bottomLeft, index + 2, n - 1);
+        SubdivideFace(index + 1, index + 2, index,      n - 1);
+        SubdivideFace(index, index + 2, bottomRight,    n - 1);
     }
 
     /*
@@ -135,10 +146,11 @@ public class Planet : MonoBehaviour
     {
         // Calculate midpoint
         Vector3 val = (vertices[a] + vertices[b]) / 2;
+        //val += new Vector3(0, 0.1f, 0);
 
         // DEBUG
-        //var obj = Instantiate(debugPoint, val, Quaternion.identity);
-        //obj.GetComponent<Renderer>().material.color = c;
+        /*var obj = Instantiate(debugPoint, val, Quaternion.identity);
+        obj.GetComponent<Renderer>().material.color = c;*/
 
         return val;
     }
