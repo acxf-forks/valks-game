@@ -132,9 +132,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6470953}
+  - component: {fileID: 6470950}
   - component: {fileID: 6470952}
   - component: {fileID: 6470951}
-  - component: {fileID: 6470950}
   m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
@@ -155,6 +155,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugPoint: {fileID: 878881606622497471, guid: ae13ed0e077ea0b4ca2983e507d55e6e, type: 3}
+  r: 2
 --- !u!23 &6470951
 MeshRenderer:
   m_ObjectHideFlags: 0

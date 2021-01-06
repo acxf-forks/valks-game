@@ -18,17 +18,28 @@ using UnityEngine;
  * Reference https://en.wikipedia.org/wiki/Geodesic_polyhedron
  */
 
-public enum Dir { UP, DOWN, EAST, WEST, NORTH, SOUTH }
-
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class Planet : MonoBehaviour
 {
     public Transform debugPoint;
+    public int r = 2;
 
     private Mesh mesh;
 
     private List<Vector3> vertices;
     private List<Polygon> polygons;
+
+    public enum Dir { UP, DOWN, EAST, WEST, NORTH, SOUTH }
+
+    public Vector3 GetVertex(int index) 
+    {
+        return vertices[index];
+    }
+
+    public int GetIndex(Planet.Dir dir)
+    {
+        return (int)dir;
+    }
 
     private void Awake()
     {
@@ -37,8 +48,6 @@ public class Planet : MonoBehaviour
 
     private void Start()
     {
-        int r = 2;
-
         /*
          * (+x) = East, (+z) = North, (+y) = Up
          * (-x) = West, (-z) = South, (-y) = Down
@@ -46,12 +55,12 @@ public class Planet : MonoBehaviour
 
         vertices = new List<Vector3>() 
         {
-            new Vector3(0, r, 0),  // UP   
-            new Vector3(0, -r, 0), // DOWN 
-            new Vector3(r, 0, 0),  // EAST 
-            new Vector3(-r, 0, 0), // WEST 
-            new Vector3(0, 0, r),  // NORTH
-            new Vector3(0, 0, -r)  // SOUTH
+            new Vector3(0, r, 0),  // UP    (0)
+            new Vector3(0, -r, 0), // DOWN  (1)
+            new Vector3(r, 0, 0),  // EAST  (2)
+            new Vector3(-r, 0, 0), // WEST  (3)
+            new Vector3(0, 0, r),  // NORTH (4)
+            new Vector3(0, 0, -r)  // SOUTH (5)
         };
 
         /*
@@ -78,6 +87,9 @@ public class Planet : MonoBehaviour
             new Polygon(Dir.SOUTH, Dir.DOWN, Dir.WEST) 
         };
 
+        SubdivideFace((int)Dir.UP, (int)Dir.SOUTH, (int)Dir.EAST);
+
+        // GENERATE MESH
         mesh.Clear(); // Remove any previous mesh data
         mesh.vertices = vertices.ToArray();
 
@@ -89,20 +101,37 @@ public class Planet : MonoBehaviour
         mesh.triangles = triangles.ToArray();
 
         mesh.RecalculateNormals();
+    }
 
-        GetMidPointVertex(Dir.UP, Dir.EAST,  new Color(1, 0, 0));
-        GetMidPointVertex(Dir.UP, Dir.SOUTH, new Color(0, 1, 0));
-        GetMidPointVertex(Dir.SOUTH, Dir.EAST, new Color(0, 0, 1));
+    private void SubdivideFace(int top, int bottomLeft, int bottomRight)
+    {
+        vertices.Add(GetMidPointVertex(top, bottomRight, new Color(1, 0, 0)));    // R (6)
+        vertices.Add(GetMidPointVertex(top, bottomLeft, new Color(0, 1, 0)));   // G (7)
+        vertices.Add(GetMidPointVertex(bottomLeft, bottomRight, new Color(0, 0, 1))); // B (8)
+
+        // G R
+        //  B
+
+        int i = 6;
+
+        polygons.Add(new Polygon(top, i, i + 1)); // Upper
+        polygons.Add(new Polygon(i + 1, i + 2, bottomLeft)); // Lower Left
+        polygons.Add(new Polygon(i + 1, i, i + 2)); // Lower Mid
+        polygons.Add(new Polygon(i, bottomRight, i + 2)); // Lower Right
     }
 
     /*
-        * Gets the midpoint vector between 2 vectors.
-        */
-    private Vector3 GetMidPointVertex(Dir a, Dir b, Color c) 
+     * Gets the midpoint vertex between two vertices.
+     */
+    private Vector3 GetMidPointVertex(int a, int b, Color c) 
     {
-        Vector3 val = (vertices[(int)b] - vertices[(int)a]) / 2;
-        var obj = Instantiate(debugPoint, val, Quaternion.identity); // Debug
+        // Calculate midpoint
+        Vector3 val = (vertices[a] + vertices[b]) / 2;
+
+        // DEBUG
+        var obj = Instantiate(debugPoint, val, Quaternion.identity);
         obj.GetComponent<Renderer>().material.color = c;
+
         return val;
     }
 }
@@ -111,8 +140,13 @@ public class Polygon
 {
     public List<int> vertices;
 
-    public Polygon(Dir vertexA, Dir vertexB, Dir vertexC) 
+    public Polygon(Planet.Dir a, Planet.Dir b, Planet.Dir c) 
     {
-        vertices = new List<int>() { (int)vertexA, (int)vertexB, (int)vertexC };
+        vertices = new List<int>() { (int)a, (int)b, (int)c };
+    }
+
+    public Polygon(int a, int b, int c)
+    {
+        vertices = new List<int>() { a, b, c };
     }
 }
