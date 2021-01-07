@@ -44,52 +44,55 @@ public class Planet : MonoBehaviour
         };
 
         polygons = new List<Polygon>();
-        /*polygons = new List<Polygon>() // For Base Form Reference
+
+        int subdivisions = 0;
+
+        if (subdivisions == 0)
         {
-            new Polygon(0, 11, 5),
-            new Polygon(0, 5, 1),
-            new Polygon(0, 1, 7),
-            new Polygon(0, 7, 10),
-            new Polygon(0, 10, 11),
-            new Polygon(1, 5, 9),
-            new Polygon(5, 11, 4),
-            new Polygon(11, 10, 2),
-            new Polygon(10, 7, 6),
-            new Polygon(7, 1, 8),
-            new Polygon(3, 9, 4),
-            new Polygon(3, 4, 2),
-            new Polygon(3, 2, 6),
-            new Polygon(3, 6, 8),
-            new Polygon(3, 8, 9),
-            new Polygon(4, 9, 5),
-            new Polygon(2, 4, 11),
-            new Polygon(6, 2, 10),
-            new Polygon(8, 6, 7),
-            new Polygon(9, 8, 1)
-        };*/
-
-        int subdivisions = 5;
-
-        SubdivideFace(0,  5,11,  subdivisions);
-        SubdivideFace(0,  1,5,   subdivisions);
-        SubdivideFace(0,  7,1,   subdivisions);
-        SubdivideFace(0, 10,7,   subdivisions);
-        SubdivideFace(0, 11,10,  subdivisions);
-        SubdivideFace(1,  9,5,   subdivisions);
-        SubdivideFace(5,  4,11,  subdivisions);
-        SubdivideFace(11, 2, 10, subdivisions);
-        SubdivideFace(10, 6, 7,  subdivisions);
-        SubdivideFace(7,  8,1,   subdivisions);
-        SubdivideFace(3,  4,9,   subdivisions);
-        SubdivideFace(3,  2,4,   subdivisions);
-        SubdivideFace(3,  6,2,   subdivisions);
-        SubdivideFace(3,  8,6,   subdivisions);
-        SubdivideFace(3,  9,8,   subdivisions);
-        SubdivideFace(4,  5,9,   subdivisions);
-        SubdivideFace(2, 11,4,   subdivisions);
-        SubdivideFace(6, 10,2,   subdivisions);
-        SubdivideFace(8,  7,6,   subdivisions);
-        SubdivideFace(9,  1,8,   subdivisions);
+            polygons.Add(new Polygon(0, 11, 5));
+            polygons.Add(new Polygon(0, 5, 1));
+            polygons.Add(new Polygon(0, 1, 7));
+            polygons.Add(new Polygon(0, 7, 10));
+            polygons.Add(new Polygon(0, 10, 11));
+            polygons.Add(new Polygon(1, 5, 9));
+            polygons.Add(new Polygon(5, 11, 4));
+            polygons.Add(new Polygon(11, 10, 2));
+            polygons.Add(new Polygon(10, 7, 6));
+            polygons.Add(new Polygon(7, 1, 8));
+            polygons.Add(new Polygon(3, 9, 4));
+            polygons.Add(new Polygon(3, 4, 2));
+            polygons.Add(new Polygon(3, 2, 6));
+            polygons.Add(new Polygon(3, 6, 8));
+            polygons.Add(new Polygon(3, 8, 9));
+            polygons.Add(new Polygon(4, 9, 5));
+            polygons.Add(new Polygon(2, 4, 11));
+            polygons.Add(new Polygon(6, 2, 10));
+            polygons.Add(new Polygon(8, 6, 7));
+            polygons.Add(new Polygon(9, 8, 1));
+        }
+        else 
+        {
+            SubdivideFace(0, 5, 11, subdivisions);
+            SubdivideFace(0, 1, 5, subdivisions);
+            SubdivideFace(0, 7, 1, subdivisions);
+            SubdivideFace(0, 10, 7, subdivisions);
+            SubdivideFace(0, 11, 10, subdivisions);
+            SubdivideFace(1, 9, 5, subdivisions);
+            SubdivideFace(5, 4, 11, subdivisions);
+            SubdivideFace(11, 2, 10, subdivisions);
+            SubdivideFace(10, 6, 7, subdivisions);
+            SubdivideFace(7, 8, 1, subdivisions);
+            SubdivideFace(3, 4, 9, subdivisions);
+            SubdivideFace(3, 2, 4, subdivisions);
+            SubdivideFace(3, 6, 2, subdivisions);
+            SubdivideFace(3, 8, 6, subdivisions);
+            SubdivideFace(3, 9, 8, subdivisions);
+            SubdivideFace(4, 5, 9, subdivisions);
+            SubdivideFace(2, 11, 4, subdivisions);
+            SubdivideFace(6, 10, 2, subdivisions);
+            SubdivideFace(8, 7, 6, subdivisions);
+            SubdivideFace(9, 1, 8, subdivisions);
+        }
 
         // GENERATE MESH
         mesh.Clear(); // Remove any previous mesh data
