@@ -13,6 +13,7 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class Planet : MonoBehaviour
 {
+    public Transform debugPoint;
     private Mesh mesh;
 
     private List<Vector3> vertices;
@@ -45,54 +46,28 @@ public class Planet : MonoBehaviour
 
         polygons = new List<Polygon>();
 
-        int subdivisions = 0;
+        int subdivisions = 2;
 
-        if (subdivisions == 0)
-        {
-            polygons.Add(new Polygon(0, 11, 5));
-            polygons.Add(new Polygon(0, 5, 1));
-            polygons.Add(new Polygon(0, 1, 7));
-            polygons.Add(new Polygon(0, 7, 10));
-            polygons.Add(new Polygon(0, 10, 11));
-            polygons.Add(new Polygon(1, 5, 9));
-            polygons.Add(new Polygon(5, 11, 4));
-            polygons.Add(new Polygon(11, 10, 2));
-            polygons.Add(new Polygon(10, 7, 6));
-            polygons.Add(new Polygon(7, 1, 8));
-            polygons.Add(new Polygon(3, 9, 4));
-            polygons.Add(new Polygon(3, 4, 2));
-            polygons.Add(new Polygon(3, 2, 6));
-            polygons.Add(new Polygon(3, 6, 8));
-            polygons.Add(new Polygon(3, 8, 9));
-            polygons.Add(new Polygon(4, 9, 5));
-            polygons.Add(new Polygon(2, 4, 11));
-            polygons.Add(new Polygon(6, 2, 10));
-            polygons.Add(new Polygon(8, 6, 7));
-            polygons.Add(new Polygon(9, 8, 1));
-        }
-        else 
-        {
-            SubdivideFace(0, 5, 11, subdivisions);
-            SubdivideFace(0, 1, 5, subdivisions);
-            SubdivideFace(0, 7, 1, subdivisions);
-            SubdivideFace(0, 10, 7, subdivisions);
-            SubdivideFace(0, 11, 10, subdivisions);
-            SubdivideFace(1, 9, 5, subdivisions);
-            SubdivideFace(5, 4, 11, subdivisions);
-            SubdivideFace(11, 2, 10, subdivisions);
-            SubdivideFace(10, 6, 7, subdivisions);
-            SubdivideFace(7, 8, 1, subdivisions);
-            SubdivideFace(3, 4, 9, subdivisions);
-            SubdivideFace(3, 2, 4, subdivisions);
-            SubdivideFace(3, 6, 2, subdivisions);
-            SubdivideFace(3, 8, 6, subdivisions);
-            SubdivideFace(3, 9, 8, subdivisions);
-            SubdivideFace(4, 5, 9, subdivisions);
-            SubdivideFace(2, 11, 4, subdivisions);
-            SubdivideFace(6, 10, 2, subdivisions);
-            SubdivideFace(8, 7, 6, subdivisions);
-            SubdivideFace(9, 1, 8, subdivisions);
-        }
+        SubdivideFace(0, 5, 11, subdivisions);
+        SubdivideFace(0, 1, 5, subdivisions);
+        SubdivideFace(0, 7, 1, subdivisions);
+        SubdivideFace(0, 10, 7, subdivisions);
+        SubdivideFace(0, 11, 10, subdivisions);
+        SubdivideFace(1, 9, 5, subdivisions);
+        SubdivideFace(5, 4, 11, subdivisions);
+        SubdivideFace(11, 2, 10, subdivisions);
+        SubdivideFace(10, 6, 7, subdivisions);
+        SubdivideFace(7, 8, 1, subdivisions);
+        SubdivideFace(3, 4, 9, subdivisions);
+        SubdivideFace(3, 2, 4, subdivisions);
+        SubdivideFace(3, 6, 2, subdivisions);
+        SubdivideFace(3, 8, 6, subdivisions);
+        SubdivideFace(3, 9, 8, subdivisions);
+        SubdivideFace(4, 5, 9, subdivisions);
+        SubdivideFace(2, 11, 4, subdivisions);
+        SubdivideFace(6, 10, 2, subdivisions);
+        SubdivideFace(8, 7, 6, subdivisions);
+        SubdivideFace(9, 1, 8, subdivisions);
 
         // GENERATE MESH
         mesh.Clear(); // Remove any previous mesh data
@@ -122,9 +97,9 @@ public class Planet : MonoBehaviour
     {
         if (n == 0) return;
 
-        vertices.Add(GetMidPointVertex(top, bottomRight, new Color(1, 0, 0)));        // R (6)
-        vertices.Add(GetMidPointVertex(top, bottomLeft, new Color(0, 1, 0)));         // G (7)
-        vertices.Add(GetMidPointVertex(bottomLeft, bottomRight, new Color(0, 0, 1))); // B (8)
+        vertices.Add(GetMidPointVertex(top, bottomRight));       
+        vertices.Add(GetMidPointVertex(top, bottomLeft));        
+        vertices.Add(GetMidPointVertex(bottomLeft, bottomRight));
 
         // G R
         //  B
@@ -135,10 +110,16 @@ public class Planet : MonoBehaviour
         // Only draw the last subdivision.
         if (n == 1)
         {
-            polygons.Add(new Polygon(top, index, index + 1)); // Upper Top R G
+            polygons.Add(new Polygon(top, index, index + 1)); // Upper Top
             polygons.Add(new Polygon(index + 1, index + 2, bottomLeft)); // Lower Left
             polygons.Add(new Polygon(index + 1, index, index + 2)); // Lower Mid
             polygons.Add(new Polygon(index, bottomRight, index + 2)); // Lower Right
+
+            // TEST
+            //GetCenterVertex(top, index, index + 1); // Upper Top
+            //GetCenterVertex(index + 1, index + 2, bottomLeft); // Lower Left
+            //GetCenterVertex(index + 1, index, index + 2); // Lower Mid
+            //GetCenterVertex(index, bottomRight, index + 2); // Lower Right
         }
 
         /*
@@ -154,13 +135,28 @@ public class Planet : MonoBehaviour
     /*
      * Gets the midpoint vertex between two vertices.
      */
-    private Vector3 GetMidPointVertex(int a, int b, Color c)
+    private Vector3 GetMidPointVertex(int a, int b)
     {
         // Calculate midpoint
         Vector3 midpoint = (vertices[a] + vertices[b]) / 2;
 
-        // Normalized * r will project the midpoints onto a icosphere.
+        // Normalized will project the midpoints onto a icosphere (with a radius of 1)
         return midpoint.normalized;
+    }
+
+    /*
+     * Calculate the center point of a triangle.
+     */
+    private Vector3 GetCenterVertex(int a, int b, int c) 
+    {
+        Vector3 centerpoint = (vertices[a] + vertices[b] + vertices[c]) / 3;
+
+        // DEBUG
+        var cube = Instantiate(debugPoint, centerpoint, Quaternion.identity);
+        cube.rotation = Quaternion.LookRotation(Vector3.zero - cube.position);
+        cube.position = Vector3.MoveTowards(cube.position, Vector3.zero, -0.05f);
+
+        return centerpoint.normalized;
     }
 }
 
