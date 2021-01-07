@@ -3,33 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /*
- * Geodesic polyhedron are represented by geodesic notation in the form
- * {3,q+}b,c where 3 represents the number of vertices for one face 
- * (a triangle), q represents the number of valence vertices from a center
- * vertex. The + symbol indicates the valence of the vertices being increased.
- * b,c represent the subdivision description with 1,0 representing base form.
+ * Icosahedron is the closest you can get to a near perfect uniform
+ * tessellation projected onto a icosphere.
  * 
- * OCTAHEDRAL CALCULATIONS (for one face of the base form)
- * Triangles(T) = b^2
- * Vertices     = 4T + 2
- * Faces        = 8T
- * Edges        = 12T
- * 
- * Reference https://en.wikipedia.org/wiki/Geodesic_polyhedron
+ * Reference 
+ * https://en.wikipedia.org/wiki/Geodesic_polyhedron
  */
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class Planet : MonoBehaviour
 {
-    public Transform debugPoint;
-    public int r = 2;
-
     private Mesh mesh;
 
     private List<Vector3> vertices;
     private List<Polygon> polygons;
-
-    public enum Dir { UP, DOWN, EAST, WEST, NORTH, SOUTH }
 
     private void Awake()
     {
@@ -38,57 +25,79 @@ public class Planet : MonoBehaviour
 
     private void Start()
     {
-        /*
-         * (+x) = East, (+z) = North, (+y) = Up
-         * (-x) = West, (-z) = South, (-y) = Down
-         */
+        float t = (1.0f + Mathf.Sqrt(5.0f)) / 2.0f;
 
-        vertices = new List<Vector3>() 
+        vertices = new List<Vector3>()
         {
-            new Vector3(0, r, 0),  // UP    (0)
-            new Vector3(0, -r, 0), // DOWN  (1)
-            new Vector3(r, 0, 0),  // EAST  (2)
-            new Vector3(-r, 0, 0), // WEST  (3)
-            new Vector3(0, 0, r),  // NORTH (4)
-            new Vector3(0, 0, -r)  // SOUTH (5)
+            new Vector3(-1, t, 0).normalized,
+            new Vector3(1, t, 0).normalized,
+            new Vector3(-1, -t, 0).normalized,
+            new Vector3(1, -t, 0).normalized,
+            new Vector3(0, -1, t).normalized,
+            new Vector3(0, 1, t).normalized,
+            new Vector3(0, -1, -t).normalized,
+            new Vector3(0, 1, -t).normalized,
+            new Vector3(t, 0, -1).normalized,
+            new Vector3(t, 0, 1).normalized,
+            new Vector3(-t, 0, -1).normalized,
+            new Vector3(-t, 0, 1).normalized
         };
 
-        /*
-         * Creating the base form ({3,4+}1,0) of a geodesic octahedron can be tedious.
-         * Drawing a picture on paper should help.
-         * 
-         * Note that the lower is the same as the upper except the first 
-         * and third vertices are swapped and the second vertex is made 
-         * negative. 
-         * 
-         * Recall: Drawing triangles clockwise will show their fronts while
-         * drawing them counter-clockwise will show their rears.
-         */
-
-        //polygons = new List<Polygon>();
-        polygons = new List<Polygon>() // For Base Form Reference
+        polygons = new List<Polygon>();
+        /*polygons = new List<Polygon>() // For Base Form Reference
         {
-            new Polygon(Dir.EAST,  Dir.UP,   Dir.NORTH),
-            new Polygon(Dir.NORTH, Dir.UP,   Dir.WEST),
-            new Polygon(Dir.SOUTH, Dir.UP,   Dir.EAST),
-            new Polygon(Dir.WEST,  Dir.UP,   Dir.SOUTH),
-            new Polygon(Dir.NORTH, Dir.DOWN, Dir.EAST),
-            new Polygon(Dir.WEST,  Dir.DOWN, Dir.NORTH),
-            new Polygon(Dir.EAST,  Dir.DOWN, Dir.SOUTH),
-            new Polygon(Dir.SOUTH, Dir.DOWN, Dir.WEST) 
-        };
+            new Polygon(0, 11, 5),
+            new Polygon(0, 5, 1),
+            new Polygon(0, 1, 7),
+            new Polygon(0, 7, 10),
+            new Polygon(0, 10, 11),
+            new Polygon(1, 5, 9),
+            new Polygon(5, 11, 4),
+            new Polygon(11, 10, 2),
+            new Polygon(10, 7, 6),
+            new Polygon(7, 1, 8),
+            new Polygon(3, 9, 4),
+            new Polygon(3, 4, 2),
+            new Polygon(3, 2, 6),
+            new Polygon(3, 6, 8),
+            new Polygon(3, 8, 9),
+            new Polygon(4, 9, 5),
+            new Polygon(2, 4, 11),
+            new Polygon(6, 2, 10),
+            new Polygon(8, 6, 7),
+            new Polygon(9, 8, 1)
+        };*/
 
-        // We choose 6 because there are 6 directions of the base form, so we want the vertices after that.
-        // Here we are subdividing one face of the base form octahedron.
-        SubdivideFace((int)Dir.UP, (int)Dir.SOUTH, (int)Dir.EAST, 1);
+        int subdivisions = 5;
+
+        SubdivideFace(0,  5,11,  subdivisions);
+        SubdivideFace(0,  1,5,   subdivisions);
+        SubdivideFace(0,  7,1,   subdivisions);
+        SubdivideFace(0, 10,7,   subdivisions);
+        SubdivideFace(0, 11,10,  subdivisions);
+        SubdivideFace(1,  9,5,   subdivisions);
+        SubdivideFace(5,  4,11,  subdivisions);
+        SubdivideFace(11, 2, 10, subdivisions);
+        SubdivideFace(10, 6, 7,  subdivisions);
+        SubdivideFace(7,  8,1,   subdivisions);
+        SubdivideFace(3,  4,9,   subdivisions);
+        SubdivideFace(3,  2,4,   subdivisions);
+        SubdivideFace(3,  6,2,   subdivisions);
+        SubdivideFace(3,  8,6,   subdivisions);
+        SubdivideFace(3,  9,8,   subdivisions);
+        SubdivideFace(4,  5,9,   subdivisions);
+        SubdivideFace(2, 11,4,   subdivisions);
+        SubdivideFace(6, 10,2,   subdivisions);
+        SubdivideFace(8,  7,6,   subdivisions);
+        SubdivideFace(9,  1,8,   subdivisions);
 
         // GENERATE MESH
         mesh.Clear(); // Remove any previous mesh data
         mesh.vertices = vertices.ToArray();
 
         List<int> triangles = new List<int>();
-        for (int i = 0; i < polygons.Count; i++) 
-            for (int j = 0; j < polygons[i].vertices.Count; j++) 
+        for (int i = 0; i < polygons.Count; i++)
+            for (int j = 0; j < polygons[i].vertices.Count; j++)
                 triangles.Add(polygons[i].vertices[j]);
 
         mesh.triangles = triangles.ToArray();
@@ -133,37 +142,28 @@ public class Planet : MonoBehaviour
          * When you draw a triangle within a triangle it gets turned upside down, so that's
          * why we have to swap the 2nd and 3rd vertices.
          */
-        SubdivideFace(top, index + 1, index,            n - 1);
+        SubdivideFace(top, index + 1, index, n - 1);
         SubdivideFace(index + 1, bottomLeft, index + 2, n - 1);
-        SubdivideFace(index + 1, index + 2, index,      n - 1);
-        SubdivideFace(index, index + 2, bottomRight,    n - 1);
+        SubdivideFace(index + 1, index + 2, index, n - 1);
+        SubdivideFace(index, index + 2, bottomRight, n - 1);
     }
 
     /*
      * Gets the midpoint vertex between two vertices.
      */
-    private Vector3 GetMidPointVertex(int a, int b, Color c) 
+    private Vector3 GetMidPointVertex(int a, int b, Color c)
     {
         // Calculate midpoint
-        Vector3 val = (vertices[a] + vertices[b]) / 2;
-        //val += new Vector3(0, 0.1f, 0);
+        Vector3 midpoint = (vertices[a] + vertices[b]) / 2;
 
-        // DEBUG
-        /*var obj = Instantiate(debugPoint, val, Quaternion.identity);
-        obj.GetComponent<Renderer>().material.color = c;*/
-
-        return val;
+        // Normalized * r will project the midpoints onto a icosphere.
+        return midpoint.normalized;
     }
 }
 
-public class Polygon 
+public class Polygon
 {
     public List<int> vertices;
-
-    public Polygon(Planet.Dir a, Planet.Dir b, Planet.Dir c) 
-    {
-        vertices = new List<int>() { (int)a, (int)b, (int)c };
-    }
 
     public Polygon(int a, int b, int c)
     {
