@@ -32,8 +32,7 @@ public class Planet : MonoBehaviour
         for (int i = 0; i < polygons.Count; i++)
         {
             var cube = Instantiate(debugPoint, polygons[i].GetCenterVertex(), Quaternion.identity);
-
-            float color = (i / (float)polygons.Count);
+            var color = (i / (float)polygons.Count);
 
             cube.GetComponent<Renderer>().material.color = new Color(color, 0, 0);
             cube.rotation = Quaternion.LookRotation(Vector3.zero - cube.position);
@@ -43,7 +42,7 @@ public class Planet : MonoBehaviour
 
     private void GenerateMesh() 
     {
-        float t = (1.0f + Mathf.Sqrt(5.0f)) / 2.0f;
+        var t = (1.0f + Mathf.Sqrt(5.0f)) / 2.0f;
 
         vertices = new List<Vector3>()
         {
@@ -63,7 +62,7 @@ public class Planet : MonoBehaviour
 
         polygons = new List<Polygon>();
 
-        int subdivisions = 2;
+        var subdivisions = 2;
 
         SubdivideFace(0, 5, 11, subdivisions);
         SubdivideFace(0, 1, 5, subdivisions);
@@ -98,6 +97,9 @@ public class Planet : MonoBehaviour
         mesh.triangles = triangles.ToArray();
 
         mesh.RecalculateNormals();
+
+        var collider = gameObject.AddComponent<MeshCollider>();
+        collider.sharedMesh = mesh;
     }
 
     /*
@@ -149,7 +151,7 @@ public class Planet : MonoBehaviour
     private Vector3 GetMidPointVertex(int a, int b)
     {
         // Calculate midpoint
-        Vector3 midpoint = (vertices[a] + vertices[b]) / 2;
+        var midpoint = (vertices[a] + vertices[b]) / 2;
 
         // Normalized will project the midpoints onto a icosphere (with a radius of 1)
         return midpoint.normalized;
@@ -170,8 +172,5 @@ public class Polygon
     /*
      * Calculate the center point of polygon
      */
-    public Vector3 GetCenterVertex()
-    {
-        return ((vertices[0] + vertices[1] + vertices[2]) / 3).normalized;
-    }
+    public Vector3 GetCenterVertex() => ((vertices[0] + vertices[1] + vertices[2]) / 3).normalized;
 }
