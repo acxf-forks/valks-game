@@ -26,6 +26,23 @@ public class Planet : MonoBehaviour
 
     private void Start()
     {
+        GenerateMesh();
+
+        // DEBUG
+        for (int i = 0; i < polygons.Count; i++)
+        {
+            var cube = Instantiate(debugPoint, polygons[i].GetCenterVertex(), Quaternion.identity);
+
+            float color = (i / (float)polygons.Count);
+
+            cube.GetComponent<Renderer>().material.color = new Color(color, 0, 0);
+            cube.rotation = Quaternion.LookRotation(Vector3.zero - cube.position);
+            cube.position = Vector3.MoveTowards(cube.position, Vector3.zero, -0.05f);
+        }
+    }
+
+    private void GenerateMesh() 
+    {
         float t = (1.0f + Mathf.Sqrt(5.0f)) / 2.0f;
 
         vertices = new List<Vector3>()
@@ -75,8 +92,8 @@ public class Planet : MonoBehaviour
 
         List<int> triangles = new List<int>();
         for (int i = 0; i < polygons.Count; i++)
-            for (int j = 0; j < polygons[i].vertices.Count; j++)
-                triangles.Add(polygons[i].vertices[j]);
+            for (int j = 0; j < polygons[i].indices.Count; j++)
+                triangles.Add(polygons[i].indices[j]);
 
         mesh.triangles = triangles.ToArray();
 
@@ -110,16 +127,10 @@ public class Planet : MonoBehaviour
         // Only draw the last subdivision.
         if (n == 1)
         {
-            polygons.Add(new Polygon(top, index, index + 1)); // Upper Top
-            polygons.Add(new Polygon(index + 1, index + 2, bottomLeft)); // Lower Left
-            polygons.Add(new Polygon(index + 1, index, index + 2)); // Lower Mid
-            polygons.Add(new Polygon(index, bottomRight, index + 2)); // Lower Right
-
-            // TEST
-            //GetCenterVertex(top, index, index + 1); // Upper Top
-            //GetCenterVertex(index + 1, index + 2, bottomLeft); // Lower Left
-            //GetCenterVertex(index + 1, index, index + 2); // Lower Mid
-            //GetCenterVertex(index, bottomRight, index + 2); // Lower Right
+            polygons.Add(new Polygon(vertices[top], vertices[index], vertices[index + 1], top, index, index + 1)); // Upper Top
+            polygons.Add(new Polygon(vertices[index + 1], vertices[index + 2], vertices[bottomLeft], index + 1, index + 2, bottomLeft)); // Lower Left
+            polygons.Add(new Polygon(vertices[index + 1], vertices[index], vertices[index + 2], index + 1, index, index + 2)); // Lower Mid
+            polygons.Add(new Polygon(vertices[index], vertices[bottomRight], vertices[index + 2], index, bottomRight, index + 2)); // Lower Right
         }
 
         /*
@@ -143,29 +154,24 @@ public class Planet : MonoBehaviour
         // Normalized will project the midpoints onto a icosphere (with a radius of 1)
         return midpoint.normalized;
     }
-
-    /*
-     * Calculate the center point of a triangle.
-     */
-    private Vector3 GetCenterVertex(int a, int b, int c) 
-    {
-        Vector3 centerpoint = (vertices[a] + vertices[b] + vertices[c]) / 3;
-
-        // DEBUG
-        var cube = Instantiate(debugPoint, centerpoint, Quaternion.identity);
-        cube.rotation = Quaternion.LookRotation(Vector3.zero - cube.position);
-        cube.position = Vector3.MoveTowards(cube.position, Vector3.zero, -0.05f);
-
-        return centerpoint.normalized;
-    }
 }
 
 public class Polygon
 {
-    public List<int> vertices;
+    public List<Vector3> vertices;
+    public List<int> indices;
 
-    public Polygon(int a, int b, int c)
+    public Polygon(Vector3 vA, Vector3 vB, Vector3 vC, int a, int b, int c)
     {
-        vertices = new List<int>() { a, b, c };
+        vertices = new List<Vector3>() { vA, vB, vC };
+        indices = new List<int>() { a, b, c };
+    }
+
+    /*
+     * Calculate the center point of polygon
+     */
+    public Vector3 GetCenterVertex()
+    {
+        return ((vertices[0] + vertices[1] + vertices[2]) / 3).normalized;
     }
 }
