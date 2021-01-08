@@ -17,27 +17,30 @@ public class Planet : MonoBehaviour
     private Mesh mesh;
 
     private List<Vector3> vertices;
-    private List<Polygon> polygons;
+    private List<int> triangles;
+    public int r = 2;
+
+    public int[] grid;
 
     private void Awake()
     {
         mesh = GetComponent<MeshFilter>().mesh;
+        triangles = new List<int>();
     }
 
     private void Start()
     {
         GenerateMesh();
 
-        // DEBUG
-        for (int i = 0; i < polygons.Count; i++)
-        {
-            var cube = Instantiate(debugPoint, polygons[i].GetCenterVertex(), Quaternion.identity);
-            var color = (i / (float)polygons.Count);
+        grid = new int[(triangles.Count / 3) - 3];
 
-            cube.GetComponent<Renderer>().material.color = new Color(color, 0, 0);
-            cube.rotation = Quaternion.LookRotation(Vector3.zero - cube.position);
-            cube.position = Vector3.MoveTowards(cube.position, Vector3.zero, -0.05f);
-        }
+        // DEBUG
+        var centerVertex = GetCenterVertex(triangles[0], triangles[1], triangles[2]);
+        var cube = Instantiate(debugPoint, centerVertex, Quaternion.identity);
+
+        var dir = (centerVertex - Vector3.zero).normalized;
+        cube.forward = dir;
+        cube.position = centerVertex + (dir * 0.05f);
     }
 
     private void GenerateMesh() 
@@ -46,21 +49,19 @@ public class Planet : MonoBehaviour
 
         vertices = new List<Vector3>()
         {
-            new Vector3(-1, t, 0).normalized,
-            new Vector3(1, t, 0).normalized,
-            new Vector3(-1, -t, 0).normalized,
-            new Vector3(1, -t, 0).normalized,
-            new Vector3(0, -1, t).normalized,
-            new Vector3(0, 1, t).normalized,
-            new Vector3(0, -1, -t).normalized,
-            new Vector3(0, 1, -t).normalized,
-            new Vector3(t, 0, -1).normalized,
-            new Vector3(t, 0, 1).normalized,
-            new Vector3(-t, 0, -1).normalized,
-            new Vector3(-t, 0, 1).normalized
+            new Vector3(-1, t, 0).normalized * r,
+            new Vector3(1, t, 0).normalized * r ,
+            new Vector3(-1, -t, 0).normalized * r,
+            new Vector3(1, -t, 0).normalized * r,
+            new Vector3(0, -1, t).normalized * r,
+            new Vector3(0, 1, t).normalized * r ,
+            new Vector3(0, -1, -t).normalized * r,
+            new Vector3(0, 1, -t).normalized * r,
+            new Vector3(t, 0, -1).normalized * r,
+            new Vector3(t, 0, 1).normalized * r ,
+            new Vector3(-t, 0, -1).normalized * r,
+            new Vector3(-t, 0, 1).normalized * r
         };
-
-        polygons = new List<Polygon>();
 
         var subdivisions = 2;
 
@@ -88,12 +89,6 @@ public class Planet : MonoBehaviour
         // GENERATE MESH
         mesh.Clear(); // Remove any previous mesh data
         mesh.vertices = vertices.ToArray();
-
-        List<int> triangles = new List<int>();
-        for (int i = 0; i < polygons.Count; i++)
-            for (int j = 0; j < polygons[i].indices.Count; j++)
-                triangles.Add(polygons[i].indices[j]);
-
         mesh.triangles = triangles.ToArray();
 
         mesh.RecalculateNormals();
@@ -129,10 +124,10 @@ public class Planet : MonoBehaviour
         // Only draw the last subdivision.
         if (n == 1)
         {
-            polygons.Add(new Polygon(vertices[top], vertices[index], vertices[index + 1], top, index, index + 1)); // Upper Top
-            polygons.Add(new Polygon(vertices[index + 1], vertices[index + 2], vertices[bottomLeft], index + 1, index + 2, bottomLeft)); // Lower Left
-            polygons.Add(new Polygon(vertices[index + 1], vertices[index], vertices[index + 2], index + 1, index, index + 2)); // Lower Mid
-            polygons.Add(new Polygon(vertices[index], vertices[bottomRight], vertices[index + 2], index, bottomRight, index + 2)); // Lower Right
+            triangles.AddRange(new List<int> { top, index, index + 1 }); // Upper Top
+            triangles.AddRange(new List<int> { index + 1, index + 2, bottomLeft }); // Lower Left
+            triangles.AddRange(new List<int> { index + 1, index, index + 2 }); // Lower Mid
+            triangles.AddRange(new List<int> { index, bottomRight, index + 2 }); // Lower Right
         }
 
         /*
@@ -154,23 +149,8 @@ public class Planet : MonoBehaviour
         var midpoint = (vertices[a] + vertices[b]) / 2;
 
         // Normalized will project the midpoints onto a icosphere (with a radius of 1)
-        return midpoint.normalized;
-    }
-}
-
-public class Polygon
-{
-    public List<Vector3> vertices;
-    public List<int> indices;
-
-    public Polygon(Vector3 vA, Vector3 vB, Vector3 vC, int a, int b, int c)
-    {
-        vertices = new List<Vector3>() { vA, vB, vC };
-        indices = new List<int>() { a, b, c };
+        return midpoint.normalized * r;
     }
 
-    /*
-     * Calculate the center point of polygon
-     */
-    public Vector3 GetCenterVertex() => ((vertices[0] + vertices[1] + vertices[2]) / 3).normalized;
+    public Vector3 GetCenterVertex(int a, int b, int c) => ((vertices[a] + vertices[b] + vertices[c]) / 3).normalized * r;
 }
