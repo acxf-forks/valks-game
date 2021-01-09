@@ -31,24 +31,32 @@ public class PlayerController : MonoBehaviour
         
         transform.position = new Vector3(0, radius + playerHeight / 2, 0);
 
-        target = new Vector3(-radius, 0, 0);
+        target = new Vector3(radius, 0, 0);
     }
 
     private void Update()
     {
-        Vector3 gravityDir = (planet.position - transform.position).normalized;
+
+        
 
         // Always stand on planet
-        transform.up = -gravityDir;
+        
 
         if (Vector3.Distance(transform.position, target) > ((playerHeight / 2) + 1))
         {
+            Vector3 gravityDir = (transform.position - planet.position).normalized;
+
+            Vector3 targetAngle = Quaternion.LookRotation(target - transform.position).eulerAngles;
+            transform.eulerAngles = new Vector3(0, targetAngle.y, 0);
+            transform.up = gravityDir;
+
             // Planet Gravity
             rb.AddForce(gravityDir * gravityForce);
 
             // Move to Target
-            Vector3 targetDir = (target - transform.position).normalized;
-            rb.AddForce(targetDir * speed);
+            //
+            //rb.AddForce(targetDir * speed);
+            //rb.AddForce(transform.forward * speed);
         }
         else 
         {

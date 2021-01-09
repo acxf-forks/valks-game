@@ -24,10 +24,13 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (Input.GetMouseButtonDown(0)) 
+        // 0 = primary
+        // 1 = secondary
+        // 2 = middle
+        if (Input.GetMouseButtonDown(2)) 
             previousPosition = cam.ScreenToViewportPoint(Input.mousePosition);
 
-        if (Input.GetMouseButton(0)) 
+        if (Input.GetMouseButton(2)) 
         {
             Vector3 dir = previousPosition - cam.ScreenToViewportPoint(Input.mousePosition);
 
