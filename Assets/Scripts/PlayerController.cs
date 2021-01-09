@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     public Transform planet;
     private Planet planetScript;
-    public float gravityForce = 1f;
+    public float gravityForce = -10f;
     private float radius;
     public float speed = 1f;
 
@@ -32,35 +32,55 @@ public class PlayerController : MonoBehaviour
         transform.position = new Vector3(0, radius + playerHeight / 2, 0);
 
         target = new Vector3(radius, 0, 0);
+
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        rb.useGravity = false;
     }
 
     private void Update()
     {
 
-        
+    }
 
-        // Always stand on planet
-        
+    private void FixedUpdate()
+    {
+        Vector3 gravityUp = (transform.position - planet.position).normalized;
 
-        if (Vector3.Distance(transform.position, target) > ((playerHeight / 2) + 1))
+        Vector3 bodyUp = transform.up;
+
+        Quaternion targetRotation = Quaternion.FromToRotation(bodyUp, gravityUp) * transform.rotation;
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 50 * Time.deltaTime);
+
+        rb.AddForce(gravityUp * gravityForce);
+
+        if (Vector3.Distance(transform.position, target) > ((playerHeight / 2) + 2))
         {
-            Vector3 gravityDir = (transform.position - planet.position).normalized;
-
-            Vector3 targetAngle = Quaternion.LookRotation(target - transform.position).eulerAngles;
-            transform.eulerAngles = new Vector3(0, targetAngle.y, 0);
-            transform.up = gravityDir;
-
-            // Planet Gravity
-            rb.AddForce(gravityDir * gravityForce);
-
-            // Move to Target
-            //
-            //rb.AddForce(targetDir * speed);
-            //rb.AddForce(transform.forward * speed);
+            //rb.MovePosition(rb.position + transform.TransformDirection(moveDir) * speed * Time.deltaTime);
         }
-        else 
+    }
+
+    private void AStar(Vector3 start, Vector3 goal) 
+    {
+        // Center vertices of all the planets polygons
+        Vector3[] centerVertices = planetScript.centerVertices;
+
+        // Priority queue
+        List<Vector3> openSet = new List<Vector3>();
+        openSet.Add(start);
+
+        // Calculate the shortest path to the next node
+        Vector3 nextNode = Vector3.zero;
+        float minDist = Mathf.Infinity;
+        for (int i = 0; i < centerVertices.Length; i++) 
         {
-            rb.velocity = Vector3.zero;
+            float curDist = Vector3.Distance(start, centerVertices[i]);
+            if (curDist < minDist) 
+            {
+                minDist = curDist;
+                nextNode = centerVertices[i];
+            }
         }
+
+        openSet.Add(nextNode);
     }
 }

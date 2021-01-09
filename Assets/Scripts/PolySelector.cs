@@ -44,8 +44,8 @@ public class PolySelector : MonoBehaviour
             Debug.DrawLine(p2, p0, Color.blue, 0.5f);
 
             // We populate the planet grid to let us know an entity exists in this space now
-            var planet = hit.transform.gameObject.GetComponent<Planet>();
-            planet.grid[hit.triangleIndex / 3] = 1;
+            //var planet = hit.transform.gameObject.GetComponent<Planet>();
+            //planet.grid[hit.triangleIndex / 3] = 1;
         }
     }
 }

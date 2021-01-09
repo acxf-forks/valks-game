@@ -20,7 +20,7 @@ public class Planet : MonoBehaviour
     private List<int> triangles;
     public int r = 2;
 
-    public int[] grid;
+    public Vector3[] centerVertices;
 
     private void Awake()
     {
@@ -32,15 +32,20 @@ public class Planet : MonoBehaviour
     {
         GenerateMesh();
 
-        grid = new int[(triangles.Count / 3) - 3];
+        centerVertices = new Vector3[(triangles.Count / 3)];
 
         // DEBUG
-        var centerVertex = GetCenterVertex(triangles[0], triangles[1], triangles[2]);
-        var cube = Instantiate(debugPoint, centerVertex, Quaternion.identity);
+        for (int i = 0; i < triangles.Count; i+=3) 
+        {
+            var centerVertex = GetCenterVertex(triangles[i], triangles[i + 1], triangles[i + 2]);
+            var cube = Instantiate(debugPoint, centerVertex, Quaternion.identity);
 
-        var dir = (centerVertex - Vector3.zero).normalized;
-        cube.forward = dir;
-        cube.position = centerVertex + (dir * 0.05f);
+            var dir = (centerVertex - Vector3.zero).normalized;
+            cube.forward = dir;
+            cube.position = centerVertex + (dir * 0.05f);
+
+            centerVertices[i / 3] = centerVertex;
+        }
     }
 
     private void GenerateMesh() 
