@@ -45,18 +45,33 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         Vector3 gravityUp = (transform.position - planet.position).normalized;
-
         Vector3 bodyUp = transform.up;
 
-        Quaternion targetRotation = Quaternion.FromToRotation(bodyUp, gravityUp) * transform.rotation;
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 50 * Time.deltaTime);
+        // Aligns to planets surface
+        //Quaternion targetRotation = Quaternion.FromToRotation(bodyUp, gravityUp) * transform.rotation;
+        //transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 50 * Time.deltaTime);
 
+        transform.rotation = Quaternion.LookRotation(Vector3.ProjectOnPlane(target - transform.position, gravityUp), gravityUp);
+
+        // Planet gravity
         rb.AddForce(gravityUp * gravityForce);
+
+        Debug.DrawRay(transform.position, transform.forward * 1000f, Color.green);
+        Debug.DrawLine(planet.position, transform.position, Color.blue);
 
         if (Vector3.Distance(transform.position, target) > ((playerHeight / 2) + 2))
         {
-            //rb.MovePosition(rb.position + transform.TransformDirection(moveDir) * speed * Time.deltaTime);
+            if (rb.velocity.magnitude < 2) 
+            {
+                rb.AddForce(transform.forward * speed);
+            }
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(target, 1);
     }
 
     private void AStar(Vector3 start, Vector3 goal) 

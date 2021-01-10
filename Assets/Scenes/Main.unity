@@ -155,8 +155,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugPoint: {fileID: 878881606622497471, guid: ae13ed0e077ea0b4ca2983e507d55e6e, type: 3}
-  r: 5
-  grid: 
+  r: 100
+  centerVertices: []
 --- !u!23 &6470951
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -444,8 +444,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   planet: {fileID: 6470953}
-  gravityForce: -1
-  speed: 5
+  gravityForce: -20
+  speed: 20
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
