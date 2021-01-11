@@ -32,6 +32,11 @@ public class Planet : MonoBehaviour
     {
         GenerateMesh();
 
+        var collider = gameObject.AddComponent<MeshCollider>();
+        collider.sharedMesh = mesh;
+
+        gameObject.layer = LayerMask.NameToLayer("Planets");
+
         centerVertices = new Vector3[(triangles.Count / 3)];
 
         // DEBUG
@@ -97,9 +102,6 @@ public class Planet : MonoBehaviour
         mesh.triangles = triangles.ToArray();
 
         mesh.RecalculateNormals();
-
-        var collider = gameObject.AddComponent<MeshCollider>();
-        collider.sharedMesh = mesh;
     }
 
     /*

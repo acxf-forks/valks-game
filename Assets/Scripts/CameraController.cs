@@ -11,6 +11,8 @@ public class CameraController : MonoBehaviour
     private Vector3 previousPosition;
     private Camera cam;
 
+    public float distanceFromPlanetSurface = 20;
+
     private void Awake()
     {
         cam = GetComponent<Camera>();
@@ -19,7 +21,7 @@ public class CameraController : MonoBehaviour
 
     private void Start()
     {
-        cam.transform.Translate(new Vector3(0, 0, -planetScript.r - 20));
+        cam.transform.Translate(new Vector3(0, 0, -planetScript.r - distanceFromPlanetSurface));
     }
 
     private void LateUpdate()

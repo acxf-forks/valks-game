@@ -27,6 +27,8 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        gameObject.layer = LayerMask.NameToLayer("Units");
+
         radius = planetScript.r;
         
         transform.position = new Vector3(0, radius + playerHeight / 2, 0);
@@ -56,7 +58,7 @@ public class PlayerController : MonoBehaviour
         // Planet gravity
         rb.AddForce(gravityUp * gravityForce);
 
-        Debug.DrawRay(transform.position, transform.forward * 1000f, Color.green);
+        Debug.DrawRay(transform.position, transform.forward * 10f, Color.green);
         Debug.DrawLine(planet.position, transform.position, Color.blue);
 
         if (Vector3.Distance(transform.position, target) > ((playerHeight / 2) + 2))
