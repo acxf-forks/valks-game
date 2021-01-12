@@ -1,3 +1,6 @@
+## Roadmap
+[Roadmap to `v0.1`](https://github.com/Valks-Games/valks-game/issues/2)
+
 ## Useful Links
 What are Geodesic Polyhedra?  
 https://en.wikipedia.org/wiki/Geodesic_polyhedron  
