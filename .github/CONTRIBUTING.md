@@ -1,3 +1,6 @@
+## Split %
+You will be paid fairly based on your contributions once the project receives enough revenue. Please talk to me about rev-share before you contribute otherwise I will assume you are contributing for free. I do not want to pay for things I could have done myself. Unless you made an honest effort all around in the long run, that's different.
+
 ## Setup
 Current project Unity version `2020.2.1f1`, if there is a newer version of Unity please inform me.
 
