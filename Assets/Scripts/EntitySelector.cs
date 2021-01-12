@@ -18,6 +18,8 @@ public class EntitySelector : MonoBehaviour
     private Vector2[] cornersScreenSpace;
     private Vector3[] cornersWorldSpace;
 
+    private Game game;
+
     // For reference to drawing debug selection box gizmo
     private Vector3 middle;
     private float selectionBoxLength;
@@ -25,7 +27,7 @@ public class EntitySelector : MonoBehaviour
     private float selectionBoxHeight;
 
     // Debug
-    public float debugDrawTime = 1f;
+    public float debugDrawTime = 2f;
     public bool debugEnabled = false;
 
     private void Start()
@@ -33,6 +35,7 @@ public class EntitySelector : MonoBehaviour
         cam = Camera.main;
         planetScript = planet.GetComponent<Planet>();
         camScript = cam.GetComponent<CameraController>();
+        game = GameObject.Find("Manager").GetComponent<Game>();
     }
 
     private void Update()
@@ -99,45 +102,37 @@ public class EntitySelector : MonoBehaviour
                 cornersWorldSpace = new Vector3[4];
                 cornersScreenSpace = GetBoundingBox(p1, Input.mousePosition);
 
-                bool allPointsHitSurface = true; // Did all selection points hit the surface of the planet?
+                Vector3 camPos = cam.transform.position;
 
                 for (int i = 0; i < cornersScreenSpace.Length; i++) 
                 {
                     Ray ray = cam.ScreenPointToRay(cornersScreenSpace[i]);
-
-                    if (Physics.Raycast(ray, out hit, planetScript.radius, LayerMask.NameToLayer("Planets")))
-                    {
-                        cornersWorldSpace[i] = new Vector3(hit.point.x, hit.point.y, hit.point.z);
-                    }
-                    else 
-                    {
-                        // Did not hit planet surface
-                        allPointsHitSurface = false;
-                        cornersWorldSpace[i] = ray.GetPoint(camScript.distanceFromPlanetSurface + planetScript.radius / 2);
-                    }
+                    cornersWorldSpace[i] = ray.GetPoint(camScript.distanceFromPlanetSurface + planetScript.radius);
 
                     // DEBUG: Draw visual of 3D selection box.
-                    if (debugEnabled) Debug.DrawLine(cam.ScreenToWorldPoint(cornersScreenSpace[i]), hit.point, Color.yellow, debugDrawTime);
+                    if (debugEnabled) Debug.DrawLine(camPos, cornersWorldSpace[i], Color.yellow, debugDrawTime);
                 }
 
-                var middleTop = (cornersWorldSpace[0] + cornersWorldSpace[1]) / 2;
-                var middleBottom = (cornersWorldSpace[2] + cornersWorldSpace[3]) / 2;
-                middle = (middleTop + middleBottom) / 2;
 
-                // DEBUG: Draw visual of center.
-                if (debugEnabled) Debug.DrawLine(cam.transform.position, middle, Color.magenta, debugDrawTime);
+                var unit = game.units[0];
+                var unitPos = game.units[0].transform.position;
 
-                selectionBoxLength = Vector3.Distance(cornersWorldSpace[0], cornersWorldSpace[1]);
-                selectionBoxWidth = Vector3.Distance(cornersWorldSpace[2], cornersWorldSpace[3]);
+                // cornersWorldSpace[0] (top left)
+                // cornersWorldSpace[1] (top right)
+                // cornersWorldSpace[2] (bottom left)
+                // cornersWorldSpace[3] (bottom right)
 
-                // Adjust selection box height based on if all points hit the planets surface or not
-                if (allPointsHitSurface)
-                    selectionBoxHeight = planetScript.radius / 2; // Not too much or our rectangles will always look like boxes
-                else
-                    selectionBoxHeight = planetScript.radius; // Compensate for missed surfaces
+                // All planes are counter-clockwise
+                var topPlane = new Plane(cornersWorldSpace[1], cornersWorldSpace[0], camPos);
+                var leftPlane = new Plane(cornersWorldSpace[0], cornersWorldSpace[2], camPos);
+                var rightPlane = new Plane(cornersWorldSpace[3], cornersWorldSpace[1], camPos);
+                var bottomPlane = new Plane(cornersWorldSpace[2], cornersWorldSpace[3], camPos);
 
-                Vector3 gravityUp = (middle - planet.transform.position).normalized;
-                Collider[] hitColliders = Physics.OverlapBox(middle, new Vector3(selectionBoxWidth / 2, selectionBoxHeight / 2, selectionBoxLength / 2), Quaternion.LookRotation(cam.transform.up, gravityUp));
+                if (debugEnabled) Debug.Log(
+                    $"Top: {topPlane.GetSide(unitPos)}, " +
+                    $"Left: {leftPlane.GetSide(unitPos)}, " +
+                    $"Right: {rightPlane.GetSide(unitPos)}, " +
+                    $"Bottom: {bottomPlane.GetSide(unitPos)}");
 
                 if (!Input.GetKey(KeyCode.LeftShift))
                 {
@@ -145,9 +140,12 @@ public class EntitySelector : MonoBehaviour
                     DeslectAll();
                 }
 
-                foreach (var collider in hitColliders)
+                if (topPlane.GetSide(unitPos) && leftPlane.GetSide(unitPos) && rightPlane.GetSide(unitPos) && bottomPlane.GetSide(unitPos)) 
                 {
-                    AddSelected(collider.gameObject);
+                    if (Vector3.Distance(camPos, unitPos) < (planetScript.radius + camScript.distanceFromPlanetSurface)) 
+                    {
+                        AddSelected(unit);
+                    }
                 }
             }
 
@@ -223,6 +221,9 @@ public class EntitySelector : MonoBehaviour
         DrawScreenRect(new Rect(rect.xMin, rect.yMax - thickness, rect.width, thickness), color);
     }
 
+    /*
+     * I do not fully understand this function copied from Unity RTS Selection Tutorial https://www.youtube.com/watch?v=OL1QgwaDsqo
+     */
     public static Rect GetScreenRect(Vector3 screenPosition1, Vector3 screenPosition2)
     {
         // Move origin from bottom left to top left
@@ -235,7 +236,10 @@ public class EntitySelector : MonoBehaviour
         return Rect.MinMaxRect(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
     }
 
-    //create a bounding box (4 cornersScreenSpace in order) from the start and end mouse position
+    /*
+     * Create a bounding box (4 cornersScreenSpace in order) from the start and end mouse position
+     * I do not fully understand this function copied from Unity RTS Selection Tutorial https://www.youtube.com/watch?v=OL1QgwaDsqo
+     */
     Vector2[] GetBoundingBox(Vector2 p1, Vector2 p2)
     {
         Vector2 newP1;

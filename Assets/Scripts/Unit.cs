@@ -14,8 +14,6 @@ public class Unit : MonoBehaviour
 
     private Rigidbody rb;
 
-    private Vector3 target;
-
     private float playerHeight = 2;
 
     private static int unitCount = 0;
@@ -32,22 +30,17 @@ public class Unit : MonoBehaviour
         planetRadius = planetScript.radius;
 
         transform.position = new Vector3(0, planetRadius + playerHeight / 2, 0);
-        target = new Vector3(planetRadius, 0, 0);
 
         gameObject.name = $"({unitCount}) Unit";
     }
 
-    private void FixedUpdate()
-    {
-        MoveToTarget();
-    }
-
-    private void MoveToTarget() 
+    public void MoveToTarget(Vector3 target) 
     {
         Vector3 gravityUp = (transform.position - planet.position).normalized;
 
         // Rotate towards the target.
-        transform.rotation = Quaternion.LookRotation(Vector3.ProjectOnPlane(target - transform.position, gravityUp), gravityUp);
+        if (rb.velocity.magnitude > Mathf.Epsilon)
+            transform.rotation = Quaternion.LookRotation(Vector3.ProjectOnPlane(target - transform.position, gravityUp), gravityUp);
 
         if (Vector3.Distance(transform.position, target) > ((playerHeight / 2) + 2))
         {
@@ -56,13 +49,6 @@ public class Unit : MonoBehaviour
                 rb.AddForce(transform.forward * speed);
             }
         }
-    }
-
-    private void OnDrawGizmos()
-    {
-        // DEBUG: Draw target visual.
-        Gizmos.color = Color.green;
-        Gizmos.DrawSphere(target, 1);
     }
 
     private void AStar(Vector3 start, Vector3 goal) 

@@ -7,8 +7,6 @@ public class CameraController : MonoBehaviour
     [Header("Planet")]
     public Transform planet;
 
-
-
     [Header("Speed")]
 
     [Range(0.0f, 1.0f)]
@@ -16,8 +14,6 @@ public class CameraController : MonoBehaviour
 
     [Range(0.0f, .5f)]
     public float scrollFactor = .1f;
-
-
 
     private Planet planetScript;
     private Vector3 previousPosition;
@@ -28,14 +24,14 @@ public class CameraController : MonoBehaviour
     private void Awake()
     {
         cam = gameObject.AddComponent<Camera>();
-        gameObject.tag = "MainCamera";
+        gameObject.tag = "MainCamera"; // This is the main camera
         gameObject.name = "Main Camera";
     }
 
-    private void Start()
+    private void LateUpdate()
     {
-        planetScript = planet.GetComponent<Planet>();
-        cam.transform.Translate(new Vector3(0, 0, -planetScript.radius - distanceFromPlanetSurface));
+        if (focusedOnPlanet)
+            RotateAroundPlanet();
     }
 
     // Why late update?
@@ -64,8 +60,13 @@ public class CameraController : MonoBehaviour
         // Recalculate position
         cam.transform.position = planet.position;
         cam.transform.Translate(new Vector3(0, 0, -planetScript.radius - distanceFromPlanetSurface));
+    }
 
-
-
+    public void FocusOnPlanet(GameObject planetGo) 
+    {
+        focusedOnPlanet = true;
+        planet = planetGo.transform;
+        planetScript = planet.GetComponent<Planet>();
+        cam.transform.Translate(new Vector3(0, 0, -planetScript.radius - distanceFromPlanetSurface));
     }
 }
