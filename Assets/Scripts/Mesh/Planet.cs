@@ -13,12 +13,11 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class Planet : MonoBehaviour
 {
+    private List<Rigidbody> attractedEntities = new List<Rigidbody>();
+
     public string planetName;
     public int radius = 2;
     public float gravity = -10f;
-
-    public Transform player;
-    private Rigidbody pRB;
 
     public Transform debugPoint;
     private Mesh mesh;
@@ -35,7 +34,6 @@ public class Planet : MonoBehaviour
         GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/Texture");
         mesh = GetComponent<MeshFilter>().mesh;
         triangles = new List<int>();
-        //pRB = player.GetComponent<Rigidbody>();
     }
 
     private void Start()
@@ -66,24 +64,33 @@ public class Planet : MonoBehaviour
         gameObject.name = $"({++planetCount}) Planet - " + planetName;
     }
 
-    /*private void FixedUpdate()
+    private void FixedUpdate()
     {
-        Attract(player);
+        foreach (var entity in attractedEntities) 
+        {
+            Attract(entity);
+        }
     }
 
-    public void Attract(Transform t) 
+    public void AddAttractedEntity(Rigidbody rb) 
     {
-        Vector3 gravityUp = (t.position - transform.position).normalized;
+        attractedEntities.Add(rb);
+    }
+
+    private void Attract(Rigidbody rb) 
+    {
+        Transform t = rb.transform;
+        Vector3 gravityUp = (t.transform.position - transform.position).normalized;
         // Aligns to planets surface
         //Quaternion targetRotation = Quaternion.FromToRotation(bodyUp, gravityUp) * transform.rotation;
         //transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 50 * Time.deltaTime);
         
-        pRB.AddForce(gravityUp * gravity);
+        rb.AddForce(gravityUp * gravity);
 
         // DEBUG: Draw visual
         Debug.DrawRay(t.position, t.forward * 10f, Color.green);
         Debug.DrawLine(transform.position, t.position, Color.blue);
-    }*/
+    }
 
     private void GenerateMesh() 
     {
