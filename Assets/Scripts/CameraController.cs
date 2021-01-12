@@ -28,12 +28,6 @@ public class CameraController : MonoBehaviour
         gameObject.name = "Main Camera";
     }
 
-    private void LateUpdate()
-    {
-        if (focusedOnPlanet)
-            RotateAroundPlanet();
-    }
-
     // Why late update?
     private void LateUpdate()
     {
@@ -64,7 +58,6 @@ public class CameraController : MonoBehaviour
 
     public void FocusOnPlanet(GameObject planetGo) 
     {
-        focusedOnPlanet = true;
         planet = planetGo.transform;
         planetScript = planet.GetComponent<Planet>();
         cam.transform.Translate(new Vector3(0, 0, -planetScript.radius - distanceFromPlanetSurface));
