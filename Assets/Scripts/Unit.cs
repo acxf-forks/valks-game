@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // The player is a temporary class to help with debugging.
-public class PlayerController : MonoBehaviour
+public class Unit : MonoBehaviour
 {
     public Transform planet;
     private Planet planetScript;
-    public float gravityForce = -10f;
-    private float radius;
+
+    private float planetRadius;
+
     public float speed = 1f;
 
     private Rigidbody rb;
@@ -17,53 +18,40 @@ public class PlayerController : MonoBehaviour
 
     private float playerHeight = 2;
 
+    private static int unitCount = 0;
+
     private void Awake()
     {
+        gameObject.layer = LayerMask.NameToLayer("Units");
         rb = GetComponent<Rigidbody>();
-        planetScript = planet.GetComponent<Planet>();
     }
-
-    private Vector3 prevPos;
 
     private void Start()
     {
-        gameObject.layer = LayerMask.NameToLayer("Units");
+        planetScript = planet.GetComponent<Planet>();
+        planetRadius = planetScript.radius;
 
-        radius = planetScript.r;
-        
-        transform.position = new Vector3(0, radius + playerHeight / 2, 0);
+        transform.position = new Vector3(0, planetRadius + playerHeight / 2, 0);
+        target = new Vector3(planetRadius, 0, 0);
 
-        target = new Vector3(radius, 0, 0);
-
-        rb.constraints = RigidbodyConstraints.FreezeRotation;
-        rb.useGravity = false;
-    }
-
-    private void Update()
-    {
-
+        gameObject.name = $"({unitCount}) Unit";
     }
 
     private void FixedUpdate()
     {
+        MoveToTarget();
+    }
+
+    private void MoveToTarget() 
+    {
         Vector3 gravityUp = (transform.position - planet.position).normalized;
-        Vector3 bodyUp = transform.up;
 
-        // Aligns to planets surface
-        //Quaternion targetRotation = Quaternion.FromToRotation(bodyUp, gravityUp) * transform.rotation;
-        //transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 50 * Time.deltaTime);
-
+        // Rotate towards the target.
         transform.rotation = Quaternion.LookRotation(Vector3.ProjectOnPlane(target - transform.position, gravityUp), gravityUp);
-
-        // Planet gravity
-        rb.AddForce(gravityUp * gravityForce);
-
-        Debug.DrawRay(transform.position, transform.forward * 10f, Color.green);
-        Debug.DrawLine(planet.position, transform.position, Color.blue);
 
         if (Vector3.Distance(transform.position, target) > ((playerHeight / 2) + 2))
         {
-            if (rb.velocity.magnitude < 2) 
+            if (rb.velocity.magnitude < 2)
             {
                 rb.AddForce(transform.forward * speed);
             }
@@ -72,6 +60,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        // DEBUG: Draw target visual.
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(target, 1);
     }

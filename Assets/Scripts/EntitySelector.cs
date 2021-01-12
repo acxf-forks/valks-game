@@ -105,7 +105,7 @@ public class EntitySelector : MonoBehaviour
                 {
                     Ray ray = cam.ScreenPointToRay(cornersScreenSpace[i]);
 
-                    if (Physics.Raycast(ray, out hit, planetScript.r, LayerMask.NameToLayer("Planets")))
+                    if (Physics.Raycast(ray, out hit, planetScript.radius, LayerMask.NameToLayer("Planets")))
                     {
                         cornersWorldSpace[i] = new Vector3(hit.point.x, hit.point.y, hit.point.z);
                     }
@@ -113,7 +113,7 @@ public class EntitySelector : MonoBehaviour
                     {
                         // Did not hit planet surface
                         allPointsHitSurface = false;
-                        cornersWorldSpace[i] = ray.GetPoint(camScript.distanceFromPlanetSurface + planetScript.r / 2);
+                        cornersWorldSpace[i] = ray.GetPoint(camScript.distanceFromPlanetSurface + planetScript.radius / 2);
                     }
 
                     // DEBUG: Draw visual of 3D selection box.
@@ -132,9 +132,9 @@ public class EntitySelector : MonoBehaviour
 
                 // Adjust selection box height based on if all points hit the planets surface or not
                 if (allPointsHitSurface)
-                    selectionBoxHeight = planetScript.r / 2; // Not too much or our rectangles will always look like boxes
+                    selectionBoxHeight = planetScript.radius / 2; // Not too much or our rectangles will always look like boxes
                 else
-                    selectionBoxHeight = planetScript.r; // Compensate for missed surfaces
+                    selectionBoxHeight = planetScript.radius; // Compensate for missed surfaces
 
                 Vector3 gravityUp = (middle - planet.transform.position).normalized;
                 Collider[] hitColliders = Physics.OverlapBox(middle, new Vector3(selectionBoxWidth / 2, selectionBoxHeight / 2, selectionBoxLength / 2), Quaternion.LookRotation(cam.transform.up, gravityUp));

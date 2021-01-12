@@ -13,19 +13,29 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class Planet : MonoBehaviour
 {
+    public string planetName;
+    public int radius = 2;
+    public float gravity = -10f;
+
+    public Transform player;
+    private Rigidbody pRB;
+
     public Transform debugPoint;
     private Mesh mesh;
 
     private List<Vector3> vertices;
     private List<int> triangles;
-    public int r = 2;
 
+    private static int planetCount = 0;
+    
     public Vector3[] centerVertices;
 
     private void Awake()
     {
+        GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/Texture");
         mesh = GetComponent<MeshFilter>().mesh;
         triangles = new List<int>();
+        //pRB = player.GetComponent<Rigidbody>();
     }
 
     private void Start()
@@ -35,23 +45,45 @@ public class Planet : MonoBehaviour
         var collider = gameObject.AddComponent<MeshCollider>();
         collider.sharedMesh = mesh;
 
-        gameObject.layer = LayerMask.NameToLayer("Planets");
-
+        // Get center vertices.
         centerVertices = new Vector3[(triangles.Count / 3)];
 
-        // DEBUG
         for (int i = 0; i < triangles.Count; i+=3) 
         {
             var centerVertex = GetCenterVertex(triangles[i], triangles[i + 1], triangles[i + 2]);
-            var cube = Instantiate(debugPoint, centerVertex, Quaternion.identity);
+
+            // DEBUG
+            /*var cube = Instantiate(debugPoint, centerVertex, Quaternion.identity);
 
             var dir = (centerVertex - Vector3.zero).normalized;
             cube.forward = dir;
-            cube.position = centerVertex + (dir * 0.05f);
+            cube.position = centerVertex + (dir * 0.05f);*/
 
             centerVertices[i / 3] = centerVertex;
         }
+
+        gameObject.layer = LayerMask.NameToLayer("Planets");
+        gameObject.name = $"({++planetCount}) Planet - " + planetName;
     }
+
+    /*private void FixedUpdate()
+    {
+        Attract(player);
+    }
+
+    public void Attract(Transform t) 
+    {
+        Vector3 gravityUp = (t.position - transform.position).normalized;
+        // Aligns to planets surface
+        //Quaternion targetRotation = Quaternion.FromToRotation(bodyUp, gravityUp) * transform.rotation;
+        //transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 50 * Time.deltaTime);
+        
+        pRB.AddForce(gravityUp * gravity);
+
+        // DEBUG: Draw visual
+        Debug.DrawRay(t.position, t.forward * 10f, Color.green);
+        Debug.DrawLine(transform.position, t.position, Color.blue);
+    }*/
 
     private void GenerateMesh() 
     {
@@ -59,18 +91,18 @@ public class Planet : MonoBehaviour
 
         vertices = new List<Vector3>()
         {
-            new Vector3(-1, t, 0).normalized * r,
-            new Vector3(1, t, 0).normalized * r ,
-            new Vector3(-1, -t, 0).normalized * r,
-            new Vector3(1, -t, 0).normalized * r,
-            new Vector3(0, -1, t).normalized * r,
-            new Vector3(0, 1, t).normalized * r ,
-            new Vector3(0, -1, -t).normalized * r,
-            new Vector3(0, 1, -t).normalized * r,
-            new Vector3(t, 0, -1).normalized * r,
-            new Vector3(t, 0, 1).normalized * r ,
-            new Vector3(-t, 0, -1).normalized * r,
-            new Vector3(-t, 0, 1).normalized * r
+            new Vector3(-1, t, 0).normalized * radius,
+            new Vector3(1, t, 0).normalized * radius ,
+            new Vector3(-1, -t, 0).normalized * radius,
+            new Vector3(1, -t, 0).normalized * radius,
+            new Vector3(0, -1, t).normalized * radius,
+            new Vector3(0, 1, t).normalized * radius ,
+            new Vector3(0, -1, -t).normalized * radius,
+            new Vector3(0, 1, -t).normalized * radius,
+            new Vector3(t, 0, -1).normalized * radius,
+            new Vector3(t, 0, 1).normalized * radius ,
+            new Vector3(-t, 0, -1).normalized * radius,
+            new Vector3(-t, 0, 1).normalized * radius
         };
 
         var subdivisions = 2;
@@ -156,8 +188,8 @@ public class Planet : MonoBehaviour
         var midpoint = (vertices[a] + vertices[b]) / 2;
 
         // Normalized will project the midpoints onto a icosphere (with a radius of 1)
-        return midpoint.normalized * r;
+        return midpoint.normalized * radius;
     }
 
-    public Vector3 GetCenterVertex(int a, int b, int c) => ((vertices[a] + vertices[b] + vertices[c]) / 3).normalized * r;
+    public Vector3 GetCenterVertex(int a, int b, int c) => ((vertices[a] + vertices[b] + vertices[c]) / 3).normalized * radius;
 }

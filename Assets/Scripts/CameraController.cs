@@ -5,7 +5,6 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public Transform planet;
-    public GameObject player;
 
     private Planet planetScript;
     private Vector3 previousPosition;
@@ -15,13 +14,15 @@ public class CameraController : MonoBehaviour
 
     private void Awake()
     {
-        cam = GetComponent<Camera>();
-        planetScript = planet.GetComponent<Planet>();
+        cam = gameObject.AddComponent<Camera>();
+        gameObject.tag = "MainCamera";
+        gameObject.name = "Main Camera";
     }
 
     private void Start()
     {
-        cam.transform.Translate(new Vector3(0, 0, -planetScript.r - distanceFromPlanetSurface));
+        planetScript = planet.GetComponent<Planet>();
+        cam.transform.Translate(new Vector3(0, 0, -planetScript.radius - distanceFromPlanetSurface));
     }
 
     private void LateUpdate()
@@ -41,7 +42,7 @@ public class CameraController : MonoBehaviour
             cam.transform.Rotate(new Vector3(1, 0, 0), (dir.y * 180) / 4);
             cam.transform.Rotate(new Vector3(0, 1, 0), -(dir.x * 180) / 4);
 
-            cam.transform.Translate(new Vector3(0, 0, -planetScript.r - 20));
+            cam.transform.Translate(new Vector3(0, 0, -planetScript.radius - 20));
 
             previousPosition = cam.ScreenToViewportPoint(Input.mousePosition);
         }
