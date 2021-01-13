@@ -64,34 +64,6 @@ public class Planet : MonoBehaviour
         gameObject.name = $"({++planetCount}) Planet - " + planetName;
     }
 
-    private void FixedUpdate()
-    {
-        /*foreach (var entity in attractedEntities) 
-        {
-            Attract(entity);
-        }*/
-    }
-
-    public void AddAttractedEntity(Rigidbody rb) 
-    {
-        attractedEntities.Add(rb);
-    }
-
-    private void Attract(Rigidbody rb) 
-    {
-        Transform t = rb.transform;
-        Vector3 gravityUp = (t.transform.position - transform.position).normalized;
-        // Aligns to planets surface
-        //Quaternion targetRotation = Quaternion.FromToRotation(bodyUp, gravityUp) * transform.rotation;
-        //transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 50 * Time.deltaTime);
-        
-        rb.AddForce(gravityUp * gravity);
-
-        // DEBUG: Draw visual
-        Debug.DrawRay(t.position, t.forward * 10f, Color.green);
-        Debug.DrawLine(transform.position, t.position, Color.blue);
-    }
-
     private void GenerateMesh() 
     {
         var t = (1.0f + Mathf.Sqrt(5.0f)) / 2.0f;
