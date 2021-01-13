@@ -66,10 +66,10 @@ public class Planet : MonoBehaviour
 
     private void FixedUpdate()
     {
-        foreach (var entity in attractedEntities) 
+        /*foreach (var entity in attractedEntities) 
         {
             Attract(entity);
-        }
+        }*/
     }
 
     public void AddAttractedEntity(Rigidbody rb) 
