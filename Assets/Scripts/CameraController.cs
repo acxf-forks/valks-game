@@ -55,8 +55,9 @@ public class CameraController : MonoBehaviour
         {
             Vector3 dir = previousPosition - cam.ScreenToViewportPoint(Input.mousePosition);
 
-            cam.transform.Rotate(new Vector3(1, 0, 0),  (dir.y * 180) * rotationSpeed);
-            cam.transform.Rotate(new Vector3(0, 1, 0), -(dir.x * 180) * rotationSpeed);
+            // Multiplying by the distance from the planet allows for more pracise rotation when closer to the planet
+            cam.transform.Rotate(new Vector3(1, 0, 0),  (dir.y * 180) * rotationSpeed * (distanceFromPlanetSurface / 100));
+            cam.transform.Rotate(new Vector3(0, 1, 0), -(dir.x * 180) * rotationSpeed * (distanceFromPlanetSurface / 100));
         }
         previousPosition = cam.ScreenToViewportPoint(Input.mousePosition);
 
