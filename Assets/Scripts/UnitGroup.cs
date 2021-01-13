@@ -30,12 +30,15 @@ public class UnitGroup
         AlignWithLeader();
         //leader.GetComponent<Unit>().MoveToTarget(target);
     }
-
+    
     private void AlignWithLeader()
     {
         var leaderPos = leader.position;
 
         Debug.DrawRay(leader.position, leader.transform.forward * 10f, Color.green);
+
+        var distFromLeader = 5;
+        var unitSpreadAngle = 180;
 
         // Calculate Unit Formation
         for (int i = 0; i < units.Count; i++)
@@ -43,15 +46,16 @@ public class UnitGroup
             if (i == 0) // Ignore leader
                 continue;
 
-            var distFromLeader = 5;
-            var unitSpreadAngle = 180;
-
             // Learn how remaps work (https://www.fundza.com/rfm/osl/f_remap/index.html)
             // Calculate each individual blue line direction
             var leaderBackDir = Quaternion.AngleAxis((unitSpreadAngle / 2) * ((float)i).Remap(1, units.Count - 1, -1, 1), leader.transform.up) * -leader.transform.forward;
 
             // Calculate positions at end of each blue line
             var pos = leader.transform.position + leaderBackDir * distFromLeader;
+
+            // Snap back to planets surface
+            var newGravityUp = (pos - planet.position).normalized * (planetRadius + 1);
+            pos = newGravityUp;
 
             // Slowly move towards these positions
             units[i].GetComponent<Unit>().MoveToTarget(pos);

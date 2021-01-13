@@ -52,6 +52,11 @@ public class Unit : MonoBehaviour
         accSpeed = maxSpeed / 100;
     }
 
+    public void SetMaxSpeed(float value) 
+    {
+        maxSpeed = value;
+    }
+
     public void MoveToTarget(Vector3 target) 
     {
         this.target = target;

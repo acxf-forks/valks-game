@@ -10,7 +10,7 @@ public class CameraController : MonoBehaviour
     [Header("Speed")]
 
     [Range(0.0f, 1.0f)]
-    public float rotationSpeed = .25f;
+    public float rotationSpeed = 1f;
 
     [Range(0.0f, .5f)]
     public float scrollFactor = .1f;
