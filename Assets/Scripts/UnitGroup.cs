@@ -46,15 +46,9 @@ public class UnitGroup
             var distFromLeader = 5;
             var unitSpreadAngle = 180;
 
-            
-            var gravityUp = (units[i].transform.position - planet.position).normalized;
-
             // Learn how remaps work (https://www.fundza.com/rfm/osl/f_remap/index.html)
             // Calculate each individual blue line direction
-            var leaderBackDir = Quaternion.Euler(0, (unitSpreadAngle / 2) * ((float)i).Remap(1, units.Count - 1, -1, 1), 0) * -leader.transform.forward;
-
-            //var forward = Vector3.ProjectOnPlane(leaderBackDir, gravityUp);
-            //var leaderBackDirAligned = Quaternion.LookRotation(forward, gravityUp);
+            var leaderBackDir = Quaternion.AngleAxis((unitSpreadAngle / 2) * ((float)i).Remap(1, units.Count - 1, -1, 1), leader.transform.up) * -leader.transform.forward;
 
             // Calculate positions at end of each blue line
             var pos = leader.transform.position + leaderBackDir * distFromLeader;

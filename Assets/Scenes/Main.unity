@@ -300,3 +300,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   units: []
+  planetRadius: 30
