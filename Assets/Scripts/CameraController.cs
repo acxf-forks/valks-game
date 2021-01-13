@@ -22,7 +22,7 @@ public class CameraController : MonoBehaviour
     private Vector3 previousPosition;
     private Camera cam;
 
-    public float distanceFromPlanetSurface = 20;
+    public float distanceFromPlanetSurface = 100;
     float targetDistanceFromPlanet;
 
     private void Awake()
