@@ -6,6 +6,7 @@ public class Game : MonoBehaviour
 {
     public List<GameObject> units = new List<GameObject>();
     private Planet planet;
+    private UnitGroup group;
 
     private void Awake()
     {
@@ -18,13 +19,13 @@ public class Game : MonoBehaviour
         var planetGo = new GameObject();
         var planet = planetGo.AddComponent<Planet>();
         planet.planetName = "Yomolla";
-        planet.radius = 10;
+        planet.radius = 50;
         camera.FocusOnPlanet(planetGo);
         this.planet = planet;
 
         // Create units
         var unitGoPrefab = Resources.Load<GameObject>("Prefabs/Unit");
-        for (int i = 0; i < 2; i++) 
+        for (int i = 0; i < 100; i++) 
         {
             var unitGo = Instantiate(unitGoPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             var unit = unitGo.GetComponent<Unit>();
@@ -36,18 +37,30 @@ public class Game : MonoBehaviour
 
             units.Add(unitGo);
         }
+
+        group = new UnitGroup(units, planetGo.transform);
         
         // Create entity selector
         var entitySelector = GameObject.Find("Manager").AddComponent<EntitySelector>();
         entitySelector.planet = planetGo;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         foreach (var unit in units) 
         {
-            // Seems inefficient to get the component everytime
-            unit.GetComponent<Unit>().MoveToTarget(new Vector3(planet.radius + 1, 0, 0));
+            Unit unitScript = unit.GetComponent<Unit>();
+            unitScript.AlignToPlanetSurface();
+            unitScript.Separation();
         }
+
+        group.MoveToTarget(new Vector3(planet.radius + 1, 0, 0));
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (planet == null) return;
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(new Vector3(planet.radius + 1, 0, 0), 0.5f);
     }
 }

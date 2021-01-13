@@ -12,19 +12,29 @@ public class Unit : MonoBehaviour
 
     private static int unitCount = 0;
 
+    private Game game;
+    private List<GameObject> units;
+
+    private Vector3 gravityUp;
+
     private Vector3 startPos;
     private bool getStartPos = true;
 
     [Header("Movement")]
-    public float progress = 0;
     public float curSpeed = 0;
 
-    private const float maxSpeed = 0.03f;
-    private const float accSpeed = 0.0005f;
+    public float maxSpeed;
+    private float accSpeed;
+
+    public bool groupLeader; // Is this unit a leader of a group?
+    public UnitGroup group; // The group this unit belongs to
+
+    private Vector3 target = new Vector3(1, 0, 0);
 
     private void Awake()
     {
         gameObject.layer = LayerMask.NameToLayer("Units");
+        game = GameObject.Find("Manager").GetComponent<Game>();
     }
 
     private void Start()
@@ -35,21 +45,22 @@ public class Unit : MonoBehaviour
         transform.position = new Vector3(0, planetRadius + 1, 0);
 
         gameObject.name = $"({++unitCount}) Unit";
+
+        units = game.units;
+
+        maxSpeed = 0.1f;
+        accSpeed = maxSpeed / 100;
     }
 
     public void MoveToTarget(Vector3 target) 
     {
+        this.target = target;
+
         if (getStartPos) 
         {
             getStartPos = false;
             startPos = transform.position;
         }
-
-        // Rotate towards the target on the y axis whilst maintaining a standing rotation on the surface of the planet
-        var gravityUp = (transform.position - planet.position).normalized;
-        var forward = Vector3.ProjectOnPlane(target - transform.position, gravityUp);
-        if (forward != Vector3.zero)
-            transform.rotation = Quaternion.LookRotation(forward, gravityUp);
 
         // Move towards the target
         var distanceToTarget = Vector3.Distance(transform.position, target);
@@ -66,9 +77,10 @@ public class Unit : MonoBehaviour
                 curSpeed = Mathf.Max(curSpeed, 0);
             }
 
+            //Separation();
+
             // Moving towards target
-            transform.position = Vector3.Slerp(startPos, target, progress);
-            progress += (curSpeed / planetRadius);
+            transform.position = Vector3.RotateTowards(transform.position, target, curSpeed * Time.deltaTime, 0);
         }
         else 
         {
@@ -77,7 +89,61 @@ public class Unit : MonoBehaviour
         }
     }
 
-    private void AStar(Vector3 start, Vector3 goal) 
+    public void AlignToPlanetSurface() 
+    {
+        // Rotate towards the target on the y axis whilst maintaining a standing rotation on the surface of the planet
+        gravityUp = (transform.position - planet.position).normalized;
+        var forward = Vector3.ProjectOnPlane(target - transform.position, gravityUp);
+        if (forward != Vector3.zero)
+            transform.rotation = Quaternion.LookRotation(forward, gravityUp);
+
+        // Snap back to planets surface
+        this.transform.position = gravityUp * (planetRadius + 1);
+    }
+
+    /*
+     * Separate agents from each other.
+     */
+    public void Separation() 
+    {
+        gravityUp = (transform.position - planet.position).normalized;
+
+        var groupSeparationFactor = 0.05f;
+
+        foreach (var agent in units)
+        {
+            Unit unit = agent.GetComponent<Unit>();
+            if (unit.groupLeader)
+                continue;
+
+            var agentA = this.transform.position;
+            var agentB = agent.transform.position;
+
+            var maxDist = 1.1f;
+            if (unit.group != null) 
+            {
+                maxDist += (unit.group.units.Count * groupSeparationFactor);
+            }
+
+            var curDist = Vector3.Distance(agentA, agentB);
+
+            if (curDist < maxDist)
+            {
+                var dir = (agentA - agentB).normalized;
+
+                // If their positions are the same add a small offset
+                if (agentA == agentB)
+                    dir += new Vector3(0, 0, 1);
+
+                // Separate the agents from each other
+                var separationForce = maxDist - curDist;
+                agent.transform.position -= dir * separationForce * Time.deltaTime;
+            }
+        }
+    }
+
+    // Another challenge for another day!
+    /*private void AStar(Vector3 start, Vector3 goal) 
     {
         // Center vertices of all the planets polygons
         Vector3[] centerVertices = planetScript.centerVertices;
@@ -100,5 +166,5 @@ public class Unit : MonoBehaviour
         }
 
         openSet.Add(nextNode);
-    }
+    }*/
 }
