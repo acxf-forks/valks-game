@@ -10,18 +10,21 @@ public class Unit : MonoBehaviour
 
     private float planetRadius;
 
-    public float speed = 1f;
-
-    private Rigidbody rb;
-
-    private float playerHeight = 2;
-
     private static int unitCount = 0;
+
+    private Vector3 startPos;
+    private bool getStartPos = true;
+
+    [Header("Movement")]
+    public float progress = 0;
+    public float curSpeed = 0;
+
+    private const float maxSpeed = 0.03f;
+    private const float accSpeed = 0.0005f;
 
     private void Awake()
     {
         gameObject.layer = LayerMask.NameToLayer("Units");
-        rb = GetComponent<Rigidbody>();
     }
 
     private void Start()
@@ -29,25 +32,48 @@ public class Unit : MonoBehaviour
         planetScript = planet.GetComponent<Planet>();
         planetRadius = planetScript.radius;
 
-        transform.position = new Vector3(0, planetRadius + playerHeight / 2, 0);
+        transform.position = new Vector3(0, planetRadius + 1, 0);
 
-        gameObject.name = $"({unitCount}) Unit";
+        gameObject.name = $"({++unitCount}) Unit";
     }
 
     public void MoveToTarget(Vector3 target) 
     {
-        Vector3 gravityUp = (transform.position - planet.position).normalized;
-
-        // Rotate towards the target.
-        if (rb.velocity.magnitude > Mathf.Epsilon)
-            transform.rotation = Quaternion.LookRotation(Vector3.ProjectOnPlane(target - transform.position, gravityUp), gravityUp);
-
-        if (Vector3.Distance(transform.position, target) > ((playerHeight / 2) + 2))
+        if (getStartPos) 
         {
-            if (rb.velocity.magnitude < 2)
+            getStartPos = false;
+            startPos = transform.position;
+        }
+
+        var gravityUp = (transform.position - planet.position).normalized;
+
+        // Rotate towards the target on the y axis whilst maintaining a standing rotation on the surface of the planet
+        Vector3 forward = Vector3.ProjectOnPlane(target - transform.position, gravityUp);
+        if (forward != Vector3.zero)
+            transform.rotation = Quaternion.LookRotation(forward, gravityUp);
+
+        var distanceToTarget = Vector3.Distance(transform.position, target);
+        if (distanceToTarget > 0)
+        {
+            if (distanceToTarget > 3)
             {
-                rb.AddForce(transform.forward * speed);
+                curSpeed += accSpeed;
+                curSpeed = Mathf.Min(curSpeed, maxSpeed);
             }
+            else 
+            {
+                curSpeed -= accSpeed;
+                curSpeed = Mathf.Max(curSpeed, 0);
+            }
+
+            // Moving towards target
+            transform.position = Vector3.Slerp(startPos, target, progress);
+            progress += (curSpeed / planetRadius);
+        }
+        else 
+        {
+            // Reached target
+            getStartPos = true;
         }
     }
 
