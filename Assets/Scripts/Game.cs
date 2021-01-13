@@ -7,7 +7,7 @@ public class Game : MonoBehaviour
     public List<GameObject> units = new List<GameObject>();
     private Planet planet;
 
-    private void Start()
+    private void Awake()
     {
         // Create main camera
         var cameraGo = new GameObject();
@@ -29,10 +29,8 @@ public class Game : MonoBehaviour
         planet.AddAttractedEntity(unitGo.GetComponent<Rigidbody>());
 
         unit.planet = planetGo.transform;
-        unit.speed = 20;
 
-        var playerHeight = 2;
-        unitGo.transform.position = unit.planet.position + new Vector3(0, planet.radius + playerHeight / 2, 0);
+        unitGo.transform.position = unit.planet.position + new Vector3(0, planet.radius + 1, 0);
 
         units.Add(unitGo);
 
@@ -46,7 +44,7 @@ public class Game : MonoBehaviour
         foreach (var unit in units) 
         {
             // Seems inefficient to get the component everytime
-            unit.GetComponent<Unit>().MoveToTarget(new Vector3(planet.radius, 0, 0));
+            unit.GetComponent<Unit>().MoveToTarget(new Vector3(planet.radius + 1, 0, 0));
         }
     }
 }
