@@ -48,7 +48,7 @@ public class Unit : MonoBehaviour
 
         units = game.units;
 
-        maxSpeed = 0.1f;
+        maxSpeed = 5f;
         accSpeed = maxSpeed / 100;
     }
 
@@ -80,7 +80,7 @@ public class Unit : MonoBehaviour
             //Separation();
 
             // Moving towards target
-            transform.position = Vector3.RotateTowards(transform.position, target, curSpeed * Time.deltaTime, 0);
+            transform.position = Vector3.RotateTowards(transform.position, target, (curSpeed / planetRadius) * Time.deltaTime, 0);
         }
         else 
         {
