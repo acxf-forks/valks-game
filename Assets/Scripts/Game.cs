@@ -22,18 +22,21 @@ public class Game : MonoBehaviour
         camera.FocusOnPlanet(planetGo);
         this.planet = planet;
 
-        // Create unit
+        // Create units
         var unitGoPrefab = Resources.Load<GameObject>("Prefabs/Unit");
-        var unitGo = Instantiate(unitGoPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        var unit = unitGo.GetComponent<Unit>();
-        planet.AddAttractedEntity(unitGo.GetComponent<Rigidbody>());
+        for (int i = 0; i < 2; i++) 
+        {
+            var unitGo = Instantiate(unitGoPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            var unit = unitGo.GetComponent<Unit>();
+            planet.AddAttractedEntity(unitGo.GetComponent<Rigidbody>());
 
-        unit.planet = planetGo.transform;
+            unit.planet = planetGo.transform;
 
-        unitGo.transform.position = unit.planet.position + new Vector3(0, planet.radius + 1, 0);
+            unitGo.transform.position = unit.planet.position + new Vector3(0, planet.radius + 1, 0);
 
-        units.Add(unitGo);
-
+            units.Add(unitGo);
+        }
+        
         // Create entity selector
         var entitySelector = GameObject.Find("Manager").AddComponent<EntitySelector>();
         entitySelector.planet = planetGo;

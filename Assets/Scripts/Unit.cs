@@ -45,13 +45,13 @@ public class Unit : MonoBehaviour
             startPos = transform.position;
         }
 
-        var gravityUp = (transform.position - planet.position).normalized;
-
         // Rotate towards the target on the y axis whilst maintaining a standing rotation on the surface of the planet
-        Vector3 forward = Vector3.ProjectOnPlane(target - transform.position, gravityUp);
+        var gravityUp = (transform.position - planet.position).normalized;
+        var forward = Vector3.ProjectOnPlane(target - transform.position, gravityUp);
         if (forward != Vector3.zero)
             transform.rotation = Quaternion.LookRotation(forward, gravityUp);
 
+        // Move towards the target
         var distanceToTarget = Vector3.Distance(transform.position, target);
         if (distanceToTarget > 0)
         {
