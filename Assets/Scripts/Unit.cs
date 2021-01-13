@@ -66,21 +66,16 @@ public class Unit : MonoBehaviour
         var distanceToTarget = Vector3.Distance(transform.position, target);
         if (distanceToTarget > 0)
         {
-            if (distanceToTarget > 3)
+            if (distanceToTarget > 0)
             {
                 curSpeed += accSpeed;
                 curSpeed = Mathf.Min(curSpeed, maxSpeed);
-            }
-            else 
-            {
-                curSpeed -= accSpeed;
-                curSpeed = Mathf.Max(curSpeed, 0);
             }
 
             //Separation();
 
             // Moving towards target
-            transform.position = Vector3.RotateTowards(transform.position, target, (curSpeed / planetRadius) * Time.deltaTime, 0);
+            transform.position = Vector3.RotateTowards(transform.position, target, (curSpeed / planetRadius) * Time.deltaTime, 1);
         }
         else 
         {
@@ -102,8 +97,8 @@ public class Unit : MonoBehaviour
     }
 
     /*
-     * Separate agents from each other.
-     */
+        * Separate agents from each other.
+        */
     public void Separation() 
     {
         gravityUp = (transform.position - planet.position).normalized;
