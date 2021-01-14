@@ -50,6 +50,11 @@ public class Unit : MonoBehaviour
 
         maxSpeed = 10f;
         accSpeed = maxSpeed / 100;
+
+        // Add random force so they separate if spawned on top of each other
+        float separationAngle = Random.Range(0, Mathf.PI);
+        Vector3 separationDirection = new Vector3(Mathf.Cos(separationAngle), 0, Mathf.Sin(separationAngle));
+        transform.position += separationDirection * 0.00001f; // This value was fine tuned, any lower and will not be enough
     }
 
     public void SetMaxSpeed(float value) 
@@ -132,8 +137,8 @@ public class Unit : MonoBehaviour
                 var dir = (agentA - agentB).normalized;
 
                 // If their positions are the same add a small offset
-                if (agentA == agentB)
-                    dir += new Vector3(0, 0, 1);
+                //if (agentA == agentB)
+                  //  dir += new Vector3(0, 0, 1);
 
                 // Separate the agents from each other
                 var separationForce = maxDist - curDist;
