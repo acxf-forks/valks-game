@@ -9,6 +9,8 @@ public class Game : MonoBehaviour
     private UnitGroup group;
     public int planetRadius = 50;
 
+    public List<UnitGroup> groups = new List<UnitGroup>();
+
     private void Awake()
     {
         // Create main camera
@@ -38,7 +40,7 @@ public class Game : MonoBehaviour
             units.Add(unitGo);
         }
 
-        group = new UnitGroup(units, planetGo.transform);
+        //group = new UnitGroup(units, planetGo.transform);
         
         // Create entity selector
         var entitySelector = GameObject.Find("Manager").AddComponent<EntitySelector>();
@@ -54,7 +56,12 @@ public class Game : MonoBehaviour
             unitScript.Separation();
         }
 
-        group.MoveToTarget(new Vector3(planet.radius + 1, 0, 0));
+        //group.MoveToTarget(new Vector3(planet.radius + 1, 0, 0));
+
+        foreach (var group in groups) 
+        {
+            group.AlignWithLeader();
+        }
     }
 
     private void OnDrawGizmos()
