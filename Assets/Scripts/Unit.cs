@@ -48,7 +48,7 @@ public class Unit : MonoBehaviour
 
         units = game.units;
 
-        maxSpeed = 5f;
+        maxSpeed = 10f;
         accSpeed = maxSpeed / 100;
     }
 

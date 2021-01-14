@@ -37,6 +37,57 @@ public class UnitGroup
 
         Debug.DrawRay(leader.position, leader.transform.forward * 10f, Color.green);
 
+        LineRowFormation();
+    }
+
+    private void LineRowFormation() 
+    {
+        var horzDist = 0f;
+        var vertDist = 0f;
+        var leaderTransform = leader.transform;
+        var distanceBetweenAgents = units.Count / 20;
+
+        for (int i = 0; i < units.Count; i++)
+        {
+            if (i == 0) // Ignore leader
+                continue;
+
+            // Swap between left and right directions
+            Vector3 direction;
+            if (i % 2 == 0)
+            {
+                direction = leaderTransform.right * -1;
+            }
+            else
+            {
+                direction = leaderTransform.right;
+                horzDist += distanceBetweenAgents;
+            }
+
+            // Start a new row behind
+            if (i % (units.Count / 10) == 0) 
+            {
+                horzDist = 0f;
+                vertDist += distanceBetweenAgents;
+            }
+
+            // Calculate positions at end of each blue line
+            var pos = leader.transform.position + (direction * horzDist) + (leaderTransform.forward * -vertDist);
+
+            //var arcLength = Vector3.Angle(leader.transform.position, pos) * Mathf.Deg2Rad * (planetRadius + 1);
+
+            // Snap back to planets surface
+            var newGravityUp = (pos - planet.position).normalized * (planetRadius + 1);
+            pos = newGravityUp;
+
+            // Slowly move towards these positions
+            units[i].GetComponent<Unit>().MoveToTarget(pos);
+            Debug.DrawLine(leader.position, pos, Color.blue);
+        }
+    }
+
+    private void ArcFormation() 
+    {
         var distFromLeader = 5;
         var unitSpreadAngle = 180;
 
@@ -61,7 +112,10 @@ public class UnitGroup
             units[i].GetComponent<Unit>().MoveToTarget(pos);
             Debug.DrawLine(leader.position, pos, Color.blue);
         }
+    }
 
+    private void UnorganizedFormation() 
+    {
         // Align with Leader
         /*foreach (var agentGo in units)
         {
