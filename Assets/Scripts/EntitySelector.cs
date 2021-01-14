@@ -20,12 +20,6 @@ public class EntitySelector : MonoBehaviour
 
     private Game game;
 
-    // For reference to drawing debug selection box gizmo
-    private Vector3 middle;
-    private float selectionBoxLength;
-    private float selectionBoxWidth;
-    private float selectionBoxHeight;
-
     // Debug
     public float debugDrawTime = 2f;
     public bool debugEnabled = false;
@@ -305,17 +299,4 @@ public class EntitySelector : MonoBehaviour
         }
     }
     #endregion
-
-    private void OnDrawGizmos()
-    {
-        if (!debugEnabled)
-            return;
-
-        if (selectionBoxLength == 0 && selectionBoxWidth == 0)
-            return;
-
-        Vector3 gravityUp = (middle - planet.transform.position).normalized;
-        Gizmos.matrix = Matrix4x4.TRS(middle, Quaternion.LookRotation(cam.transform.up, gravityUp), this.transform.lossyScale);
-        Gizmos.DrawWireCube(Vector3.zero, new Vector3(selectionBoxWidth, selectionBoxHeight, selectionBoxLength));
-    }
 }
