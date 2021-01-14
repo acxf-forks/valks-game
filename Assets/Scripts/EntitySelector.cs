@@ -71,6 +71,7 @@ public class EntitySelector : MonoBehaviour
         #endregion
     }
 
+    #region SelectionLogic
     private void GroupSelect() 
     {
         /*var movingGroups = new List<UnitGroup>();
@@ -207,8 +208,23 @@ public class EntitySelector : MonoBehaviour
             }
         }
     }
+    #endregion
 
-    #region Selection
+    #region SelectionManagement
+    private void AddRecentlySelected(GameObject go) 
+    {
+        if (go.layer != LayerMask.NameToLayer("Units"))
+            return;
+
+        int id = go.GetInstanceID();
+
+        if (!recentlySelectedEntities.ContainsKey(id))
+        {
+            recentlySelectedEntities.Add(id, go);
+            go.GetComponent<Renderer>().material.color = Color.magenta;
+        }
+    }
+
     private void AddSelected(GameObject go)
     {
         if (go.layer != LayerMask.NameToLayer("Units"))
