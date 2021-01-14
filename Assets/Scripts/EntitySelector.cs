@@ -113,38 +113,39 @@ public class EntitySelector : MonoBehaviour
                     if (debugEnabled) Debug.DrawLine(camPos, cornersWorldSpace[i], Color.yellow, debugDrawTime);
                 }
 
-
-                var unit = game.units[0];
-                var unitPos = game.units[0].transform.position;
-
-                // cornersWorldSpace[0] (top left)
-                // cornersWorldSpace[1] (top right)
-                // cornersWorldSpace[2] (bottom left)
-                // cornersWorldSpace[3] (bottom right)
-
-                // All planes are counter-clockwise
-                var topPlane = new Plane(cornersWorldSpace[1], cornersWorldSpace[0], camPos);
-                var leftPlane = new Plane(cornersWorldSpace[0], cornersWorldSpace[2], camPos);
-                var rightPlane = new Plane(cornersWorldSpace[3], cornersWorldSpace[1], camPos);
-                var bottomPlane = new Plane(cornersWorldSpace[2], cornersWorldSpace[3], camPos);
-
-                if (debugEnabled) Debug.Log(
-                    $"Top: {topPlane.GetSide(unitPos)}, " +
-                    $"Left: {leftPlane.GetSide(unitPos)}, " +
-                    $"Right: {rightPlane.GetSide(unitPos)}, " +
-                    $"Bottom: {bottomPlane.GetSide(unitPos)}");
-
                 if (!Input.GetKey(KeyCode.LeftShift))
                 {
                     // TODO: Would be more efficient to only deselect the ones that needed to be deselected based on the new selected
                     DeslectAll();
                 }
 
-                if (topPlane.GetSide(unitPos) && leftPlane.GetSide(unitPos) && rightPlane.GetSide(unitPos) && bottomPlane.GetSide(unitPos)) 
+                foreach (var unit in game.units) 
                 {
-                    if (Vector3.Distance(camPos, unitPos) < (planetScript.radius + camScript.distanceFromPlanetSurface)) 
+                    var unitPos = unit.transform.position;
+
+                    // cornersWorldSpace[0] (top left)
+                    // cornersWorldSpace[1] (top right)
+                    // cornersWorldSpace[2] (bottom left)
+                    // cornersWorldSpace[3] (bottom right)
+
+                    // All planes are counter-clockwise
+                    var topPlane = new Plane(cornersWorldSpace[1], cornersWorldSpace[0], camPos);
+                    var leftPlane = new Plane(cornersWorldSpace[0], cornersWorldSpace[2], camPos);
+                    var rightPlane = new Plane(cornersWorldSpace[3], cornersWorldSpace[1], camPos);
+                    var bottomPlane = new Plane(cornersWorldSpace[2], cornersWorldSpace[3], camPos);
+
+                    /*if (debugEnabled) Debug.Log(
+                        $"Top: {topPlane.GetSide(unitPos)}, " +
+                        $"Left: {leftPlane.GetSide(unitPos)}, " +
+                        $"Right: {rightPlane.GetSide(unitPos)}, " +
+                        $"Bottom: {bottomPlane.GetSide(unitPos)}");*/
+
+                    if (topPlane.GetSide(unitPos) && leftPlane.GetSide(unitPos) && rightPlane.GetSide(unitPos) && bottomPlane.GetSide(unitPos))
                     {
-                        AddSelected(unit);
+                        if (Vector3.Distance(camPos, unitPos) < (planetScript.radius + camScript.distanceFromPlanetSurface))
+                        {
+                            AddSelected(unit);
+                        }
                     }
                 }
             }

@@ -82,7 +82,7 @@ public class UnitGroup
 
             // Slowly move towards these positions
             units[i].GetComponent<Unit>().MoveToTarget(pos);
-            Debug.DrawLine(leader.position, pos, Color.blue);
+            //Debug.DrawLine(leader.position, pos, Color.blue);
         }
     }
 
