@@ -9,6 +9,8 @@ public class UnitGroup
     private float planetRadius;
     private Transform leader;
 
+    public bool isMoving;
+
     public UnitGroup(List<GameObject> units, Transform planet) 
     {
         this.units = units;
@@ -24,6 +26,8 @@ public class UnitGroup
         foreach (var unit in units)
             unit.GetComponent<Unit>().group = this;
     }
+
+    public int GetMemberCount() => units.Count;
 
     public void MoveToTarget(Vector3 target) 
     {
@@ -44,7 +48,7 @@ public class UnitGroup
         var horzDist = 0f;
         var vertDist = 0f;
         var leaderTransform = leader.transform;
-        var distanceBetweenAgents = units.Count / 20;
+        var distanceBetweenAgents = 1.1f;
 
         for (int i = 0; i < units.Count; i++)
         {
@@ -64,7 +68,7 @@ public class UnitGroup
             }
 
             // Start a new row behind
-            if (i % (units.Count / 10) == 0) 
+            if (i % (10) == 0) 
             {
                 horzDist = 0f;
                 vertDist += distanceBetweenAgents;

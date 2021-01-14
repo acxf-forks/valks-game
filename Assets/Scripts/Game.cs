@@ -57,6 +57,7 @@ public class Game : MonoBehaviour
         }
 
         //group.MoveToTarget(new Vector3(planet.radius + 1, 0, 0));
+        //group.AlignWithLeader();
 
         foreach (var group in groups) 
         {

@@ -5,6 +5,8 @@ using UnityEngine;
 public class EntitySelector : MonoBehaviour
 {
     private Dictionary<int, GameObject> selectedEntities = new Dictionary<int, GameObject>();
+    private Dictionary<int, GameObject> recentlySelectedEntities = new Dictionary<int, GameObject>();
+
     private bool dragSelect;
     private Vector3 p1; // First mouse position on screen
     
@@ -37,8 +39,7 @@ public class EntitySelector : MonoBehaviour
         #region Right Clicked
         if (Input.GetMouseButtonDown(1)) 
         {
-            // Give Movement Command
-            
+            // TODO: Give Movement Command
         }
         #endregion
 
@@ -60,113 +61,151 @@ public class EntitySelector : MonoBehaviour
         #region Left Click Released
         if (Input.GetMouseButtonUp(0))
         {
-            // Currently not dragging
-            if (!dragSelect)
-            {
-                // Did p1 hit anything?
-                Ray ray = cam.ScreenPointToRay(p1);
-                if (Physics.Raycast(ray, out hit, 500000))
-                {
-                    GameObject go = hit.transform.gameObject;
-                    if (Input.GetKey(KeyCode.LeftShift))
-                    {
-                        // Shift add select
-                        if (!IsSelected(go))
-                        {
-                            AddSelected(go);
-                        }
-                        else
-                        {
-                            Deselect(go);
-                        }
-                    }
-                    else
-                    {
-                        // Singular select
-                        DeslectAll();
-                        AddSelected(go);
-                    }
-                }
-                else // We did not hit anything.
-                {
-                    if (Input.GetKey(KeyCode.LeftShift))
-                    {
-                        // Do nothing
-                    }
-                    else
-                    {
-                        DeslectAll();
-                    }
-                }
-            }
-            else // Marquee Select
-            {
-                cornersWorldSpace = new Vector3[4];
-                cornersScreenSpace = GetBoundingBox(p1, Input.mousePosition);
+            if (!dragSelect) // Currently not dragging
+                SingleSelect();
+            else
+                MarqueeSelect();
 
-                Vector3 camPos = cam.transform.position;
-
-                for (int i = 0; i < cornersScreenSpace.Length; i++) 
-                {
-                    Ray ray = cam.ScreenPointToRay(cornersScreenSpace[i]);
-                    cornersWorldSpace[i] = ray.GetPoint(camScript.distanceFromPlanetSurface + planetScript.radius);
-
-                    // DEBUG: Draw visual of 3D selection box.
-                    if (debugEnabled) Debug.DrawLine(camPos, cornersWorldSpace[i], Color.yellow, debugDrawTime);
-                }
-
-                if (!Input.GetKey(KeyCode.LeftShift))
-                {
-                    // TODO: Would be more efficient to only deselect the ones that needed to be deselected based on the new selected
-                    DeslectAll();
-                }
-
-                foreach (var unit in game.units) 
-                {
-                    var unitPos = unit.transform.position;
-
-                    // cornersWorldSpace[0] (top left)
-                    // cornersWorldSpace[1] (top right)
-                    // cornersWorldSpace[2] (bottom left)
-                    // cornersWorldSpace[3] (bottom right)
-
-                    // All planes are counter-clockwise
-                    var topPlane = new Plane(cornersWorldSpace[1], cornersWorldSpace[0], camPos);
-                    var leftPlane = new Plane(cornersWorldSpace[0], cornersWorldSpace[2], camPos);
-                    var rightPlane = new Plane(cornersWorldSpace[3], cornersWorldSpace[1], camPos);
-                    var bottomPlane = new Plane(cornersWorldSpace[2], cornersWorldSpace[3], camPos);
-
-                    /*if (debugEnabled) Debug.Log(
-                        $"Top: {topPlane.GetSide(unitPos)}, " +
-                        $"Left: {leftPlane.GetSide(unitPos)}, " +
-                        $"Right: {rightPlane.GetSide(unitPos)}, " +
-                        $"Bottom: {bottomPlane.GetSide(unitPos)}");*/
-
-                    if (topPlane.GetSide(unitPos) && leftPlane.GetSide(unitPos) && rightPlane.GetSide(unitPos) && bottomPlane.GetSide(unitPos))
-                    {
-                        if (Vector3.Distance(camPos, unitPos) < (planetScript.radius + camScript.distanceFromPlanetSurface))
-                        {
-                            AddSelected(unit);
-                        }
-                    }
-                }
-            }
-
-            dragSelect = false;
-
-            // Form Group
-            if (selectedEntities.Count > 1)
-            {
-                var units = new List<GameObject>();
-                foreach (var go in selectedEntities.Values)
-                {
-                    units.Add(go);
-                }
-
-                game.groups.Add(new UnitGroup(units, planetScript.transform));
-            }
+            GroupSelect();
         }
         #endregion
+    }
+
+    private void GroupSelect() 
+    {
+        /*var movingGroups = new List<UnitGroup>();
+            foreach (var group in game.groups)
+            {
+                if (group.isMoving)
+                    movingGroups.Add(group);
+            }
+
+            // Only keep the moving groups.
+            game.groups = movingGroups;*/
+
+        /*if (!Input.GetKey(KeyCode.LeftShift))
+        {
+            game.groups.Clear();
+        }*/
+
+        // Add Group from Selected
+        if (selectedEntities.Count > 1)
+        {
+            var units = new List<GameObject>();
+            foreach (var go in selectedEntities.Values)
+            {
+                go.GetComponent<Unit>().LeaveCurrentGroup(); // Remove old group if any
+                units.Add(go); // Add to new group
+            }
+
+            game.groups.Add(new UnitGroup(units, planetScript.transform));
+        }
+
+        // Check if any groups have < 1 members
+        /*var groups = game.groups;
+        for (int i = 0; i < groups.Count; i++)
+        {
+            if (groups[i].GetMemberCount() < 2) 
+            {
+                game.groups.Remove(groups[i]);
+            }
+        }*/
+
+        Debug.Log(game.groups.Count);
+    }
+
+    private void MarqueeSelect() 
+    {
+        cornersWorldSpace = new Vector3[4];
+        cornersScreenSpace = GetBoundingBox(p1, Input.mousePosition);
+
+        Vector3 camPos = cam.transform.position;
+
+        for (int i = 0; i < cornersScreenSpace.Length; i++)
+        {
+            Ray ray = cam.ScreenPointToRay(cornersScreenSpace[i]);
+            cornersWorldSpace[i] = ray.GetPoint(camScript.distanceFromPlanetSurface + planetScript.radius);
+
+            // DEBUG: Draw visual of 3D selection box.
+            if (debugEnabled) Debug.DrawLine(camPos, cornersWorldSpace[i], Color.yellow, debugDrawTime);
+        }
+
+        if (!Input.GetKey(KeyCode.LeftShift))
+        {
+            // TODO: Would be more efficient to only deselect the ones that needed to be deselected based on the new selected
+            DeslectAll();
+        }
+
+        foreach (var unit in game.units)
+        {
+            var unitPos = unit.transform.position;
+
+            // cornersWorldSpace[0] (top left)
+            // cornersWorldSpace[1] (top right)
+            // cornersWorldSpace[2] (bottom left)
+            // cornersWorldSpace[3] (bottom right)
+
+            // All planes are counter-clockwise
+            var topPlane = new Plane(cornersWorldSpace[1], cornersWorldSpace[0], camPos);
+            var leftPlane = new Plane(cornersWorldSpace[0], cornersWorldSpace[2], camPos);
+            var rightPlane = new Plane(cornersWorldSpace[3], cornersWorldSpace[1], camPos);
+            var bottomPlane = new Plane(cornersWorldSpace[2], cornersWorldSpace[3], camPos);
+
+            /*if (debugEnabled) Debug.Log(
+                $"Top: {topPlane.GetSide(unitPos)}, " +
+                $"Left: {leftPlane.GetSide(unitPos)}, " +
+                $"Right: {rightPlane.GetSide(unitPos)}, " +
+                $"Bottom: {bottomPlane.GetSide(unitPos)}");*/
+
+            if (topPlane.GetSide(unitPos) && leftPlane.GetSide(unitPos) && rightPlane.GetSide(unitPos) && bottomPlane.GetSide(unitPos))
+            {
+                if (Vector3.Distance(camPos, unitPos) < (planetScript.radius + camScript.distanceFromPlanetSurface))
+                {
+                    AddSelected(unit);
+                }
+            }
+        }
+
+        dragSelect = false;
+    }
+
+    private void SingleSelect() 
+    {
+        // Did p1 hit anything?
+        Ray ray = cam.ScreenPointToRay(p1);
+        if (Physics.Raycast(ray, out hit, 500000))
+        {
+            GameObject go = hit.transform.gameObject;
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                // Shift add select
+                if (!IsSelected(go))
+                {
+                    AddSelected(go);
+                }
+                else
+                {
+                    Deselect(go);
+                }
+            }
+            else
+            {
+                // Singular select
+                DeslectAll();
+                AddSelected(go);
+            }
+        }
+        else // We did not hit anything.
+        {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                // Do nothing
+            }
+            else
+            {
+                DeslectAll();
+            }
+        }
     }
 
     #region Selection

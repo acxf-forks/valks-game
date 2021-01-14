@@ -57,6 +57,12 @@ public class Unit : MonoBehaviour
         transform.position += separationDirection * 0.00001f; // This value was fine tuned, any lower and will not be enough
     }
 
+    public void LeaveCurrentGroup() 
+    {
+        if (group != null)
+            group.units.Remove(this.gameObject);
+    }
+
     public void SetMaxSpeed(float value) 
     {
         maxSpeed = value;
