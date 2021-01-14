@@ -27,11 +27,10 @@ public class UnitGroup
 
     public void MoveToTarget(Vector3 target) 
     {
-        AlignWithLeader();
         //leader.GetComponent<Unit>().MoveToTarget(target);
     }
     
-    private void AlignWithLeader()
+    public void AlignWithLeader()
     {
         var leaderPos = leader.position;
 
