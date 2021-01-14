@@ -34,6 +34,14 @@ public class EntitySelector : MonoBehaviour
 
     private void Update()
     {
+        #region Right Clicked
+        if (Input.GetMouseButtonDown(1)) 
+        {
+            // Give Movement Command
+            
+        }
+        #endregion
+
         #region Left Clicked
         if (Input.GetMouseButtonDown(0)) 
         {
@@ -145,6 +153,18 @@ public class EntitySelector : MonoBehaviour
             }
 
             dragSelect = false;
+
+            // Form Group
+            if (selectedEntities.Count > 1)
+            {
+                var units = new List<GameObject>();
+                foreach (var go in selectedEntities.Values)
+                {
+                    units.Add(go);
+                }
+
+                game.groups.Add(new UnitGroup(units, planetScript.transform));
+            }
         }
         #endregion
     }
