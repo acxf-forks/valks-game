@@ -17,3 +17,4 @@ Current project Unity version `2020.2.1f1`, if there is a newer version of Unity
 ## Coding Style
 - Please make both Public and Private variables camelCase.
 - Methods should follow PascalFormat
+- Please keep accessor and mutator methods at bottom of classes.
