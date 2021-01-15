@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /*
@@ -24,6 +25,7 @@ public class Planet : MonoBehaviour
 
     private List<Vector3> vertices;
     private List<int> triangles;
+    private List<Color32> colors;
 
     private static int planetCount = 0;
     
@@ -114,7 +116,8 @@ public class Planet : MonoBehaviour
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
 
-        mesh.RecalculateNormals();
+        //mesh.RecalculateNormals();
+        mesh.normals = vertices.Select(s => s.normalized).ToArray();
     }
 
     /*
