@@ -8,6 +8,7 @@ public class Game : MonoBehaviour
     public static List<UnitGroup> groups = new List<UnitGroup>();
 
     public int planetRadius = 50;
+    private Transform planet;
 
     private void Awake()
     {
@@ -21,6 +22,7 @@ public class Game : MonoBehaviour
         var planet = planetGo.AddComponent<Planet>();
         planet.planetName = "Yomolla";
         planet.radius = planetRadius;
+        this.planet = planetGo.transform;
         camera.FocusOnPlanet(planetGo);
 
         // Create units

@@ -52,8 +52,8 @@ public class Unit : MonoBehaviour
 
     private void Update()
     {
-        AlignToPlanetSurface();
         Separation();
+        AlignToPlanetSurface();
 
         if (unitTask == UnitTask.MoveToTarget)
         {
@@ -99,28 +99,32 @@ public class Unit : MonoBehaviour
     {
         gravityUp = (transform.position - planet.position).normalized;
 
-        foreach (var agent in Game.units)
+        int maxColliders = Game.units.Count;
+        Collider[] hitColliders = new Collider[maxColliders];
+        var numColliders = Physics.OverlapSphereNonAlloc(transform.position, 1.1f, hitColliders, LayerMask.GetMask("Units"));
+
+        for (int i = 0; i < numColliders; i++)
         {
-            Unit unit = agent.GetComponent<Unit>();
+            var agentA = this.transform.position;
+            var agentB = hitColliders[i].transform.position;
+
+            var unit = hitColliders[i].GetComponent<Unit>();
             if (unit.groupLeader)
                 continue;
-
-            var agentA = this.transform.position;
-            var agentB = agent.transform.position;
 
             var maxDist = 1.1f; // Default separation force
             if (unit.group != null)
                 maxDist = unit.group.distanceBetweenAgents; // Adjust to groups distance between agents
 
-            var curDist = Vector3.Distance(agentA, agentB);
+            var curDist = (agentB - agentA).sqrMagnitude;
 
             if (curDist < maxDist)
             {
-                var dir = (agentB - agentA).normalized;
+                var dir = (agentA - agentB).normalized;
 
                 // Separate the agents from each other
                 var separationForce = maxDist - curDist;
-                agent.transform.position += dir * separationForce * Time.deltaTime;
+                this.transform.position += dir * separationForce * Time.deltaTime;
             }
         }
     }
