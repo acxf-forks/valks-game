@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class EntitySelector : MonoBehaviour
@@ -39,16 +40,9 @@ public class EntitySelector : MonoBehaviour
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, camScript.distanceFromPlanetSurface + planetScript.radius, LayerMask.GetMask("Planets"))) 
+            if (Physics.Raycast(ray, out hit, camScript.distanceFromPlanetSurface + planetScript.radius, LayerMask.GetMask("Planets")))
             {
-                var selectedGroups = new List<UnitGroup>();
-                foreach (var group in Game.groups)
-                {
-                    if (group.IsSelected()) 
-                    {
-                        selectedGroups.Add(group);
-                    }
-                }
+                var selectedGroups = Game.groups.Where(group => group.IsSelected()).ToList();
 
                 if (selectedGroups.Count == 1)
                 {
@@ -58,7 +52,9 @@ public class EntitySelector : MonoBehaviour
                 {
                     // Flawed logic, does not work for some reason.
 
-                    /*var unitsForNewGroup = new List<GameObject>();
+                    // Debug.Log(Game.groups.Count);
+
+                    var unitsForNewGroup = new List<GameObject>();
 
                     foreach (var group in selectedGroups)
                     {
@@ -67,11 +63,12 @@ public class EntitySelector : MonoBehaviour
                         foreach (var unitGo in group.units)
                         {
                             var unit = unitGo.GetComponent<Unit>();
-                            if (unit.selected) 
-                            {
-                                unit.group = null;
-                                unitsForNewGroup.Add(unitGo);
-                            }
+
+                            if (!unit.selected)
+                                continue;
+
+                            unit.LeaveCurrentGroup();
+                            unitsForNewGroup.Add(unitGo);
                         }
 
                         group.RemoveGroupIfMemberCountLow();
@@ -79,7 +76,7 @@ public class EntitySelector : MonoBehaviour
 
                     var newGroup = new UnitGroup(unitsForNewGroup, planet.transform);
                     Game.groups.Add(newGroup);
-                    newGroup.MoveToTarget(hit.point);*/
+                    newGroup.MoveToTarget(hit.point);
                 }
             }
         }

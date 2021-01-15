@@ -89,7 +89,7 @@ public class Unit : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(forward, gravityUp);
 
         // Snap back to planets surface
-        this.transform.position = gravityUp * (planetRadius + 1);
+        transform.position = gravityUp * (planetRadius + 1);
     }
 
     /*
@@ -105,7 +105,7 @@ public class Unit : MonoBehaviour
 
         for (int i = 0; i < numColliders; i++)
         {
-            var agentA = this.transform.position;
+            var agentA = transform.position;
             var agentB = hitColliders[i].transform.position;
 
             var unit = hitColliders[i].GetComponent<Unit>();
@@ -124,7 +124,7 @@ public class Unit : MonoBehaviour
 
                 // Separate the agents from each other
                 var separationForce = maxDist - curDist;
-                this.transform.position += dir * separationForce * Time.deltaTime;
+                transform.position += dir * separationForce * Time.deltaTime;
             }
         }
     }
@@ -145,11 +145,12 @@ public class Unit : MonoBehaviour
     /*
      * Leave current group if any.
      */
-    public void LeaveCurrentGroup() 
-    {
-        if (group != null)
-            group.units.Remove(this.gameObject);
-    }
+    public void LeaveCurrentGroup() =>
+        group?.RemoveUnit(this);
 
-    public void SetMaxSpeed(float value) => speed = value;
+    public void Idle() =>
+        unitTask = UnitTask.Idle;
+
+    public void SetMaxSpeed(float value) =>
+        speed = value;
 }
