@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public enum UnitGroupTask 
@@ -52,23 +53,38 @@ public class UnitGroup
         } 
     }
 
-    public bool IsSelected() 
+    public void RemoveUnit(Unit unit)
     {
-        foreach (var unit in units) 
-        {
-            if (unit.GetComponent<Unit>().selected)
-                return true;
-        }
+        if (!units.Remove(unit.gameObject))
+            return;
 
-        return false;
+        if (RemoveGroupIfMemberCountLow())
+            return;
+
+        if (unit.groupLeader)
+            ReassignLeader();
+
+        unit.Idle(); // Make sure the unit stops trying to move to their target
+        unit.groupLeader = default;
+        unit.group = null;
     }
 
-    public void RemoveGroupIfMemberCountLow() 
+    public void ReassignLeader()
     {
-        if (GetMemberCount() < 2)
-        {
-            Game.groups.Remove(this);
-        }
+        leader = units[0].transform;
+        leader.GetComponent<Unit>().groupLeader = true;
+    }
+
+    public bool IsSelected() =>
+        units.Any(unit => unit.GetComponent<Unit>().selected);
+
+    public bool RemoveGroupIfMemberCountLow()
+    {
+        if (GetMemberCount() > 1)
+            return false;
+
+        Game.groups.Remove(this);
+        return true;
     }
 
     public void MoveToTarget(Vector3 target) 
@@ -106,7 +122,7 @@ public class UnitGroup
             }
 
             // Start a new row behind
-            if (i % (10) == 0) 
+            if (i % 10 == 0)
             {
                 horzDist = 0f;
                 vertDist += distanceBetweenAgents;
