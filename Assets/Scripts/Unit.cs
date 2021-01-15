@@ -24,7 +24,6 @@ public class Unit : MonoBehaviour
 
     private float speed = 10f;
 
-    public bool groupLeader; // Is this unit a leader of a group?
     public UnitGroup group; // The group this unit belongs to
 
     public bool selected;
@@ -53,7 +52,7 @@ public class Unit : MonoBehaviour
     private void Update()
     {
         Separation();
-        AlignToPlanetSurface();
+        PlanetUtils.AlignToPlanetSurface(transform, planet, target);
 
         if (unitTask == UnitTask.MoveToTarget)
         {
@@ -78,20 +77,6 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public void AlignToPlanetSurface()
-    {
-        Vector3 unitPosition = transform.position;
-
-        // Rotate towards the target on the y axis whilst maintaining a standing rotation on the surface of the planet
-        gravityUp = (unitPosition - planet.position).normalized;
-        var forward = Vector3.ProjectOnPlane(target - unitPosition, gravityUp);
-        if (forward != Vector3.zero)
-            transform.rotation = Quaternion.LookRotation(forward, gravityUp);
-
-        // Snap back to planets surface
-        transform.position = gravityUp * (planetRadius + 1);
-    }
-
     /*
     * Separate agents from each other.
     */
@@ -109,8 +94,6 @@ public class Unit : MonoBehaviour
             var agentB = hitColliders[i].transform.position;
 
             var unit = hitColliders[i].GetComponent<Unit>();
-            if (unit.groupLeader)
-                continue;
 
             var maxDist = 1.1f; // Default separation force
             if (unit.group != null)

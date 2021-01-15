@@ -14,7 +14,9 @@ public class UnitGroup
     public List<GameObject> units;
     public Transform planet;
     private float planetRadius;
-    public Transform leader;
+
+    private static int groupCount = 0;
+    private Transform groupOrigin;
 
     public UnitGroupTask unitGroupTask;
     public Vector3 target;
@@ -27,10 +29,11 @@ public class UnitGroup
         this.planet = planet;
         planetRadius = planet.GetComponent<Planet>().radius;
 
-        // Elect Leader for Group
-        leader = units[0].transform;
-        leader.GetComponent<Renderer>().material.color = Color.blue;
-        leader.GetComponent<Unit>().groupLeader = true;
+        // Initialize group origin, all units will align with respect to this origin
+        groupOrigin = new GameObject().transform;
+        groupOrigin.transform.position = units[0].transform.position;
+        groupCount++;
+        groupOrigin.name = $"({groupCount}) Group";
 
         // Assign all units to group
         foreach (var unit in units)
@@ -43,10 +46,15 @@ public class UnitGroup
     {
         if (unitGroupTask == UnitGroupTask.MoveToTarget) 
         {
-            AlignWithLeader();
+            // Align group origin to planets surface
+            PlanetUtils.AlignToPlanetSurface(groupOrigin, planet, target);
 
-            leader.GetComponent<Unit>().MoveToTarget(target);
-            if (Vector3.Distance(leader.position, target) < 1) 
+            AlignWithGroupOrigin();
+
+            var speed = 10f;
+            groupOrigin.position = Vector3.RotateTowards(groupOrigin.position, target, (speed / planetRadius) * Time.deltaTime, 1);
+
+            if (Vector3.Distance(groupOrigin.position, target) < 1) 
             {
                 unitGroupTask = UnitGroupTask.Idle;
             }
@@ -61,18 +69,8 @@ public class UnitGroup
         if (RemoveGroupIfMemberCountLow()) // Remove this group if member count is too low
             return;
 
-        if (unit.groupLeader) // If we are removing the leader, then elect a new leader
-            ReassignLeader();
-
         unit.Idle(); // Make sure the unit stops trying to move to their target
-        unit.groupLeader = default;
         unit.group = null;
-    }
-
-    public void ReassignLeader()
-    {
-        leader = units[0].transform;
-        leader.GetComponent<Unit>().groupLeader = true;
     }
 
     public bool IsSelected() =>
@@ -83,6 +81,8 @@ public class UnitGroup
         if (GetMemberCount() > 1)
             return false;
 
+        groupCount--;
+        Object.Destroy(groupOrigin.gameObject);
         Game.groups.Remove(this);
         return true;
     }
@@ -93,9 +93,9 @@ public class UnitGroup
         unitGroupTask = UnitGroupTask.MoveToTarget;
     }
     
-    public void AlignWithLeader()
+    public void AlignWithGroupOrigin()
     {
-        Debug.DrawRay(leader.position, leader.transform.forward * 10f, Color.green);
+        Debug.DrawRay(groupOrigin.position, groupOrigin.forward * 10f, Color.green);
         LineRowFormation();
     }
 
@@ -106,18 +106,15 @@ public class UnitGroup
 
         for (int i = 0; i < units.Count; i++)
         {
-            if (i == 0) // Ignore leader
-                continue;
-
             // Swap between left and right directions
             Vector3 direction;
             if (i % 2 == 0)
             {
-                direction = leader.right * -1;
+                direction = groupOrigin.right * -1;
             }
             else
             {
-                direction = leader.right;
+                direction = groupOrigin.right;
                 horzDist += distanceBetweenAgents;
             }
 
@@ -129,9 +126,9 @@ public class UnitGroup
             }
 
             // Calculate positions at end of each blue line
-            var pos = leader.transform.position + (direction * horzDist) + (leader.forward * -vertDist);
+            var pos = groupOrigin.position + (direction * horzDist) + (groupOrigin.forward * -vertDist);
 
-            //var arcLength = Vector3.Angle(leader.transform.position, pos) * Mathf.Deg2Rad * (planetRadius + 1);
+            //var arcLength = Vector3.Angle(groupOrigin.position, pos) * Mathf.Deg2Rad * (planetRadius + 1);
 
             // Snap back to planets surface
             var newGravityUp = (pos - planet.position).normalized * (planetRadius + 1);
@@ -139,7 +136,7 @@ public class UnitGroup
 
             // Slowly move towards these positions
             units[i].GetComponent<Unit>().MoveToTarget(pos);
-            //Debug.DrawLine(leader.position, pos, Color.blue);
+            //Debug.DrawLine(groupOrigin.position, pos, Color.blue);
         }
     }
 

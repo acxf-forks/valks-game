@@ -36,6 +36,36 @@ public class EntitySelector : MonoBehaviour
         #region Right Clicked
         if (Input.GetMouseButtonDown(1)) 
         {
+            for (int i = 0; i < Game.groups.Count; i++)
+            {
+                // Remove all idle groups
+                if (Game.groups[i].unitGroupTask == UnitGroupTask.Idle)
+                {
+                    Game.groups.Remove(Game.groups[i]);
+                }
+            }
+
+            // Add Group from Selected
+            if (selectedEntities.Count > 1)
+            {
+                var units = new List<GameObject>();
+                foreach (var go in selectedEntities.Values)
+                {
+                    go.GetComponent<Unit>().LeaveCurrentGroup(); // Remove old group if any
+                    units.Add(go); // Add to new group
+                }
+
+                if (units.Count > 1)
+                    Game.groups.Add(new UnitGroup(units, planetScript.transform));
+            }
+
+            // Since we were telling units to leave their old groups, we have to check if any groups have less than 2 members
+            // Check if any groups have < 1 members
+            for (int i = 0; i < Game.groups.Count; i++)
+            {
+                Game.groups[i].RemoveGroupIfMemberCountLow();
+            }
+
             // Give Movement Command
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
@@ -100,8 +130,6 @@ public class EntitySelector : MonoBehaviour
                 MarqueeSelect();
             else
                 SingleSelect();
-
-            GroupSelect();
         }
         #endregion
     }
@@ -199,41 +227,6 @@ public class EntitySelector : MonoBehaviour
                 DeslectAll();
             }
         }
-    }
-
-    private void GroupSelect()
-    {
-        for (int i = 0; i < Game.groups.Count; i++)
-        {
-            // Remove all idle groups
-            if (Game.groups[i].unitGroupTask == UnitGroupTask.Idle)
-            {
-                Game.groups.Remove(Game.groups[i]);
-            }
-        }
-
-        // Add Group from Selected
-        if (selectedEntities.Count > 1)
-        {
-            var units = new List<GameObject>();
-            foreach (var go in selectedEntities.Values)
-            {
-                go.GetComponent<Unit>().LeaveCurrentGroup(); // Remove old group if any
-                units.Add(go); // Add to new group
-            }
-
-            if (units.Count > 1)
-                Game.groups.Add(new UnitGroup(units, planetScript.transform));
-        }
-
-        // Since we were telling units to leave their old groups, we have to check if any groups have less than 2 members
-        // Check if any groups have < 1 members
-        for (int i = 0; i < Game.groups.Count; i++)
-        {
-            Game.groups[i].RemoveGroupIfMemberCountLow();
-        }
-
-        //Debug.Log(Game.groups.Count);
     }
     #endregion
 
