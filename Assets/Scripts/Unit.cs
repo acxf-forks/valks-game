@@ -2,6 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum UnitTask 
+{
+    Idle,
+    MoveToTarget
+}
+
 // The player is a temporary class to help with debugging.
 public class Unit : MonoBehaviour
 {
@@ -12,29 +18,22 @@ public class Unit : MonoBehaviour
 
     private static int unitCount = 0;
 
-    private Game game;
-    private List<GameObject> units;
-
     private Vector3 gravityUp;
 
-    private Vector3 startPos;
-    private bool getStartPos = true;
+    public UnitTask unitTask;
 
-    [Header("Movement")]
-    public float curSpeed = 0;
-
-    public float maxSpeed;
-    private float accSpeed;
+    private float speed = 10f;
 
     public bool groupLeader; // Is this unit a leader of a group?
     public UnitGroup group; // The group this unit belongs to
 
-    private Vector3 target = new Vector3(1, 0, 0);
+    public bool selected;
+
+    private Vector3 target;
 
     private void Awake()
     {
         gameObject.layer = LayerMask.NameToLayer("Units");
-        game = GameObject.Find("Manager").GetComponent<Game>();
     }
 
     private void Start()
@@ -46,65 +45,46 @@ public class Unit : MonoBehaviour
 
         gameObject.name = $"({++unitCount}) Unit";
 
-        units = game.units;
+        AddRandomForce(0.00001f);
 
-        maxSpeed = 10f;
-        accSpeed = maxSpeed / 100;
-
-        // Add random force so they separate if spawned on top of each other
-        float separationAngle = Random.Range(0, Mathf.PI);
-        Vector3 separationDirection = new Vector3(Mathf.Cos(separationAngle), 0, Mathf.Sin(separationAngle));
-        transform.position += separationDirection * 0.00001f; // This value was fine tuned, any lower and will not be enough
+        unitTask = UnitTask.Idle;
     }
 
-    public void LeaveCurrentGroup() 
+    private void Update()
     {
-        if (group != null)
-            group.units.Remove(this.gameObject);
-    }
+        AlignToPlanetSurface();
+        Separation();
 
-    public void SetMaxSpeed(float value) 
-    {
-        maxSpeed = value;
+        if (unitTask == UnitTask.MoveToTarget)
+        {
+            MovementLogic();
+        }
     }
 
     public void MoveToTarget(Vector3 target) 
     {
+        unitTask = UnitTask.MoveToTarget;
         this.target = target;
+    }
 
-        if (getStartPos) 
-        {
-            getStartPos = false;
-            startPos = transform.position;
-        }
-
+    private void MovementLogic()
+    {
         // Move towards the target
         var distanceToTarget = Vector3.Distance(transform.position, target);
         if (distanceToTarget > 0)
         {
-            if (distanceToTarget > 0)
-            {
-                curSpeed += accSpeed;
-                curSpeed = Mathf.Min(curSpeed, maxSpeed);
-            }
-
-            //Separation();
-
             // Moving towards target
-            transform.position = Vector3.RotateTowards(transform.position, target, (curSpeed / planetRadius) * Time.deltaTime, 1);
-        }
-        else 
-        {
-            // Reached target
-            getStartPos = true;
+            transform.position = Vector3.RotateTowards(transform.position, target, (speed / planetRadius) * Time.deltaTime, 1);
         }
     }
 
-    public void AlignToPlanetSurface() 
+    public void AlignToPlanetSurface()
     {
+        Vector3 unitPosition = transform.position;
+
         // Rotate towards the target on the y axis whilst maintaining a standing rotation on the surface of the planet
-        gravityUp = (transform.position - planet.position).normalized;
-        var forward = Vector3.ProjectOnPlane(target - transform.position, gravityUp);
+        gravityUp = (unitPosition - planet.position).normalized;
+        var forward = Vector3.ProjectOnPlane(target - unitPosition, gravityUp);
         if (forward != Vector3.zero)
             transform.rotation = Quaternion.LookRotation(forward, gravityUp);
 
@@ -113,15 +93,13 @@ public class Unit : MonoBehaviour
     }
 
     /*
-        * Separate agents from each other.
-        */
-    public void Separation() 
+    * Separate agents from each other.
+    */
+    public void Separation()
     {
         gravityUp = (transform.position - planet.position).normalized;
 
-        var groupSeparationFactor = 0.05f;
-
-        foreach (var agent in units)
+        foreach (var agent in Game.units)
         {
             Unit unit = agent.GetComponent<Unit>();
             if (unit.groupLeader)
@@ -130,52 +108,44 @@ public class Unit : MonoBehaviour
             var agentA = this.transform.position;
             var agentB = agent.transform.position;
 
-            var maxDist = 1.1f;
-            if (unit.group != null) 
-            {
-                maxDist += (unit.group.units.Count * groupSeparationFactor);
-            }
+            var maxDist = 1.1f; // Default separation force
+            if (unit.group != null)
+                maxDist = unit.group.distanceBetweenAgents; // Adjust to groups distance between agents
 
             var curDist = Vector3.Distance(agentA, agentB);
 
             if (curDist < maxDist)
             {
-                var dir = (agentA - agentB).normalized;
-
-                // If their positions are the same add a small offset
-                //if (agentA == agentB)
-                  //  dir += new Vector3(0, 0, 1);
+                var dir = (agentB - agentA).normalized;
 
                 // Separate the agents from each other
                 var separationForce = maxDist - curDist;
-                agent.transform.position -= dir * separationForce * Time.deltaTime;
+                agent.transform.position += dir * separationForce * Time.deltaTime;
             }
         }
     }
 
-    // Another challenge for another day!
-    /*private void AStar(Vector3 start, Vector3 goal) 
+    /*
+     * Add a random directional force to the unit.
+     * Mainly used for separating units on top of each other.
+     * A force of 0.00001f is the absolute minimum required to make any difference.
+     */
+    private void AddRandomForce(float force) 
     {
-        // Center vertices of all the planets polygons
-        Vector3[] centerVertices = planetScript.centerVertices;
+        // Add random force so they separate if spawned on top of each other
+        float separationAngle = Random.Range(0, 2 * Mathf.PI);
+        Vector3 separationDirection = new Vector3(Mathf.Cos(separationAngle), 0, Mathf.Sin(separationAngle));
+        transform.position += separationDirection * force;
+    }
 
-        // Priority queue
-        List<Vector3> openSet = new List<Vector3>();
-        openSet.Add(start);
+    /*
+     * Leave current group if any.
+     */
+    public void LeaveCurrentGroup() 
+    {
+        if (group != null)
+            group.units.Remove(this.gameObject);
+    }
 
-        // Calculate the shortest path to the next node
-        Vector3 nextNode = Vector3.zero;
-        float minDist = Mathf.Infinity;
-        for (int i = 0; i < centerVertices.Length; i++) 
-        {
-            float curDist = Vector3.Distance(start, centerVertices[i]);
-            if (curDist < minDist) 
-            {
-                minDist = curDist;
-                nextNode = centerVertices[i];
-            }
-        }
-
-        openSet.Add(nextNode);
-    }*/
+    public void SetMaxSpeed(float value) => speed = value;
 }

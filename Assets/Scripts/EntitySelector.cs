@@ -5,7 +5,6 @@ using UnityEngine;
 public class EntitySelector : MonoBehaviour
 {
     private Dictionary<int, GameObject> selectedEntities = new Dictionary<int, GameObject>();
-    private Dictionary<int, GameObject> recentlySelectedEntities = new Dictionary<int, GameObject>();
 
     private bool dragSelect;
     private Vector3 p1; // First mouse position on screen
@@ -20,8 +19,6 @@ public class EntitySelector : MonoBehaviour
     private Vector2[] cornersScreenSpace;
     private Vector3[] cornersWorldSpace;
 
-    private Game game;
-
     // Debug
     public float debugDrawTime = 2f;
     public bool debugEnabled = false;
@@ -31,7 +28,6 @@ public class EntitySelector : MonoBehaviour
         cam = Camera.main;
         planetScript = planet.GetComponent<Planet>();
         camScript = cam.GetComponent<CameraController>();
-        game = GameObject.Find("Manager").GetComponent<Game>();
     }
 
     private void Update()
@@ -39,7 +35,53 @@ public class EntitySelector : MonoBehaviour
         #region Right Clicked
         if (Input.GetMouseButtonDown(1)) 
         {
-            // TODO: Give Movement Command
+            // Give Movement Command
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, camScript.distanceFromPlanetSurface + planetScript.radius, LayerMask.GetMask("Planets"))) 
+            {
+                var selectedGroups = new List<UnitGroup>();
+                foreach (var group in Game.groups)
+                {
+                    if (group.IsSelected()) 
+                    {
+                        selectedGroups.Add(group);
+                    }
+                }
+
+                if (selectedGroups.Count == 1)
+                {
+                    selectedGroups[0].MoveToTarget(hit.point);
+                }
+                else if (selectedGroups.Count > 1) 
+                {
+                    // Flawed logic, does not work for some reason.
+
+                    /*var unitsForNewGroup = new List<GameObject>();
+
+                    foreach (var group in selectedGroups)
+                    {
+                        // Selected more than 1 group
+                        // Merge units selected from other groups into 1 new group
+                        foreach (var unitGo in group.units)
+                        {
+                            var unit = unitGo.GetComponent<Unit>();
+                            if (unit.selected) 
+                            {
+                                unit.group = null;
+                                unitsForNewGroup.Add(unitGo);
+                            }
+                        }
+
+                        group.RemoveGroupIfMemberCountLow();
+                    }
+
+                    var newGroup = new UnitGroup(unitsForNewGroup, planet.transform);
+                    Game.groups.Add(newGroup);
+                    newGroup.MoveToTarget(hit.point);*/
+                }
+            }
         }
         #endregion
 
@@ -74,20 +116,14 @@ public class EntitySelector : MonoBehaviour
     #region SelectionLogic
     private void GroupSelect() 
     {
-        /*var movingGroups = new List<UnitGroup>();
-            foreach (var group in game.groups)
-            {
-                if (group.isMoving)
-                    movingGroups.Add(group);
-            }
-
-            // Only keep the moving groups.
-            game.groups = movingGroups;*/
-
-        /*if (!Input.GetKey(KeyCode.LeftShift))
+        for (int i = 0; i < Game.groups.Count; i++) 
         {
-            game.groups.Clear();
-        }*/
+            // Remove all idle groups
+            if (Game.groups[i].unitGroupTask == UnitGroupTask.Idle) 
+            {
+                Game.groups.Remove(Game.groups[i]);
+            }
+        }
 
         // Add Group from Selected
         if (selectedEntities.Count > 1)
@@ -99,20 +135,17 @@ public class EntitySelector : MonoBehaviour
                 units.Add(go); // Add to new group
             }
 
-            game.groups.Add(new UnitGroup(units, planetScript.transform));
+            Game.groups.Add(new UnitGroup(units, planetScript.transform));
         }
 
+        // Since we were telling units to leave their old groups, we have to check if any groups have less than 2 members
         // Check if any groups have < 1 members
-        /*var groups = game.groups;
-        for (int i = 0; i < groups.Count; i++)
+        for (int i = 0; i < Game.groups.Count; i++)
         {
-            if (groups[i].GetMemberCount() < 2) 
-            {
-                game.groups.Remove(groups[i]);
-            }
-        }*/
+            Game.groups[i].RemoveGroupIfMemberCountLow();
+        }
 
-        Debug.Log(game.groups.Count);
+        //Debug.Log(Game.groups.Count);
     }
 
     private void MarqueeSelect() 
@@ -137,7 +170,7 @@ public class EntitySelector : MonoBehaviour
             DeslectAll();
         }
 
-        foreach (var unit in game.units)
+        foreach (var unit in Game.units)
         {
             var unitPos = unit.transform.position;
 
@@ -211,20 +244,6 @@ public class EntitySelector : MonoBehaviour
     #endregion
 
     #region SelectionManagement
-    private void AddRecentlySelected(GameObject go) 
-    {
-        if (go.layer != LayerMask.NameToLayer("Units"))
-            return;
-
-        int id = go.GetInstanceID();
-
-        if (!recentlySelectedEntities.ContainsKey(id))
-        {
-            recentlySelectedEntities.Add(id, go);
-            go.GetComponent<Renderer>().material.color = Color.magenta;
-        }
-    }
-
     private void AddSelected(GameObject go)
     {
         if (go.layer != LayerMask.NameToLayer("Units"))
@@ -236,12 +255,14 @@ public class EntitySelector : MonoBehaviour
         {
             selectedEntities.Add(id, go);
             go.GetComponent<Renderer>().material.color = Color.green;
+            go.GetComponent<Unit>().selected = true;
         }
     }
 
     private void Deselect(GameObject go)
     {
         selectedEntities[go.GetInstanceID()].GetComponent<Renderer>().material.color = Color.red;
+        selectedEntities[go.GetInstanceID()].GetComponent<Unit>().selected = false;
         selectedEntities.Remove(go.GetInstanceID());
     }
 
@@ -249,8 +270,11 @@ public class EntitySelector : MonoBehaviour
     {
         foreach (KeyValuePair<int, GameObject> pair in selectedEntities)
         {
-            if (pair.Value != null)
+            if (pair.Value != null) 
+            {
                 selectedEntities[pair.Key].GetComponent<Renderer>().material.color = Color.red;
+                selectedEntities[pair.Key].GetComponent<Unit>().selected = false;
+            } 
         }
         selectedEntities.Clear();
     }

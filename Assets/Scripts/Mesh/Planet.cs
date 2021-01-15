@@ -40,8 +40,10 @@ public class Planet : MonoBehaviour
     {
         GenerateMesh();
 
-        var collider = gameObject.AddComponent<MeshCollider>();
-        collider.sharedMesh = mesh;
+        //var collider = gameObject.AddComponent<MeshCollider>();
+        //collider.sharedMesh = mesh;
+
+        gameObject.AddComponent<SphereCollider>();
 
         // Get center vertices.
         centerVertices = new Vector3[(triangles.Count / 3)];
@@ -84,7 +86,7 @@ public class Planet : MonoBehaviour
             new Vector3(-t, 0, 1).normalized * radius
         };
 
-        var subdivisions = 2;
+        var subdivisions = 4;
 
         SubdivideFace(0, 5, 11, subdivisions);
         SubdivideFace(0, 1, 5, subdivisions);

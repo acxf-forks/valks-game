@@ -4,12 +4,10 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
-    public List<GameObject> units = new List<GameObject>();
-    private Planet planet;
-    private UnitGroup group;
-    public int planetRadius = 50;
+    public static List<GameObject> units = new List<GameObject>();
+    public static List<UnitGroup> groups = new List<UnitGroup>();
 
-    public List<UnitGroup> groups = new List<UnitGroup>();
+    public int planetRadius = 50;
 
     private void Awake()
     {
@@ -24,7 +22,6 @@ public class Game : MonoBehaviour
         planet.planetName = "Yomolla";
         planet.radius = planetRadius;
         camera.FocusOnPlanet(planetGo);
-        this.planet = planet;
 
         // Create units
         var unitGoPrefab = Resources.Load<GameObject>("Prefabs/Unit");
@@ -34,16 +31,13 @@ public class Game : MonoBehaviour
             var unit = unitGo.GetComponent<Unit>();
 
             unit.planet = planetGo.transform;
-
             unitGo.transform.position = unit.planet.position + new Vector3(0, planet.radius + 1, 0);
 
             units.Add(unitGo);
         }
-
-        //group = new UnitGroup(units, planetGo.transform);
         
         // Create entity selector
-        var entitySelector = GameObject.Find("Manager").AddComponent<EntitySelector>();
+        var entitySelector = gameObject.AddComponent<EntitySelector>();
         entitySelector.planet = planetGo;
     }
 
@@ -51,24 +45,12 @@ public class Game : MonoBehaviour
     {
         foreach (var unit in units) 
         {
-            Unit unitScript = unit.GetComponent<Unit>();
-            unitScript.AlignToPlanetSurface();
-            unitScript.Separation();
+            //Unit unitScript = unit.GetComponent<Unit>();
         }
-
-        //group.MoveToTarget(new Vector3(planet.radius + 1, 0, 0));
-        //group.AlignWithLeader();
 
         foreach (var group in groups) 
         {
-            group.AlignWithLeader();
+            group.Update();
         }
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (planet == null) return;
-        Gizmos.color = Color.green;
-        Gizmos.DrawSphere(new Vector3(planet.radius + 1, 0, 0), 0.5f);
     }
 }
