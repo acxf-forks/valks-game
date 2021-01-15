@@ -55,13 +55,13 @@ public class UnitGroup
 
     public void RemoveUnit(Unit unit)
     {
-        if (!units.Remove(unit.gameObject))
+        if (!units.Remove(unit.gameObject)) // Remove unit from this group
             return;
 
-        if (RemoveGroupIfMemberCountLow())
+        if (RemoveGroupIfMemberCountLow()) // Remove this group if member count is too low
             return;
 
-        if (unit.groupLeader)
+        if (unit.groupLeader) // If we are removing the leader, then elect a new leader
             ReassignLeader();
 
         unit.Idle(); // Make sure the unit stops trying to move to their target

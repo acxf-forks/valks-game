@@ -50,25 +50,21 @@ public class EntitySelector : MonoBehaviour
                 }
                 else if (selectedGroups.Count > 1) 
                 {
-                    // Flawed logic, does not work for some reason.
-
-                    // Debug.Log(Game.groups.Count);
-
                     var unitsForNewGroup = new List<GameObject>();
 
                     foreach (var group in selectedGroups)
                     {
                         // Selected more than 1 group
                         // Merge units selected from other groups into 1 new group
-                        foreach (var unitGo in group.units)
+                        for (int i = 0; i < group.units.Count; i++)
                         {
-                            var unit = unitGo.GetComponent<Unit>();
+                            var unit = group.units[i].GetComponent<Unit>();
 
                             if (!unit.selected)
                                 continue;
 
                             unit.LeaveCurrentGroup();
-                            unitsForNewGroup.Add(unitGo);
+                            unitsForNewGroup.Add(group.units[i]);
                         }
 
                         group.RemoveGroupIfMemberCountLow();
@@ -100,10 +96,10 @@ public class EntitySelector : MonoBehaviour
         #region Left Click Released
         if (Input.GetMouseButtonUp(0))
         {
-            if (!dragSelect) // Currently not dragging
-                SingleSelect();
-            else
+            if (dragSelect)
                 MarqueeSelect();
+            else
+                SingleSelect();
 
             GroupSelect();
         }
@@ -111,40 +107,6 @@ public class EntitySelector : MonoBehaviour
     }
 
     #region SelectionLogic
-    private void GroupSelect() 
-    {
-        for (int i = 0; i < Game.groups.Count; i++) 
-        {
-            // Remove all idle groups
-            if (Game.groups[i].unitGroupTask == UnitGroupTask.Idle) 
-            {
-                Game.groups.Remove(Game.groups[i]);
-            }
-        }
-
-        // Add Group from Selected
-        if (selectedEntities.Count > 1)
-        {
-            var units = new List<GameObject>();
-            foreach (var go in selectedEntities.Values)
-            {
-                go.GetComponent<Unit>().LeaveCurrentGroup(); // Remove old group if any
-                units.Add(go); // Add to new group
-            }
-
-            Game.groups.Add(new UnitGroup(units, planetScript.transform));
-        }
-
-        // Since we were telling units to leave their old groups, we have to check if any groups have less than 2 members
-        // Check if any groups have < 1 members
-        for (int i = 0; i < Game.groups.Count; i++)
-        {
-            Game.groups[i].RemoveGroupIfMemberCountLow();
-        }
-
-        //Debug.Log(Game.groups.Count);
-    }
-
     private void MarqueeSelect() 
     {
         cornersWorldSpace = new Vector3[4];
@@ -237,6 +199,41 @@ public class EntitySelector : MonoBehaviour
                 DeslectAll();
             }
         }
+    }
+
+    private void GroupSelect()
+    {
+        for (int i = 0; i < Game.groups.Count; i++)
+        {
+            // Remove all idle groups
+            if (Game.groups[i].unitGroupTask == UnitGroupTask.Idle)
+            {
+                Game.groups.Remove(Game.groups[i]);
+            }
+        }
+
+        // Add Group from Selected
+        if (selectedEntities.Count > 1)
+        {
+            var units = new List<GameObject>();
+            foreach (var go in selectedEntities.Values)
+            {
+                go.GetComponent<Unit>().LeaveCurrentGroup(); // Remove old group if any
+                units.Add(go); // Add to new group
+            }
+
+            if (units.Count > 1)
+                Game.groups.Add(new UnitGroup(units, planetScript.transform));
+        }
+
+        // Since we were telling units to leave their old groups, we have to check if any groups have less than 2 members
+        // Check if any groups have < 1 members
+        for (int i = 0; i < Game.groups.Count; i++)
+        {
+            Game.groups[i].RemoveGroupIfMemberCountLow();
+        }
+
+        //Debug.Log(Game.groups.Count);
     }
     #endregion
 
