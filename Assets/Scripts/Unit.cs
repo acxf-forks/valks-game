@@ -96,8 +96,8 @@ public class Unit : MonoBehaviour
             var unit = hitColliders[i].GetComponent<Unit>();
 
             var maxDist = 1.1f; // Default separation force
-            if (unit.group != null)
-                maxDist = unit.group.distanceBetweenAgents; // Adjust to groups distance between agents
+            //if (unit.group != null)
+                //maxDist = unit.group.distanceBetweenAgents; // Adjust to groups distance between agents
 
             var curDist = (agentB - agentA).sqrMagnitude;
 

@@ -88,7 +88,7 @@ public class Planet : MonoBehaviour
             new Vector3(-t, 0, 1).normalized * radius
         };
 
-        var subdivisions = 4;
+        var subdivisions = 2;
 
         SubdivideFace(0, 5, 11, subdivisions);
         SubdivideFace(0, 1, 5, subdivisions);
@@ -116,8 +116,28 @@ public class Planet : MonoBehaviour
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
 
-        //mesh.RecalculateNormals();
+        var test = false;
+        Color[] colors = new Color[vertices.Count];
+        for (int i = 0; i < colors.Length / 3; i++) 
+        {
+            if (test)
+            {
+                colors[i * 3 + 0] = new Color(0, 0.5f, 0);
+                colors[i * 3 + 1] = new Color(0, 0.5f, 0);
+                colors[i * 3 + 2] = new Color(0, 0.5f, 0);
+            }
+            else
+            {
+                colors[i * 3 + 0] = new Color(0, 0.8f, 0);
+                colors[i * 3 + 1] = new Color(0, 0.8f, 0);
+                colors[i * 3 + 2] = new Color(0, 0.8f, 0);
+            }
+
+            test = !test;
+        }
+
         mesh.normals = vertices.Select(s => s.normalized).ToArray();
+        mesh.colors = colors;
     }
 
     /*

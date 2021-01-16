@@ -21,7 +21,7 @@ public class UnitGroup
     public UnitGroupTask unitGroupTask;
     public Vector3 target;
 
-    public float distanceBetweenAgents = 1.1f;
+    private float distanceBetweenAgents;
 
     public UnitGroup(List<GameObject> units, Transform planet) 
     {
@@ -40,6 +40,8 @@ public class UnitGroup
             unit.GetComponent<Unit>().group = this;
 
         unitGroupTask = UnitGroupTask.Idle;
+
+        distanceBetweenAgents = 50f / planetRadius;
     }
 
     public void Update() 
@@ -81,7 +83,7 @@ public class UnitGroup
         if (GetMemberCount() > 1)
             return false;
 
-        groupCount--;
+        //groupCount--;
         Object.Destroy(groupOrigin.gameObject);
         Game.groups.Remove(this);
         return true;
@@ -97,7 +99,35 @@ public class UnitGroup
     {
         Debug.DrawRay(groupOrigin.position, groupOrigin.forward * 10f, Color.green);
         LineRowFormation();
+        //TestFormation();
     }
+
+    /*private void TestFormation()
+    {
+        var prevSphereGroupOriginPoint = PlanetUtils.CartesianToSpherical(groupOrigin.position);
+        var curSphereGroupOrigin = prevSphereGroupOriginPoint;
+        var vertDist = (50f / planetRadius);
+        var horzDist = (50f / planetRadius);
+
+        for (int i = 0; i < units.Count; i++) 
+        {
+            curSphereGroupOrigin.z += (vertDist * Mathf.Deg2Rad);
+
+            if (i % 10 == 0) 
+            {
+                curSphereGroupOrigin.z = prevSphereGroupOriginPoint.z;
+                curSphereGroupOrigin.y += (horzDist * Mathf.Deg2Rad);
+            }
+
+            var pos = PlanetUtils.SphericalToCartesian(curSphereGroupOrigin);
+
+            // Snap back to planets surface
+            var newGravityUp = (pos - planet.position).normalized * (planetRadius + 1);
+            pos = newGravityUp;
+
+            units[i].GetComponent<Unit>().MoveToTarget(pos);
+        }
+    }*/
 
     private void LineRowFormation() 
     {
