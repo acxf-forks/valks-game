@@ -30,6 +30,8 @@ public class Unit : MonoBehaviour
 
     private Vector3 target;
 
+    private int unitsLayerMask;
+
     private void Awake()
     {
         gameObject.layer = LayerMask.NameToLayer("Units");
@@ -47,6 +49,8 @@ public class Unit : MonoBehaviour
         AddRandomForce(0.00001f);
 
         unitTask = UnitTask.Idle;
+
+        unitsLayerMask = LayerMask.GetMask("Units");
     }
 
     private void Update()
@@ -86,7 +90,7 @@ public class Unit : MonoBehaviour
 
         int maxColliders = Game.units.Count;
         Collider[] hitColliders = new Collider[maxColliders];
-        var numColliders = Physics.OverlapSphereNonAlloc(transform.position, 1.1f, hitColliders, LayerMask.GetMask("Units"));
+        var numColliders = Physics.OverlapSphereNonAlloc(transform.position, 1.1f, hitColliders, unitsLayerMask);
 
         for (int i = 0; i < numColliders; i++)
         {

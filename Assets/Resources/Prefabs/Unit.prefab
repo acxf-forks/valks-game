@@ -47,9 +47,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   planet: {fileID: 0}
-  curSpeed: 0
-  maxSpeed: 0
-  groupLeader: 0
+  unitTask: 0
+  selected: 0
 --- !u!33 &7523789987472199724
 MeshFilter:
   m_ObjectHideFlags: 0

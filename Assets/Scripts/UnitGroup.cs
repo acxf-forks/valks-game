@@ -41,7 +41,7 @@ public class UnitGroup
 
         unitGroupTask = UnitGroupTask.Idle;
 
-        distanceBetweenAgents = 50f / planetRadius;
+        distanceBetweenAgents = 1f;
     }
 
     public void Update() 
@@ -99,10 +99,29 @@ public class UnitGroup
     {
         Debug.DrawRay(groupOrigin.position, groupOrigin.forward * 10f, Color.green);
         LineRowFormation();
-        //TestFormation();
+        //SphericalCoordFormationTest();
+        //FormationTestCosSin();
     }
 
-    /*private void TestFormation()
+    private void FormationTestCosSin() 
+    {
+        for (int i = 0; i < units.Count; i++) 
+        {
+            var posX = planet.position.x + Mathf.Cos(5 * i) * planetRadius;
+            var posY = planet.position.y + Mathf.Sin(0 * i) * planetRadius;
+            var pos = new Vector3(posX, posY, 0);
+
+
+
+            //var newGravityUp = (pos - planet.position).normalized * (planetRadius + 1);
+            //pos = newGravityUp;
+
+            // Slowly move towards these positions
+            //units[i].GetComponent<Unit>().MoveToTarget(pos);
+        }
+    }
+
+    private void SphericalCoordFormationTest()
     {
         var prevSphereGroupOriginPoint = PlanetUtils.CartesianToSpherical(groupOrigin.position);
         var curSphereGroupOrigin = prevSphereGroupOriginPoint;
@@ -127,7 +146,7 @@ public class UnitGroup
 
             units[i].GetComponent<Unit>().MoveToTarget(pos);
         }
-    }*/
+    }
 
     private void LineRowFormation() 
     {

@@ -27,7 +27,7 @@ public class Game : MonoBehaviour
 
         // Create units
         var unitGoPrefab = Resources.Load<GameObject>("Prefabs/Unit");
-        for (int i = 0; i < 200; i++) 
+        for (int i = 0; i < 100; i++) 
         {
             var unitGo = Instantiate(unitGoPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             var unit = unitGo.GetComponent<Unit>();
