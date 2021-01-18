@@ -1,199 +1,256 @@
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 /*
- * Icosahedron is the closest you can get to a near perfect uniform
- * tessellation projected onto a icosphere.
- * 
- * Reference 
- * https://en.wikipedia.org/wiki/Geodesic_polyhedron
+ * Create a icosahedron. Vertices are cached meaning only
+ * vertices absolutely required are added.
  */
-
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class Planet : MonoBehaviour
 {
-    private List<Rigidbody> attractedEntities = new List<Rigidbody>();
+	private static int planetCount = 0;
 
-    public string planetName;
-    public int radius = 2;
-    public float gravity = -10f;
+	public string planetName;
 
-    public Transform debugPoint;
-    private Mesh mesh;
+	public int recursionLevel = 3;
+	public float radius = 0.5f;
 
-    private List<Vector3> vertices;
-    private List<int> triangles;
-    private List<Color32> colors;
+	private Mesh mesh;
+	private List<Vector3> vertList;
+	private List<int> triList;
+	private List<TriangleIndices> faces;
 
-    private static int planetCount = 0;
-    
-    public Vector3[] centerVertices;
-
-    private void Awake()
+	private void Awake()
     {
-        GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/Texture");
-        mesh = GetComponent<MeshFilter>().mesh;
-        triangles = new List<int>();
-    }
+		recursionLevel = Mathf.Clamp(recursionLevel, 0, 6);
+	}
 
     private void Start()
     {
-        GenerateMesh();
+		gameObject.layer = LayerMask.NameToLayer("Planets");
+		gameObject.name = $"({++planetCount}) Planet - " + planetName;
 
-        //var collider = gameObject.AddComponent<MeshCollider>();
-        //collider.sharedMesh = mesh;
+		GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/Planet Shader");
+		GenerateMesh();
 
-        gameObject.AddComponent<SphereCollider>();
+		//gameObject.AddComponent<SphereCollider>();
+		var collider = gameObject.AddComponent<MeshCollider>();
+		collider.sharedMesh = mesh;
+	}
 
-        // Get center vertices.
-        centerVertices = new Vector3[(triangles.Count / 3)];
+	private void GenerateMesh()
+	{
+		mesh = GetComponent<MeshFilter>().mesh;
+		mesh.Clear();
+		mesh.name = gameObject.name;
 
-        for (int i = 0; i < triangles.Count; i+=3) 
-        {
-            var centerVertex = GetCenterVertex(triangles[i], triangles[i + 1], triangles[i + 2]);
+		CreateBaseVertices();
+		CreateFacesAndAddMoreVertices();
+		CreateUVs();
+		CreateNormals();
+		CreateColors();
 
-            // DEBUG
-            /*var cube = Instantiate(debugPoint, centerVertex, Quaternion.identity);
+		mesh.RecalculateBounds();
+		mesh.Optimize();
 
-            var dir = (centerVertex - Vector3.zero).normalized;
-            cube.forward = dir;
-            cube.position = centerVertex + (dir * 0.05f);*/
+		GetComponent<MeshFilter>().sharedMesh = mesh;
+		mesh.RecalculateBounds();
+	}
 
-            centerVertices[i / 3] = centerVertex;
-        }
+	private void CreateBaseVertices() 
+	{
+		vertList = new List<Vector3>();
 
-        gameObject.layer = LayerMask.NameToLayer("Planets");
-        gameObject.name = $"({++planetCount}) Planet - " + planetName;
-    }
+		// create 12 vertices of a icosahedron
+		float t = (1f + Mathf.Sqrt(5f)) / 2f;
 
-    private void GenerateMesh() 
-    {
-        var t = (1.0f + Mathf.Sqrt(5.0f)) / 2.0f;
+		vertList.Add(new Vector3(-1f, t, 0f).normalized * radius);
+		vertList.Add(new Vector3(1f, t, 0f).normalized * radius);
+		vertList.Add(new Vector3(-1f, -t, 0f).normalized * radius);
+		vertList.Add(new Vector3(1f, -t, 0f).normalized * radius);
 
-        vertices = new List<Vector3>()
-        {
-            new Vector3(-1, t, 0).normalized * radius,
-            new Vector3(1, t, 0).normalized * radius ,
-            new Vector3(-1, -t, 0).normalized * radius,
-            new Vector3(1, -t, 0).normalized * radius,
-            new Vector3(0, -1, t).normalized * radius,
-            new Vector3(0, 1, t).normalized * radius ,
-            new Vector3(0, -1, -t).normalized * radius,
-            new Vector3(0, 1, -t).normalized * radius,
-            new Vector3(t, 0, -1).normalized * radius,
-            new Vector3(t, 0, 1).normalized * radius ,
-            new Vector3(-t, 0, -1).normalized * radius,
-            new Vector3(-t, 0, 1).normalized * radius
-        };
+		vertList.Add(new Vector3(0f, -1f, t).normalized * radius);
+		vertList.Add(new Vector3(0f, 1f, t).normalized * radius);
+		vertList.Add(new Vector3(0f, -1f, -t).normalized * radius);
+		vertList.Add(new Vector3(0f, 1f, -t).normalized * radius);
 
-        var subdivisions = 2;
+		vertList.Add(new Vector3(t, 0f, -1f).normalized * radius);
+		vertList.Add(new Vector3(t, 0f, 1f).normalized * radius);
+		vertList.Add(new Vector3(-t, 0f, -1f).normalized * radius);
+		vertList.Add(new Vector3(-t, 0f, 1f).normalized * radius);
+	}
 
-        SubdivideFace(0, 5, 11, subdivisions);
-        SubdivideFace(0, 1, 5, subdivisions);
-        SubdivideFace(0, 7, 1, subdivisions);
-        SubdivideFace(0, 10, 7, subdivisions);
-        SubdivideFace(0, 11, 10, subdivisions);
-        SubdivideFace(1, 9, 5, subdivisions);
-        SubdivideFace(5, 4, 11, subdivisions);
-        SubdivideFace(11, 2, 10, subdivisions);
-        SubdivideFace(10, 6, 7, subdivisions);
-        SubdivideFace(7, 8, 1, subdivisions);
-        SubdivideFace(3, 4, 9, subdivisions);
-        SubdivideFace(3, 2, 4, subdivisions);
-        SubdivideFace(3, 6, 2, subdivisions);
-        SubdivideFace(3, 8, 6, subdivisions);
-        SubdivideFace(3, 9, 8, subdivisions);
-        SubdivideFace(4, 5, 9, subdivisions);
-        SubdivideFace(2, 11, 4, subdivisions);
-        SubdivideFace(6, 10, 2, subdivisions);
-        SubdivideFace(8, 7, 6, subdivisions);
-        SubdivideFace(9, 1, 8, subdivisions);
+	private void CreateFacesAndAddMoreVertices() 
+	{
+		Dictionary<long, int> middlePointIndexCache = new Dictionary<long, int>();
 
-        // GENERATE MESH
-        mesh.Clear(); // Remove any previous mesh data
-        mesh.vertices = vertices.ToArray();
-        mesh.triangles = triangles.ToArray();
+		// create 20 triangles of the icosahedron
+		faces = new List<TriangleIndices>();
 
-        var test = false;
-        Color[] colors = new Color[vertices.Count];
-        for (int i = 0; i < colors.Length / 3; i++) 
-        {
-            if (test)
-            {
-                colors[i * 3 + 0] = new Color(0, 0.5f, 0);
-                colors[i * 3 + 1] = new Color(0, 0.5f, 0);
-                colors[i * 3 + 2] = new Color(0, 0.5f, 0);
-            }
-            else
-            {
-                colors[i * 3 + 0] = new Color(0, 0.8f, 0);
-                colors[i * 3 + 1] = new Color(0, 0.8f, 0);
-                colors[i * 3 + 2] = new Color(0, 0.8f, 0);
-            }
+		// 5 faces around point 0
+		faces.Add(new TriangleIndices(0, 11, 5));
+		faces.Add(new TriangleIndices(0, 5, 1));
+		faces.Add(new TriangleIndices(0, 1, 7));
+		faces.Add(new TriangleIndices(0, 7, 10));
+		faces.Add(new TriangleIndices(0, 10, 11));
 
-            test = !test;
-        }
+		// 5 adjacent faces
+		faces.Add(new TriangleIndices(1, 5, 9));
+		faces.Add(new TriangleIndices(5, 11, 4));
+		faces.Add(new TriangleIndices(11, 10, 2));
+		faces.Add(new TriangleIndices(10, 7, 6));
+		faces.Add(new TriangleIndices(7, 1, 8));
 
-        mesh.normals = vertices.Select(s => s.normalized).ToArray();
-        mesh.colors = colors;
-    }
+		// 5 faces around point 3
+		faces.Add(new TriangleIndices(3, 9, 4));
+		faces.Add(new TriangleIndices(3, 4, 2));
+		faces.Add(new TriangleIndices(3, 2, 6));
+		faces.Add(new TriangleIndices(3, 6, 8));
+		faces.Add(new TriangleIndices(3, 8, 9));
 
-    /*
-     * Subdivides a specified triangle given the 3 points of the triangle.
-     * 
-     * top = The top vertex
-     * bottomLeft = The bottom left vertex
-     * bottomRight = The bottom right vertex
-     * index = Keep track of the vertices index
-     * nMax = The max amount of subdivisions
-     * n = Keeping track of the current subdivision
-     */
-    private void SubdivideFace(int top, int bottomLeft, int bottomRight, int n)
-    {
-        if (n == 0) return;
+		// 5 adjacent faces
+		faces.Add(new TriangleIndices(4, 9, 5));
+		faces.Add(new TriangleIndices(2, 4, 11));
+		faces.Add(new TriangleIndices(6, 2, 10));
+		faces.Add(new TriangleIndices(8, 6, 7));
+		faces.Add(new TriangleIndices(9, 8, 1));
 
-        vertices.Add(GetMidPointVertex(top, bottomRight));       
-        vertices.Add(GetMidPointVertex(top, bottomLeft));        
-        vertices.Add(GetMidPointVertex(bottomLeft, bottomRight));
 
-        // G R
-        //  B
+		// refine triangles
+		for (int i = 0; i < recursionLevel; i++)
+		{
+			List<TriangleIndices> faces2 = new List<TriangleIndices>();
+			foreach (var tri in faces)
+			{
+				// replace triangle by 4 triangles
+				int a = GetMiddlePoint(tri.v1, tri.v2, ref vertList, ref middlePointIndexCache, radius);
+				int b = GetMiddlePoint(tri.v2, tri.v3, ref vertList, ref middlePointIndexCache, radius);
+				int c = GetMiddlePoint(tri.v3, tri.v1, ref vertList, ref middlePointIndexCache, radius);
 
-        // We subtract 3 because it's like subtracting 1 polygon because we need to account for 0 index
-        int index = vertices.Count - 3;
+				faces2.Add(new TriangleIndices(tri.v1, a, c));
+				faces2.Add(new TriangleIndices(tri.v2, b, a));
+				faces2.Add(new TriangleIndices(tri.v3, c, b));
+				faces2.Add(new TriangleIndices(a, b, c));
+			}
+			faces = faces2;
+		}
 
-        // Only draw the last subdivision.
-        if (n == 1)
-        {
-            triangles.AddRange(new List<int> { top, index, index + 1 }); // Upper Top
-            triangles.AddRange(new List<int> { index + 1, index + 2, bottomLeft }); // Lower Left
-            triangles.AddRange(new List<int> { index + 1, index, index + 2 }); // Lower Mid
-            triangles.AddRange(new List<int> { index, bottomRight, index + 2 }); // Lower Right
-        }
+		mesh.vertices = vertList.ToArray();
 
-        /*
-         * When you draw a triangle within a triangle it gets turned upside down, so that's
-         * why we have to swap the 2nd and 3rd vertices.
-         */
-        SubdivideFace(top, index + 1, index, n - 1);
-        SubdivideFace(index + 1, bottomLeft, index + 2, n - 1);
-        SubdivideFace(index + 1, index + 2, index, n - 1);
-        SubdivideFace(index, index + 2, bottomRight, n - 1);
-    }
+		triList = new List<int>();
+		UpdateFaces();
+	}
 
-    /*
-     * Gets the midpoint vertex between two vertices.
-     */
-    private Vector3 GetMidPointVertex(int a, int b)
-    {
-        // Calculate midpoint
-        var midpoint = (vertices[a] + vertices[b]) / 2;
+	private void UpdateFaces() 
+	{
+		for (int i = 0; i < faces.Count; i++)
+		{
+			triList.Add(faces[i].v1);
+			triList.Add(faces[i].v2);
+			triList.Add(faces[i].v3);
+		}
+		mesh.triangles = triList.ToArray();
+	}
 
-        // Normalized will project the midpoints onto a icosphere (with a radius of 1)
-        return midpoint.normalized * radius;
-    }
+	private void CreateUVs() 
+	{
+		var nVertices = mesh.vertices;
+		Vector2[] UVs = new Vector2[nVertices.Length];
 
-    public Vector3 GetCenterVertex(int a, int b, int c) => ((vertices[a] + vertices[b] + vertices[c]) / 3).normalized * radius;
+		for (var i = 0; i < nVertices.Length; i++)
+		{
+			var unitVector = nVertices[i].normalized;
+			Vector2 ICOuv = new Vector2(0, 0);
+			ICOuv.x = (Mathf.Atan2(unitVector.x, unitVector.z) + Mathf.PI) / Mathf.PI / 2;
+			ICOuv.y = (Mathf.Acos(unitVector.y) + Mathf.PI) / Mathf.PI - 1;
+			UVs[i] = new Vector2(ICOuv.x, ICOuv.y);
+		}
+
+		mesh.uv = UVs;
+	}
+
+	private void CreateNormals() 
+	{
+		Vector3[] normales = new Vector3[vertList.Count];
+		for (int i = 0; i < normales.Length; i++)
+			normales[i] = vertList[i].normalized;
+
+		mesh.normals = normales;
+	}
+
+	private void CreateColors() 
+	{
+		bool test = false;
+
+		Color[] colors = new Color[mesh.vertexCount];
+		for (int i = 0; i < colors.Length / 3; i++)
+		{
+			if (test)
+			{
+				colors[i * 3 + 0] = new Color(0, 1f, 0);
+				colors[i * 3 + 1] = new Color(0, 1f, 0);
+				colors[i * 3 + 2] = new Color(0, 1f, 0);
+			}
+			else
+			{
+				colors[i * 3 + 0] = new Color(0, 0, 1f);
+				colors[i * 3 + 1] = new Color(0, 0, 1f);
+				colors[i * 3 + 2] = new Color(0, 0, 1f);
+			}
+
+			test = !test;
+		}
+
+		mesh.colors = colors;
+	}
+
+	private struct TriangleIndices
+	{
+		public int v1;
+		public int v2;
+		public int v3;
+
+		public TriangleIndices(int v1, int v2, int v3)
+		{
+			this.v1 = v1;
+			this.v2 = v2;
+			this.v3 = v3;
+		}
+	}
+
+	// return index of point in the middle of p1 and p2
+	private static int GetMiddlePoint(int p1, int p2, ref List<Vector3> vertices, ref Dictionary<long, int> cache, float radius)
+	{
+		// first check if we have it already
+		bool firstIsSmaller = p1 < p2;
+		long smallerIndex = firstIsSmaller ? p1 : p2;
+		long greaterIndex = firstIsSmaller ? p2 : p1;
+		long key = (smallerIndex << 32) + greaterIndex;
+
+		int ret;
+		if (cache.TryGetValue(key, out ret))
+		{
+			return ret;
+		}
+
+		// not in cache, calculate it
+		Vector3 point1 = vertices[p1];
+		Vector3 point2 = vertices[p2];
+		Vector3 middle = new Vector3
+		(
+			(point1.x + point2.x) / 2f,
+			(point1.y + point2.y) / 2f,
+			(point1.z + point2.z) / 2f
+		);
+
+		// add vertex makes sure point is on unit sphere
+		int i = vertices.Count;
+		vertices.Add(middle.normalized * radius);
+
+		// store it, return index
+		cache.Add(key, i);
+
+		return i;
+	}
 }
