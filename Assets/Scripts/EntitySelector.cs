@@ -14,7 +14,7 @@ public class EntitySelector : MonoBehaviour
     private CameraController camScript;
 
     public GameObject planet;
-    private Planet planetScript;
+    private PlanetIco planetScript;
 
     private RaycastHit hit;
     private Vector2[] cornersScreenSpace;
@@ -27,7 +27,7 @@ public class EntitySelector : MonoBehaviour
     private void Start()
     {
         cam = Camera.main;
-        planetScript = planet.GetComponent<Planet>();
+        planetScript = planet.GetComponent<PlanetIco>();
         camScript = cam.GetComponent<CameraController>();
     }
 

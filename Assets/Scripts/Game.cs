@@ -19,7 +19,7 @@ public class Game : MonoBehaviour
 
         // Create planet
         var planetGo = new GameObject();
-        var planet = planetGo.AddComponent<Planet>();
+        var planet = planetGo.AddComponent<PlanetIco>();
         planet.planetName = "Yomolla";
         planet.radius = planetRadius;
         this.planet = planetGo.transform;

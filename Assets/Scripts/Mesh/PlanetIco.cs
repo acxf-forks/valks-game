@@ -7,7 +7,7 @@ using System.Collections.Generic;
  * vertices absolutely required are added.
  */
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class Planet : MonoBehaviour
+public class PlanetIco : MonoBehaviour
 {
 	private static int planetCount = 0;
 

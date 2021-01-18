@@ -26,6 +26,7 @@ public class PolySelector : MonoBehaviour
                 return;
 
             Mesh mesh = meshCollider.sharedMesh;
+
             Vector3[] vertices = mesh.vertices;
             int[] triangles = mesh.triangles;
 

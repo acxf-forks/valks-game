@@ -12,7 +12,7 @@ public enum UnitTask
 public class Unit : MonoBehaviour
 {
     public Transform planet;
-    private Planet planetScript;
+    private PlanetIco planetScript;
 
     private float planetRadius;
 
@@ -39,7 +39,7 @@ public class Unit : MonoBehaviour
 
     private void Start()
     {
-        planetScript = planet.GetComponent<Planet>();
+        planetScript = planet.GetComponent<PlanetIco>();
         planetRadius = planetScript.radius;
 
         transform.position = new Vector3(0, planetRadius + 1, 0);

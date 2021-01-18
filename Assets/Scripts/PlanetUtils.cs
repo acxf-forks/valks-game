@@ -29,7 +29,7 @@ public static class PlanetUtils
         var gravityUp = GravityUp(transform, planet);
 
         // Snap back to planets surface
-        var planetRadius = planet.GetComponent<Planet>().radius;
+        var planetRadius = planet.GetComponent<PlanetIco>().radius;
         transform.position = gravityUp * (planetRadius + 1);
     }
 
