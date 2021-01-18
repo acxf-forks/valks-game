@@ -103,9 +103,45 @@ public class UnitGroup
     }
 
     /*
-     * Square Formation (does not work for odd row numbers)
+     * Seems to work for all cases but movement is sort of weird. It is clear that unit formations
+     * is much bigger then I anticipated and will require alot more thinking.
      */
     private void SquareFormation()
+    {
+        var unitsInRow = Mathf.CeilToInt(Mathf.Sqrt(this.units.Count));
+        var rows = Mathf.CeilToInt((float)this.units.Count / unitsInRow);
+
+        var back = -this.groupOrigin.forward;
+        var right = this.groupOrigin.right;
+
+        for (int i = 0; i < rows; i++)
+        {
+            var isLastRow = i + 1 == rows;
+            var countInRow = isLastRow ? this.units.Count - unitsInRow * (rows - 1) : unitsInRow;
+            var offset = -right * ((countInRow - 1f) / 2f);
+
+            for (int j = 0; j < countInRow; j++)
+            {
+                var unitIndex = i * unitsInRow + j;
+
+                var pos = groupOrigin.position + i * back + j * right + offset;
+
+                // Snap back to planets surface
+                var newGravityUp = (pos - planet.position).normalized * (planetRadius + 1);
+                pos = newGravityUp;
+
+                // Slowly move towards these positions
+                units[unitIndex].GetComponent<Unit>().MoveToTarget(pos);
+            }
+        }
+    }
+
+    public int GetMemberCount() => units.Count;
+
+    /*
+     * Square Formation (does not work for odd row numbers)
+     */
+    /*private void SquareFormationV1()
     {
         var horzDist = 0f;
         var vertDist = 0f;
@@ -126,7 +162,7 @@ public class UnitGroup
             }
 
             // Start a new row behind
-            if (i % 10 == 0 && i != 0)
+            if (i % 3 == 0 && i != 0)
             {
                 horzDist = 0f;
                 vertDist += distanceBetweenAgents;
@@ -143,9 +179,7 @@ public class UnitGroup
             units[i].GetComponent<Unit>().MoveToTarget(pos);
             //Debug.DrawLine(groupOrigin.position, pos, Color.blue);
         }
-    }
-
-    public int GetMemberCount() => units.Count;
+    }*/
 
     /*
      * I honestly don't get it at all......
