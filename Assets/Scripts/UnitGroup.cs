@@ -99,7 +99,7 @@ public class UnitGroup
     {
         Debug.DrawRay(groupOrigin.position, groupOrigin.forward * 10f, Color.green);
 
-        SquareFormation();
+        SquareFormationV1();
     }
 
     /*
@@ -141,7 +141,7 @@ public class UnitGroup
     /*
      * Square Formation (does not work for odd row numbers)
      */
-    /*private void SquareFormationV1()
+    private void SquareFormationV1()
     {
         var horzDist = 0f;
         var vertDist = 0f;
@@ -162,7 +162,7 @@ public class UnitGroup
             }
 
             // Start a new row behind
-            if (i % 3 == 0 && i != 0)
+            if (i % 10 == 0 && i != 0)
             {
                 horzDist = 0f;
                 vertDist += distanceBetweenAgents;
@@ -179,7 +179,7 @@ public class UnitGroup
             units[i].GetComponent<Unit>().MoveToTarget(pos);
             //Debug.DrawLine(groupOrigin.position, pos, Color.blue);
         }
-    }*/
+    }
 
     /*
      * I honestly don't get it at all......
