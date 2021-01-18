@@ -5,19 +5,32 @@ using UnityEngine;
 public static class PlanetUtils
 {
     /*
-     * Align a transform to planets surface and rotate towards a specific target on that planet surface.
+     * Calculate the gravityUp with respect to the given transform.
      */
-    public static Vector3 AlignToPlanetSurface(Transform transform, Transform planet, Vector3 target)
+    public static Vector3 GravityUp(Transform transform, Transform planet) => (transform.position - planet.position).normalized;
+
+    /*
+        * Look at a given target with respect to the planets surface.
+        */
+    public static void LookAtTarget(Transform transform, Transform planet, Vector3 target) 
     {
-        // Rotate towards the target on the y axis whilst maintaining a standing rotation on the surface of the planet
-        var gravityUp = (transform.position - planet.position).normalized;
+        var gravityUp = GravityUp(transform, planet);
+
         var forward = Vector3.ProjectOnPlane(target - transform.position, gravityUp);
         if (forward != Vector3.zero)
             transform.rotation = Quaternion.LookRotation(forward, gravityUp);
+    }
+
+    /*
+     * Align a transform to planets surface and rotate towards a specific target on that planet surface.
+     */
+    public static void AlignToPlanetSurface(Transform transform, Transform planet)
+    {
+        var gravityUp = GravityUp(transform, planet);
 
         // Snap back to planets surface
         var planetRadius = planet.GetComponent<Planet>().radius;
-        return gravityUp * (planetRadius + 1);
+        transform.position = gravityUp * (planetRadius + 1);
     }
 
     public static Vector3 SphericalToCartesian(Vector3 sphericalCoord)
