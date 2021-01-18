@@ -48,8 +48,8 @@ public class UnitGroup
     {
         if (unitGroupTask == UnitGroupTask.MoveToTarget) 
         {
-            // Align group origin to planets surface
-            PlanetUtils.AlignToPlanetSurface(groupOrigin, planet, target);
+            PlanetUtils.AlignToPlanetSurface(groupOrigin, planet);
+            PlanetUtils.LookAtTarget(groupOrigin, planet, target);
 
             AlignWithGroupOrigin();
 
@@ -98,12 +98,118 @@ public class UnitGroup
     public void AlignWithGroupOrigin()
     {
         Debug.DrawRay(groupOrigin.position, groupOrigin.forward * 10f, Color.green);
-        LineRowFormation();
-        //SphericalCoordFormationTest();
-        //FormationTestCosSin();
+
+        SquareFormationV1();
     }
 
-    private void FormationTestCosSin() 
+    /*
+     * I honestly don't get it at all......
+     */
+    private void SquareFormationV2() 
+    {
+        var dirRight = groupOrigin.right;
+        var dirForward = groupOrigin.forward;
+        var startPos = groupOrigin.position;
+        var x = -(units.Count / 10) / 2 - 1;
+        var z = -(units.Count / 10) / 2;
+
+        for (int i = 0; i < units.Count; i++) 
+        {
+            x++;
+            if (x % 10 == 0) 
+            {
+                x = 0;
+                z++;
+            }
+
+            var curPos = startPos + dirRight * x + dirForward * z;
+
+            units[i].GetComponent<Unit>().MoveToTarget(curPos);
+        }
+    }
+
+    /*
+     * Square Formation (does not work for odd row numbers)
+     */
+    private void SquareFormationV1()
+    {
+        var horzDist = 0f;
+        var vertDist = 0f;
+
+        for (int i = 0; i < units.Count; i++)
+        {
+            // Swap between left and right directions
+            Vector3 vertDir = groupOrigin.forward * -1;
+            Vector3 horzDir;
+            if (i % 2 == 0)
+            {
+                horzDir = groupOrigin.right * -1;
+            }
+            else
+            {
+                horzDir = groupOrigin.right;
+                horzDist += distanceBetweenAgents;
+            }
+
+            // Start a new row behind
+            if (i % 10 == 0 && i != 0)
+            {
+                horzDist = 0f;
+                vertDist += distanceBetweenAgents;
+            }
+
+            // Calculate positions at end of each blue line
+            var pos = groupOrigin.position + (horzDir * horzDist) + (vertDir * vertDist);
+
+            // Snap back to planets surface
+            var newGravityUp = (pos - planet.position).normalized * (planetRadius + 1);
+            pos = newGravityUp;
+
+            // Slowly move towards these positions
+            units[i].GetComponent<Unit>().MoveToTarget(pos);
+            //Debug.DrawLine(groupOrigin.position, pos, Color.blue);
+        }
+    }
+
+    public int GetMemberCount() => units.Count;
+
+    /*
+     * Does not work because centerUnit rotation is not same as original leader rotation.
+     */
+    /*private void FollowCenterUnit(Transform centerUnit, int n = 0, int horzDir = 1, int rows = 0) 
+    {
+        if (n % 3 == 0 && n != 0) 
+        {
+            centerUnit = units[n - 3].transform;
+            horzDir = -horzDir;
+        }
+
+        if (n % 6 == 0 && n != 0) 
+        {
+            rows++;
+        }
+
+        // Position
+        var horz = centerUnit.right * horzDir * distanceBetweenAgents;
+        var vert = centerUnit.forward * -1 * rows * distanceBetweenAgents;
+        var pos = centerUnit.position + horz + vert;
+
+        // Snap back to planets surface
+        var newGravityUp = (pos - planet.position).normalized * (planetRadius + 1);
+        pos = newGravityUp;
+
+        if (n + 1 >= units.Count)
+            return;
+
+        units[n + 1].GetComponent<Unit>().MoveToTarget(pos);
+
+        FollowCenterUnit(units[n + 1].transform, n + 1, horzDir, rows);
+    }*/
+
+    /*
+     * Just ignore this.
+     */
+    /*private void FormationTestCosSin() 
     {
         for (int i = 0; i < units.Count; i++) 
         {
@@ -119,9 +225,14 @@ public class UnitGroup
             // Slowly move towards these positions
             //units[i].GetComponent<Unit>().MoveToTarget(pos);
         }
-    }
+    }*/
 
-    private void SphericalCoordFormationTest()
+    /*
+     * Does not work because 1) can't pass the north / south pole (units have to go all the way around)
+     * and 2) the spherical coordinate system is a uneven 2D grid map distribution resulting in the units
+     * getting scrunched near the poles of the planet.
+     */
+    /*private void SphericalCoordFormationTest()
     {
         var prevSphereGroupOriginPoint = PlanetUtils.CartesianToSpherical(groupOrigin.position);
         var curSphereGroupOrigin = prevSphereGroupOriginPoint;
@@ -146,48 +257,5 @@ public class UnitGroup
 
             units[i].GetComponent<Unit>().MoveToTarget(pos);
         }
-    }
-
-    private void LineRowFormation() 
-    {
-        var horzDist = 0f;
-        var vertDist = 0f;
-
-        for (int i = 0; i < units.Count; i++)
-        {
-            // Swap between left and right directions
-            Vector3 direction;
-            if (i % 2 == 0)
-            {
-                direction = groupOrigin.right * -1;
-            }
-            else
-            {
-                direction = groupOrigin.right;
-                horzDist += distanceBetweenAgents;
-            }
-
-            // Start a new row behind
-            if (i % 10 == 0)
-            {
-                horzDist = 0f;
-                vertDist += distanceBetweenAgents;
-            }
-
-            // Calculate positions at end of each blue line
-            var pos = groupOrigin.position + (direction * horzDist) + (groupOrigin.forward * -vertDist);
-
-            //var arcLength = Vector3.Angle(groupOrigin.position, pos) * Mathf.Deg2Rad * (planetRadius + 1);
-
-            // Snap back to planets surface
-            var newGravityUp = (pos - planet.position).normalized * (planetRadius + 1);
-            pos = newGravityUp;
-
-            // Slowly move towards these positions
-            units[i].GetComponent<Unit>().MoveToTarget(pos);
-            //Debug.DrawLine(groupOrigin.position, pos, Color.blue);
-        }
-    }
-
-    public int GetMemberCount() => units.Count;
+    }*/
 }
