@@ -55,8 +55,9 @@ public class Unit : MonoBehaviour
 
     private void Update()
     {
-        Separation();
-        PlanetUtils.AlignToPlanetSurface(transform, planet, target);
+        //Separation();
+        PlanetUtils.AlignToPlanetSurface(transform, planet);
+        PlanetUtils.LookAtTarget(transform, planet, target);
 
         if (unitTask == UnitTask.MoveToTarget)
         {
