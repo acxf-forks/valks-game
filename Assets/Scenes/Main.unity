@@ -248,7 +248,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1957d87bd74e86943a149badc633f537, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  KeepSceneViewActive: 0
+  KeepSceneViewActive: 1
 --- !u!4 &1258314522
 Transform:
   m_ObjectHideFlags: 0
@@ -299,4 +299,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8adea47794b56d4096a0ae25bb37b12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  planetRadius: 100
+  planetRadius: 1000
