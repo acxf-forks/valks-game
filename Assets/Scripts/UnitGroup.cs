@@ -99,39 +99,13 @@ public class UnitGroup
     {
         Debug.DrawRay(groupOrigin.position, groupOrigin.forward * 10f, Color.green);
 
-        SquareFormationV1();
-    }
-
-    /*
-     * I honestly don't get it at all......
-     */
-    private void SquareFormationV2() 
-    {
-        var dirRight = groupOrigin.right;
-        var dirForward = groupOrigin.forward;
-        var startPos = groupOrigin.position;
-        var x = -(units.Count / 10) / 2 - 1;
-        var z = -(units.Count / 10) / 2;
-
-        for (int i = 0; i < units.Count; i++) 
-        {
-            x++;
-            if (x % 10 == 0) 
-            {
-                x = 0;
-                z++;
-            }
-
-            var curPos = startPos + dirRight * x + dirForward * z;
-
-            units[i].GetComponent<Unit>().MoveToTarget(curPos);
-        }
+        SquareFormation();
     }
 
     /*
      * Square Formation (does not work for odd row numbers)
      */
-    private void SquareFormationV1()
+    private void SquareFormation()
     {
         var horzDist = 0f;
         var vertDist = 0f;
@@ -172,6 +146,32 @@ public class UnitGroup
     }
 
     public int GetMemberCount() => units.Count;
+
+    /*
+     * I honestly don't get it at all......
+     */
+    /*private void SquareFormationV2()
+    {
+        var dirRight = groupOrigin.right;
+        var dirForward = groupOrigin.forward;
+        var startPos = groupOrigin.position;
+        var x = -(units.Count / 10) / 2 - 1;
+        var z = -(units.Count / 10) / 2;
+
+        for (int i = 0; i < units.Count; i++)
+        {
+            x++;
+            if (x % 10 == 0)
+            {
+                x = 0;
+                z++;
+            }
+
+            var curPos = startPos + dirRight * x + dirForward * z;
+
+            units[i].GetComponent<Unit>().MoveToTarget(curPos);
+        }
+    }*/
 
     /*
      * Does not work because centerUnit rotation is not same as original leader rotation.
