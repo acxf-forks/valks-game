@@ -241,14 +241,15 @@ public class EntitySelector : MonoBehaviour
         if (!selectedEntities.ContainsKey(id))
         {
             selectedEntities.Add(id, go);
-            go.GetComponent<Renderer>().material.color = Color.green;
+
+            go.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
             go.GetComponent<Unit>().selected = true;
         }
     }
 
     private void Deselect(GameObject go)
     {
-        selectedEntities[go.GetInstanceID()].GetComponent<Renderer>().material.color = Color.red;
+        selectedEntities[go.GetInstanceID()].GetComponent<Renderer>().material.SetColor("_Color", Color.red);
         selectedEntities[go.GetInstanceID()].GetComponent<Unit>().selected = false;
         selectedEntities.Remove(go.GetInstanceID());
     }
