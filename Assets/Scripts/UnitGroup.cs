@@ -58,6 +58,7 @@ public class UnitGroup
 
             if (Vector3.Distance(groupOrigin.position, target) < 1) 
             {
+                // Additional logic needed eventually.
                 unitGroupTask = UnitGroupTask.Idle;
             }
         } 
@@ -182,6 +183,39 @@ public class UnitGroup
     }
 
     /*
+     * Does not work because centerUnit rotation is not same as original leader rotation.
+     */
+    private void FollowCenterUnit(Transform centerUnit, int n = 0, int horzDir = 1, int rows = 0) 
+    {
+        if (n % 3 == 0 && n != 0) 
+        {
+            centerUnit = units[n - 3].transform;
+            horzDir = -horzDir;
+        }
+
+        /*if (n % 6 == 0 && n != 0) 
+        {
+            rows++;
+        }*/
+
+        // Position
+        var horz = centerUnit.right * horzDir * distanceBetweenAgents;
+        var vert = centerUnit.forward * -1 * rows * distanceBetweenAgents;
+        var pos = centerUnit.position + horz + vert;
+
+        // Snap back to planets surface
+        var newGravityUp = (pos - planet.position).normalized * (planetRadius + 1);
+        pos = newGravityUp;
+
+        if (n + 1 >= units.Count)
+            return;
+
+        units[n + 1].GetComponent<Unit>().MoveToTarget(pos);
+
+        FollowCenterUnit(units[n + 1].transform, n + 1, horzDir, rows);
+    }
+
+    /*
      * I honestly don't get it at all......
      */
     /*private void SquareFormationV2()
@@ -205,39 +239,6 @@ public class UnitGroup
 
             units[i].GetComponent<Unit>().MoveToTarget(curPos);
         }
-    }*/
-
-    /*
-     * Does not work because centerUnit rotation is not same as original leader rotation.
-     */
-    /*private void FollowCenterUnit(Transform centerUnit, int n = 0, int horzDir = 1, int rows = 0) 
-    {
-        if (n % 3 == 0 && n != 0) 
-        {
-            centerUnit = units[n - 3].transform;
-            horzDir = -horzDir;
-        }
-
-        if (n % 6 == 0 && n != 0) 
-        {
-            rows++;
-        }
-
-        // Position
-        var horz = centerUnit.right * horzDir * distanceBetweenAgents;
-        var vert = centerUnit.forward * -1 * rows * distanceBetweenAgents;
-        var pos = centerUnit.position + horz + vert;
-
-        // Snap back to planets surface
-        var newGravityUp = (pos - planet.position).normalized * (planetRadius + 1);
-        pos = newGravityUp;
-
-        if (n + 1 >= units.Count)
-            return;
-
-        units[n + 1].GetComponent<Unit>().MoveToTarget(pos);
-
-        FollowCenterUnit(units[n + 1].transform, n + 1, horzDir, rows);
     }*/
 
     /*
