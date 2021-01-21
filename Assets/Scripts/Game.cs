@@ -18,7 +18,7 @@ public class Game : MonoBehaviour
         var camera = cameraGo.AddComponent<CameraController>();
 
         // Create planet
-        var planetGo = new GameObject();
+        /*var planetGo = new GameObject();
         var planet = planetGo.AddComponent<PlanetIco>();
         planet.planetName = "Yomolla";
         planet.radius = planetRadius;
@@ -40,7 +40,7 @@ public class Game : MonoBehaviour
         
         // Create entity selector
         var entitySelector = gameObject.AddComponent<EntitySelector>();
-        entitySelector.planet = planetGo;
+        entitySelector.planet = planetGo;*/
     }
 
     private void Update()

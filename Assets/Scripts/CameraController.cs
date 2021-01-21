@@ -31,7 +31,6 @@ public class CameraController : MonoBehaviour
         gameObject.tag = "MainCamera"; // This is the main camera
         gameObject.name = "Main Camera";
 
-
         targetDistanceFromPlanet = distanceFromPlanetSurface;
     }
 
@@ -62,10 +61,10 @@ public class CameraController : MonoBehaviour
         previousPosition = cam.ScreenToViewportPoint(Input.mousePosition);
 
         // Recalculate position
-        cam.transform.position = planet.position;
-        cam.transform.Translate(new Vector3(0, 0, -planetScript.radius - distanceFromPlanetSurface));
+        //cam.transform.position = planet.position;
+        //cam.transform.Translate(new Vector3(0, 0, -planetScript.radius - distanceFromPlanetSurface));
 
-        cam.farClipPlane = distanceFromPlanetSurface + planetScript.radius;
+        //cam.farClipPlane = distanceFromPlanetSurface + planetScript.radius;
     }
 
     public void FocusOnPlanet(GameObject planetGo) 

@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 093f11a834446554795956f7e1e3f11c, type: 3}
+  m_Name: Earth Shape
+  m_EditorClassIdentifier: 
+  radius: 20
+  resolution: 38
+  noiseSettings:
+  - filterType: 0
+    simpleNoiseSettings:
+      enabled: 1
+      strength: 0.79
+      numLayers: 2
+      baseRoughness: 1.19
+      roughness: 0
+      persistence: 0
+      minValue: 0.65
+      centre: {x: 0, y: 0, z: 0}
+    ridgidNoiseSettings:
+      enabled: 0
+      strength: 0
+      numLayers: 0
+      baseRoughness: 0
+      roughness: 0
+      persistence: 0
+      minValue: 0
+      centre: {x: 0, y: 0, z: 0}
+      weightMultiplier: 0
+  - filterType: 0
+    simpleNoiseSettings:
+      enabled: 1
+      strength: 2
+      numLayers: 2
+      baseRoughness: 3.08
+      roughness: 0
+      persistence: 0
+      minValue: 0.7
+      centre: {x: 0, y: 0, z: 0}
+    ridgidNoiseSettings:
+      enabled: 0
+      strength: 0
+      numLayers: 0
+      baseRoughness: 0
+      roughness: 0
+      persistence: 0
+      minValue: 0
+      centre: {x: 0, y: 0, z: 0}
+      weightMultiplier: 0
