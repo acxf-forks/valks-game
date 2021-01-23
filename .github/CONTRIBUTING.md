@@ -28,4 +28,9 @@ Current project Unity version `2020.2.1f1`, if there is a newer version of Unity
 ```
 
 ## Generating Documentation
+Make sure [Doxygen](https://www.doxygen.nl/index.html) is installed and added to your environment path.
+
 Run `.github/UPDATE-DOCUMENTATION.cmd` after all your initial commits then push.
+
+## Documentation
+Documentation can be found [here](https://valks-games.github.io/valks-game/html/index.html).
