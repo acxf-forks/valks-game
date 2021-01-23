@@ -20,6 +20,9 @@ public class PlanetIco : MonoBehaviour
 	private List<Vector3> vertList;
 	private List<int> triList;
 	private List<TriangleIndices> faces;
+	private Vector2[] UVs;
+	private Vector3[] normales;
+	private Color[] colors;
 
 	private void Awake()
     {
@@ -31,7 +34,7 @@ public class PlanetIco : MonoBehaviour
 		gameObject.layer = LayerMask.NameToLayer("Planets");
 		gameObject.name = $"({++planetCount}) Planet - " + planetName;
 
-		GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/Planet Shader");
+		GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/Planet");
 		GenerateMesh();
 
 		//gameObject.AddComponent<SphereCollider>();
@@ -39,7 +42,39 @@ public class PlanetIco : MonoBehaviour
 		collider.sharedMesh = mesh;
 	}
 
-	private void GenerateMesh()
+	[Range(0, 1)]
+	public float baseRoughness = 1f;
+	public int numLayers = 2;
+	public Vector3 centre = new Vector3(0, 0, 0);
+	public float roughness = 1f;
+	public float persistence = 1f;
+	public float minValue = 1f;
+	public float strength = 1f;
+
+	public float Evaluate(Noise noise, Vector3 point)
+	{
+		float noiseValue = 0;
+		float frequency = baseRoughness;
+		float amplitude = 1;
+
+		for (int i = 0; i < numLayers; i++)
+		{
+			float v = noise.Evaluate(point * frequency + centre);
+			noiseValue += (v + 1) * .5f * amplitude;
+			frequency *= roughness;
+			amplitude *= persistence;
+		}
+
+		noiseValue = noiseValue - minValue;
+		return noiseValue * strength;
+	}
+
+	private void OnValidate()
+    {
+		GenerateMesh();
+    }
+
+    private void GenerateMesh()
 	{
 		mesh = GetComponent<MeshFilter>().mesh;
 		mesh.Clear();
@@ -50,6 +85,24 @@ public class PlanetIco : MonoBehaviour
 		CreateUVs();
 		CreateNormals();
 		CreateColors();
+
+		Noise noise = new Noise();
+
+		
+
+		for (int i = 0; i < vertList.Count; i++) 
+		{
+			float elevation = Mathf.Max(0, Evaluate(noise, vertList[i]));
+			elevation = radius * (1 + elevation);
+
+			vertList[i] = vertList[i] * elevation;
+		}
+
+		mesh.vertices = vertList.ToArray();
+		mesh.triangles = triList.ToArray();
+		mesh.uv = UVs;
+		mesh.normals = normales;
+		mesh.colors = colors;
 
 		mesh.RecalculateBounds();
 		mesh.Optimize();
@@ -136,27 +189,19 @@ public class PlanetIco : MonoBehaviour
 			faces = faces2;
 		}
 
-		mesh.vertices = vertList.ToArray();
-
 		triList = new List<int>();
-		UpdateFaces();
-	}
-
-	private void UpdateFaces() 
-	{
 		for (int i = 0; i < faces.Count; i++)
 		{
 			triList.Add(faces[i].v1);
 			triList.Add(faces[i].v2);
 			triList.Add(faces[i].v3);
 		}
-		mesh.triangles = triList.ToArray();
 	}
 
 	private void CreateUVs() 
 	{
 		var nVertices = mesh.vertices;
-		Vector2[] UVs = new Vector2[nVertices.Length];
+		UVs = new Vector2[nVertices.Length];
 
 		for (var i = 0; i < nVertices.Length; i++)
 		{
@@ -166,24 +211,20 @@ public class PlanetIco : MonoBehaviour
 			ICOuv.y = (Mathf.Acos(unitVector.y) + Mathf.PI) / Mathf.PI - 1;
 			UVs[i] = new Vector2(ICOuv.x, ICOuv.y);
 		}
-
-		mesh.uv = UVs;
 	}
 
 	private void CreateNormals() 
 	{
-		Vector3[] normales = new Vector3[vertList.Count];
+		normales = new Vector3[vertList.Count];
 		for (int i = 0; i < normales.Length; i++)
 			normales[i] = vertList[i].normalized;
-
-		mesh.normals = normales;
 	}
 
 	private void CreateColors() 
 	{
 		bool test = false;
 
-		Color[] colors = new Color[mesh.vertexCount];
+		colors = new Color[mesh.vertexCount];
 		for (int i = 0; i < colors.Length / 3; i++)
 		{
 			if (test)
@@ -201,8 +242,6 @@ public class PlanetIco : MonoBehaviour
 
 			test = !test;
 		}
-
-		mesh.colors = colors;
 	}
 
 	private struct TriangleIndices

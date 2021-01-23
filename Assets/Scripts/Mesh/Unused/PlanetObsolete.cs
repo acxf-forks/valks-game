@@ -88,7 +88,7 @@ public class PlanetObsolete : MonoBehaviour
             new Vector3(-t, 0, 1).normalized * radius
         };
 
-        var subdivisions = 5;
+        var subdivisions = 4;
 
         SubdivideFace(0, 5, 11, subdivisions);
         SubdivideFace(0, 1, 5, subdivisions);
