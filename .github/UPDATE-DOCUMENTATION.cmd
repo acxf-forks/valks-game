@@ -2,7 +2,6 @@
 cd ..
 doxygen
 git add docs/\*
-cls
 git commit -m "Update Documentation"
 echo.
 echo.
