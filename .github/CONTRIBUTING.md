@@ -15,6 +15,17 @@ Current project Unity version `2020.2.1f1`, if there is a newer version of Unity
 2. State all the changes you made in the PR, not everyone will understand what you've done!
 
 ## Coding Style
-- Please make both Public and Private variables camelCase.
+### Generic
 - Methods should follow PascalFormat
-- Please keep accessor and mutator methods at bottom of classes.
+- Try to keep accessor and mutator methods at bottom of classes.
+### Comments
+```cs
+/*!
+ * This is a function.
+ * 
+ * @return Returns this.
+ */
+```
+
+## Generating Documentation
+Run `.github/UPDATE-DOCUMENTATION.cmd` after all your initial commits then push.
