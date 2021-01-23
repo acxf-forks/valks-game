@@ -6,6 +6,7 @@ Current project Unity version `2020.2.1f1`, if there is a newer version of Unity
 - Methods should follow PascalFormat
 - Try to keep accessor and mutator methods at bottom of classes.
 ### Comments
+Start comments with `/*!` so Doxygen can recognize them.
 ```cs
 /*!
  * This is a function.
