@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 093f11a834446554795956f7e1e3f11c, type: 3}
   m_Name: Earth Shape
   m_EditorClassIdentifier: 
-  radius: 20
+  radius: 5.1
   resolution: 38
   noiseSettings:
   - filterType: 0
