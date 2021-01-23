@@ -284,14 +284,14 @@ public class EntitySelector : MonoBehaviour
         }
     }
 
-    public static void DrawScreenRect(Rect rect, Color color)
+    private void DrawScreenRect(Rect rect, Color color)
     {
         GUI.color = color;
         GUI.DrawTexture(rect, WhiteTexture);
         GUI.color = Color.white;
     }
 
-    public static void DrawScreenRectBorder(Rect rect, float thickness, Color color)
+    private void DrawScreenRectBorder(Rect rect, float thickness, Color color)
     {
         // Top
         DrawScreenRect(new Rect(rect.xMin, rect.yMin, rect.width, thickness), color);
@@ -306,7 +306,7 @@ public class EntitySelector : MonoBehaviour
     /*
      * I do not fully understand this function copied from Unity RTS Selection Tutorial https://www.youtube.com/watch?v=OL1QgwaDsqo
      */
-    public static Rect GetScreenRect(Vector3 screenPosition1, Vector3 screenPosition2)
+    private Rect GetScreenRect(Vector3 screenPosition1, Vector3 screenPosition2)
     {
         // Move origin from bottom left to top left
         screenPosition1.y = Screen.height - screenPosition1.y;
@@ -322,7 +322,7 @@ public class EntitySelector : MonoBehaviour
      * Create a bounding box (4 cornersScreenSpace in order) from the start and end mouse position
      * I do not fully understand this function copied from Unity RTS Selection Tutorial https://www.youtube.com/watch?v=OL1QgwaDsqo
      */
-    Vector2[] GetBoundingBox(Vector2 p1, Vector2 p2)
+    private Vector2[] GetBoundingBox(Vector2 p1, Vector2 p2)
     {
         Vector2 newP1;
         Vector2 newP2;
@@ -370,8 +370,8 @@ public class EntitySelector : MonoBehaviour
 
     }
 
-    static Texture2D _whiteTexture;
-    public static Texture2D WhiteTexture
+    private Texture2D _whiteTexture;
+    private Texture2D WhiteTexture
     {
         get
         {
