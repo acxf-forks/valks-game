@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlanetF : MonoBehaviour
+public class Planet : MonoBehaviour
 {
-    public PlanetSettingsF planetSettings;
+    public PlanetSettings planetSettings;
     private static int planetCount = 0;
 
     private void Awake()
@@ -22,7 +22,7 @@ public class PlanetF : MonoBehaviour
     private void GeneratePlanet() 
     {
         gameObject.name = $"({planetCount}) Planet - " + planetSettings.name;
-        new PlanetMeshF().Create(this, planetSettings);
+        new PlanetMeshChunkGenerator().Create(this, planetSettings);
     }
 
     /*!

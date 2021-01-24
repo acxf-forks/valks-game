@@ -18,7 +18,7 @@ public class CameraController : MonoBehaviour
     [Range(0.0f, 1.0f)]
     public float scrollSpeed = .1f;
 
-    private PlanetIco planetScript;
+    private Planet planetScript;
     private Vector3 previousPosition;
     private Camera cam;
 
@@ -70,7 +70,7 @@ public class CameraController : MonoBehaviour
     public void FocusOnPlanet(GameObject planetGo) 
     {
         planet = planetGo.transform;
-        planetScript = planet.GetComponent<PlanetIco>();
-        cam.transform.Translate(new Vector3(0, 0, -planetScript.radius - distanceFromPlanetSurface));
+        planetScript = planet.GetComponent<Planet>();
+        cam.transform.Translate(new Vector3(0, 0, -planetScript.planetSettings.radius - distanceFromPlanetSurface));
     }
 }

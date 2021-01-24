@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class PlanetMeshChunkF : MonoBehaviour
+public class PlanetMeshChunk : MonoBehaviour
 {
     private List<Vector3> vertices;
     private List<int> triangles;
@@ -12,12 +12,12 @@ public class PlanetMeshChunkF : MonoBehaviour
 
     private static int count = 0;
 
-    public void Create(PlanetSettingsF settings, int a, int b, int c) 
+    public void Create(PlanetSettings settings, int a, int b, int c) 
     {
         count++;
         gameObject.name = $"Chunk {count}";
         GetComponent<MeshRenderer>().material = settings.material;
-        var baseFormVertices = PlanetMeshF.baseFormVertices;
+        var baseFormVertices = PlanetMeshChunkGenerator.baseFormVertices;
         vertices = new List<Vector3> { baseFormVertices[a], baseFormVertices[b], baseFormVertices[c] };
         triangles = new List<int>();
         triangles.AddRange(new List<int> { 0, 1, 2 });

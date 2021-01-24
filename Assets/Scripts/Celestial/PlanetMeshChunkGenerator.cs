@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlanetMeshF
+public class PlanetMeshChunkGenerator
 {
     public static List<Vector3> baseFormVertices;
 
-    private PlanetSettingsF settings;
-    private PlanetF planet;
+    private PlanetSettings settings;
+    private Planet planet;
 
-    public void Create(PlanetF planet, PlanetSettingsF settings)
+    public void Create(Planet planet, PlanetSettings settings)
     {
         this.planet = planet;
         this.settings = settings;
@@ -77,7 +77,7 @@ public class PlanetMeshF
         chunkObj.transform.parent = planet.transform;
 
         // Add PlanetMeshChunk script to chunk gameObject
-        var chunkScript = chunkObj.AddComponent<PlanetMeshChunkF>();
+        var chunkScript = chunkObj.AddComponent<PlanetMeshChunk>();
         chunkScript.Create(settings, a, b, c);
     }
 }
