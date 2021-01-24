@@ -76,7 +76,7 @@ public class PlanetIco : MonoBehaviour
 
     private void GenerateMesh()
 	{
-		mesh = GetComponent<MeshFilter>().mesh;
+		mesh = GetComponent<MeshFilter>().sharedMesh;
 		mesh.Clear();
 		mesh.name = gameObject.name;
 
