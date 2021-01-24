@@ -12,13 +12,14 @@ public class PlanetMeshChunk : MonoBehaviour
 
     private static int count = 0;
 
-    public void Create(PlanetSettings settings, int a, int b, int c) 
+    public void Create(PlanetSettings settings, List<Vector3> vertices) 
     {
+        this.vertices = vertices;
+
         count++;
         gameObject.name = $"Chunk {count}";
         GetComponent<MeshRenderer>().material = settings.material;
-        var baseFormVertices = PlanetMeshChunkGenerator.baseFormVertices;
-        vertices = new List<Vector3> { baseFormVertices[a], baseFormVertices[b], baseFormVertices[c] };
+        vertices = new List<Vector3> { vertices[0], vertices[1], vertices[2] };
         triangles = new List<int>();
         triangles.AddRange(new List<int> { 0, 1, 2 });
 
@@ -27,4 +28,6 @@ public class PlanetMeshChunk : MonoBehaviour
         mesh.triangles = triangles.ToArray();
         mesh.RecalculateNormals();
     }
+
+    public Vector3 GetCenterPoint() => PlanetUtils.GetCenterPoint(vertices[0], vertices[1], vertices[2]);
 }

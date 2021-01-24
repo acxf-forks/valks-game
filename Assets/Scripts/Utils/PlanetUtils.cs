@@ -4,14 +4,14 @@ using UnityEngine;
 
 public static class PlanetUtils
 {
-    /*
+    /*!
      * Calculate the gravityUp with respect to the given transform.
      */
     public static Vector3 GravityUp(Transform transform, Transform planet) => (transform.position - planet.position).normalized;
 
-    /*
-        * Look at a given target with respect to the planets surface.
-        */
+    /*!
+     * Look at a given target with respect to the planets surface.
+     */
     public static void LookAtTarget(Transform transform, Transform planet, Vector3 target) 
     {
         var gravityUp = GravityUp(transform, planet);
@@ -21,7 +21,7 @@ public static class PlanetUtils
             transform.rotation = Quaternion.LookRotation(forward, gravityUp);
     }
 
-    /*
+    /*!
      * Align a transform to planets surface and rotate towards a specific target on that planet surface.
      */
     public static void AlignToPlanetSurface(Transform transform, Transform planet)
@@ -38,7 +38,7 @@ public static class PlanetUtils
         return SphericalToCartesian(sphericalCoord.x, sphericalCoord.y, sphericalCoord.z);
     }
 
-    /*
+    /*!
      * Returns new Vector3(x, y, z)
      */
     public static Vector3 SphericalToCartesian(float radius, float polar, float azimuthal)
@@ -53,7 +53,7 @@ public static class PlanetUtils
         return result;
     }
 
-    /*
+    /*!
      * Returns new Vector3(radius, polar, azimuthal)
      */
     public static Vector3 CartesianToSpherical(Vector3 cartCoords)
@@ -73,4 +73,9 @@ public static class PlanetUtils
         Vector3 result = new Vector3(radius, polar, azimuthal);
         return result;
     }
+
+    /*!
+     * Gets the center point given 3 vertices.
+     */
+    public static Vector3 GetCenterPoint(Vector3 a, Vector3 b, Vector3 c) => (a + b + c) / 3;
 }
