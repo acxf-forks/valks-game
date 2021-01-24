@@ -78,4 +78,9 @@ public static class PlanetUtils
      * Gets the center point given 3 vertices.
      */
     public static Vector3 GetCenterPoint(Vector3 a, Vector3 b, Vector3 c) => (a + b + c) / 3;
+
+    /*!
+     * Returns the midpoint given two given vertices.
+     */
+    public static Vector3 GetMidPointVertex(Vector3 a, Vector3 b) => (a + b) / 2;
 }

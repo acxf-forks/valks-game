@@ -7,8 +7,10 @@ public class PlanetMeshChunkRenderer
     private List<Vector3> baseFormVertices;
     private List<PlanetMeshChunk> chunks;
 
-    private PlanetSettings settings;
+    public PlanetSettings settings;
     private Planet planet;
+
+    public List<Vector3> planetVertices;
 
     private GameObject test;
 
@@ -40,6 +42,7 @@ public class PlanetMeshChunkRenderer
         };
 
         chunks = new List<PlanetMeshChunk>();
+        planetVertices = new List<Vector3>();
 
         HandleBaseFormFaces();
     }
@@ -93,9 +96,9 @@ public class PlanetMeshChunkRenderer
      */
     private void GenerateChunks(List<Vector3> vertices, int n)
     {
-        vertices.Add(GetMidPointVertex(vertices[0], vertices[1])); // Right Middle (3)
-        vertices.Add(GetMidPointVertex(vertices[1], vertices[2])); // Bottom Middle (4)
-        vertices.Add(GetMidPointVertex(vertices[2], vertices[0])); // Left middle (5)
+        vertices.Add(PlanetUtils.GetMidPointVertex(vertices[0], vertices[1])); // Right Middle (3)
+        vertices.Add(PlanetUtils.GetMidPointVertex(vertices[1], vertices[2])); // Bottom Middle (4)
+        vertices.Add(PlanetUtils.GetMidPointVertex(vertices[2], vertices[0])); // Left middle (5)
 
         // Only draw the last recursion
         if (n == 1) 
@@ -114,18 +117,6 @@ public class PlanetMeshChunkRenderer
         GenerateChunks(new List<Vector3> { vertices[3], vertices[1], vertices[4] }, n - 1); // Bottom Right
     }
 
-    /*!
-     * Returns the midpoint given two given vertices.
-     */
-    private Vector3 GetMidPointVertex(Vector3 a, Vector3 b)
-    {
-        // Calculate midpoint
-        var midpoint = (a + b) / 2;
-
-        // Normalized will project the midpoints onto a icosphere (with a radius of 1)
-        return midpoint;
-    }
-
     private void GenerateChunk(List<Vector3> vertices) 
     {
         // Create chunk gameObject
@@ -136,7 +127,7 @@ public class PlanetMeshChunkRenderer
 
         // Add PlanetMeshChunk script to chunk gameObject
         var chunk = chunkObj.AddComponent<PlanetMeshChunk>();
-        chunk.Create(settings, vertices);
+        chunk.Create(this, vertices);
         chunks.Add(chunk);
     }
 }
