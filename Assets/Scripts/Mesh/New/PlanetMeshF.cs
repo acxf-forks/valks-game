@@ -12,6 +12,7 @@ public class PlanetMeshF
     public void Create(PlanetF planet, PlanetSettingsF settings)
     {
         this.planet = planet;
+        this.settings = settings;
 
         var radius = settings.radius;
         var t = (1.0f + Mathf.Sqrt(5.0f)) / 2.0f;
@@ -60,10 +61,11 @@ public class PlanetMeshF
         GenerateChunks(9, 8, 1);
     }
 
-    private void GenerateChunks(int a, int b, int c)
+    private void GenerateChunks(int a, int b, int c, int n = 0)
     {
         var numChunks = settings.chunks;
         GenerateChunk(a, b, c);
+
     }
 
     private void GenerateChunk(int a, int b, int c) 
@@ -76,6 +78,6 @@ public class PlanetMeshF
 
         // Add PlanetMeshChunk script to chunk gameObject
         var chunkScript = chunkObj.AddComponent<PlanetMeshChunkF>();
-        chunkScript.Create(a, b, c);
+        chunkScript.Create(settings, a, b, c);
     }
 }
