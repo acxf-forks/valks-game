@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['limitfps_45',['LimitFPS',['../class_limit_f_p_s.html',1,'']]]
+  ['minmax_28',['MinMax',['../class_min_max.html',1,'']]]
 ];

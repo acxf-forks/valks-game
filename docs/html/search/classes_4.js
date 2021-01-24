@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['keepscenealive_44',['KeepSceneAlive',['../class_keep_scene_alive.html',1,'']]]
+  ['limitfps_27',['LimitFPS',['../class_limit_f_p_s.html',1,'']]]
 ];

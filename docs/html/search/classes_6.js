@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['minmax_46',['MinMax',['../class_min_max.html',1,'']]]
+  ['noise_29',['Noise',['../class_noise.html',1,'']]]
 ];
