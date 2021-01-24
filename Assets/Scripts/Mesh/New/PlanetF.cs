@@ -22,8 +22,6 @@ public class PlanetF : MonoBehaviour
     private void GeneratePlanet() 
     {
         gameObject.name = $"({planetCount}) Planet - " + planetSettings.name;
-        GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/Planet");
-
         new PlanetMeshF().Create(this, planetSettings);
     }
 
