@@ -12,9 +12,8 @@ public class PlanetF : MonoBehaviour
         planetCount++;
     }
 
-    private void OnValidate()
+    private void Start()
     {
-
         planetSettings.chunks = ValidateChunkCount(planetSettings.chunks);
 
         GeneratePlanet();
@@ -25,7 +24,7 @@ public class PlanetF : MonoBehaviour
         gameObject.name = $"({planetCount}) Planet - " + planetSettings.name;
         GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/Planet");
 
-        new PlanetMeshF().Create(planetSettings);
+        new PlanetMeshF().Create(this, planetSettings);
     }
 
     /*!
