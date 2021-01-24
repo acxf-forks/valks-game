@@ -1,8 +1,10 @@
+# TODO: Give feedback to user if they have not installed Doxygen / have not put Doxygen in their environment path.
+# TODO: Only git add docs/\* when there are actually changes. Otherwise give feedback to the user that no changes needed to be made.
+# TODO: Add cls and give better feedback to the user.
 @echo off
 cd ..
 doxygen
 git add docs/\*
-cls
 git commit -m "Update Documentation"
 echo.
 echo.
