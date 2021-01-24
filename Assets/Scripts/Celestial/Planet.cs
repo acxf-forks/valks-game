@@ -22,7 +22,7 @@ public class Planet : MonoBehaviour
     private void GeneratePlanet() 
     {
         gameObject.name = $"({planetCount}) Planet - " + planetSettings.name;
-        new PlanetMeshChunkGenerator().Create(this, planetSettings);
+        new PlanetMeshChunkGenerator(this, planetSettings);
     }
 
     /*!

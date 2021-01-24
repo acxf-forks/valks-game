@@ -9,7 +9,7 @@ public class PlanetMeshChunkGenerator
     private PlanetSettings settings;
     private Planet planet;
 
-    public void Create(Planet planet, PlanetSettings settings)
+    public PlanetMeshChunkGenerator(Planet planet, PlanetSettings settings) 
     {
         this.planet = planet;
         this.settings = settings;
