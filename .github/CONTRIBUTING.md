@@ -5,6 +5,8 @@ Current project Unity version `2020.2.1f1`, if there is a newer version of Unity
 ### Generic
 - Methods should follow PascalFormat
 - Try to keep accessor and mutator methods at bottom of classes.
+### Properties
+- Use a `_` in front of all properties in methods and constructors.
 ### Comments
 Start comments with `/*!` so Doxygen can recognize them.
 ```cs
