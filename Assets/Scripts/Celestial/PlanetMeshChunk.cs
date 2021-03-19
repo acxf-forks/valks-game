@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
@@ -23,7 +24,7 @@ public class PlanetMeshChunk : MonoBehaviour
         vertices = new List<Vector3> { _vertices[0], _vertices[1], _vertices[2] };
         triangles = new List<int>();
 
-        SubdivideFace(0, 1, 2, 2);
+        SubdivideFace(0, 1, 2, _renderer.settings.chunkTriangles);
 
         var planetRadius = _renderer.settings.radius;
         var amplitude = 1.0f;
@@ -40,7 +41,8 @@ public class PlanetMeshChunk : MonoBehaviour
         mesh = GetComponent<MeshFilter>().mesh;
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
-        mesh.RecalculateNormals();
+        mesh.normals = vertices.Select(s => s.normalized).ToArray();
+        //mesh.RecalculateNormals();
     }
 
     /*!

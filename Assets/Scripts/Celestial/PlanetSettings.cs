@@ -14,6 +14,10 @@ public class PlanetSettings
     [Range(1, 3)]
     public int chunks = 1;
 
+    [Tooltip("The number of triangle recursions per chunk.")]
+    [Range(1, 3)]
+    public int chunkTriangles = 1;
+
     [Tooltip("The material of the planet.")]
     public Material material;
 }
