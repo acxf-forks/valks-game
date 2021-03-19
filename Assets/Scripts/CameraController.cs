@@ -67,9 +67,9 @@ public class CameraController : MonoBehaviour
         //cam.farClipPlane = distanceFromPlanetSurface + planetScript.radius;
     }
 
-    public void FocusOnPlanet(GameObject planetGo) 
+    public void FocusOnPlanet(GameObject _planetGo) 
     {
-        planet = planetGo.transform;
+        planet = _planetGo.transform;
         planetScript = planet.GetComponent<Planet>();
         cam.transform.Translate(new Vector3(0, 0, -planetScript.planetSettings.radius - distanceFromPlanetSurface));
     }

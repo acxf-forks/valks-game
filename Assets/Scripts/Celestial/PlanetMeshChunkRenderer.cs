@@ -11,15 +11,18 @@ public class PlanetMeshChunkRenderer
     private Planet planet;
 
     public List<Vector3> planetVertices;
+    public Noise noise;
 
     private GameObject test;
 
-    public PlanetMeshChunkRenderer(Planet planet, PlanetSettings settings) 
+    public PlanetMeshChunkRenderer(Planet _planet, PlanetSettings _settings) 
     {
         test = GameObject.Find("Test");
 
-        this.planet = planet;
-        this.settings = settings;
+        planet = _planet;
+        settings = _settings;
+
+        noise = new Noise();
 
         var radius = settings.radius;
         var t = (1.0f + Mathf.Sqrt(5.0f)) / 2.0f;
@@ -47,7 +50,7 @@ public class PlanetMeshChunkRenderer
         HandleBaseFormFaces();
     }
 
-    public void RenderNearbyChunks(float distance) 
+    public void RenderNearbyChunks(float _distance) 
     {
         if (chunks == null || chunks.Count == 0)
             return;
@@ -55,7 +58,7 @@ public class PlanetMeshChunkRenderer
         // Check which chunks to render
         for (int i = 0; i < chunks.Count; i++)
         {
-            if (Vector3.Distance(chunks[i].GetCenterPoint(), test.transform.position) < distance)
+            if (Vector3.Distance(chunks[i].GetCenterPoint(), test.transform.position) < _distance)
             {
                 chunks[i].gameObject.SetActive(true);
             }
@@ -94,30 +97,30 @@ public class PlanetMeshChunkRenderer
     /*!
      * The number of chunk recursions per base face.
      */
-    private void GenerateChunks(List<Vector3> vertices, int n)
+    private void GenerateChunks(List<Vector3> _vertices, int n)
     {
-        vertices.Add(PlanetUtils.GetMidPointVertex(vertices[0], vertices[1])); // Right Middle (3)
-        vertices.Add(PlanetUtils.GetMidPointVertex(vertices[1], vertices[2])); // Bottom Middle (4)
-        vertices.Add(PlanetUtils.GetMidPointVertex(vertices[2], vertices[0])); // Left middle (5)
+        _vertices.Add(PlanetUtils.GetMidPointVertex(_vertices[0], _vertices[1])); // Right Middle (3)
+        _vertices.Add(PlanetUtils.GetMidPointVertex(_vertices[1], _vertices[2])); // Bottom Middle (4)
+        _vertices.Add(PlanetUtils.GetMidPointVertex(_vertices[2], _vertices[0])); // Left middle (5)
 
         // Only draw the last recursion
         if (n == 1) 
         {
-            GenerateChunk(new List<Vector3> { vertices[0], vertices[3], vertices[5] }); // Top
-            GenerateChunk(new List<Vector3> { vertices[5], vertices[4], vertices[2] }); // Bottom Left
-            GenerateChunk(new List<Vector3> { vertices[4], vertices[5], vertices[3] }); // Bottom Middle
-            GenerateChunk(new List<Vector3> { vertices[3], vertices[1], vertices[4] }); // Bottom Right
+            GenerateChunk(new List<Vector3> { _vertices[0], _vertices[3], _vertices[5] }); // Top
+            GenerateChunk(new List<Vector3> { _vertices[5], _vertices[4], _vertices[2] }); // Bottom Left
+            GenerateChunk(new List<Vector3> { _vertices[4], _vertices[5], _vertices[3] }); // Bottom Middle
+            GenerateChunk(new List<Vector3> { _vertices[3], _vertices[1], _vertices[4] }); // Bottom Right
 
             return;
         }
 
-        GenerateChunks(new List<Vector3> { vertices[0], vertices[3], vertices[5] }, n - 1); // Top
-        GenerateChunks(new List<Vector3> { vertices[5], vertices[4], vertices[2] }, n - 1); // Bottom Left
-        GenerateChunks(new List<Vector3> { vertices[4], vertices[5], vertices[3] }, n - 1); // Bottom Middle
-        GenerateChunks(new List<Vector3> { vertices[3], vertices[1], vertices[4] }, n - 1); // Bottom Right
+        GenerateChunks(new List<Vector3> { _vertices[0], _vertices[3], _vertices[5] }, n - 1); // Top
+        GenerateChunks(new List<Vector3> { _vertices[5], _vertices[4], _vertices[2] }, n - 1); // Bottom Left
+        GenerateChunks(new List<Vector3> { _vertices[4], _vertices[5], _vertices[3] }, n - 1); // Bottom Middle
+        GenerateChunks(new List<Vector3> { _vertices[3], _vertices[1], _vertices[4] }, n - 1); // Bottom Right
     }
 
-    private void GenerateChunk(List<Vector3> vertices) 
+    private void GenerateChunk(List<Vector3> _vertices) 
     {
         // Create chunk gameObject
         var chunkObj = new GameObject();
@@ -127,7 +130,7 @@ public class PlanetMeshChunkRenderer
 
         // Add PlanetMeshChunk script to chunk gameObject
         var chunk = chunkObj.AddComponent<PlanetMeshChunk>();
-        chunk.Create(this, vertices);
+        chunk.Create(this, _vertices);
         chunks.Add(chunk);
     }
 }

@@ -12,21 +12,33 @@ public class PlanetMeshChunk : MonoBehaviour
 
     private static int count = 0;
 
-    public void Create(PlanetMeshChunkRenderer renderer, List<Vector3> vertices) 
+    public void Create(PlanetMeshChunkRenderer _renderer, List<Vector3> _vertices) 
     {
-        this.vertices = vertices;
+        vertices = _vertices;
 
         count++;
         gameObject.name = $"Chunk {count}";
         gameObject.SetActive(false);
-        GetComponent<MeshRenderer>().material = renderer.settings.material;
-        this.vertices = new List<Vector3> { vertices[0], vertices[1], vertices[2] };
+        GetComponent<MeshRenderer>().material = _renderer.settings.material;
+        vertices = new List<Vector3> { _vertices[0], _vertices[1], _vertices[2] };
         triangles = new List<int>();
 
         SubdivideFace(0, 1, 2, 2);
 
+        var planetRadius = _renderer.settings.radius;
+        var amplitude = 1.0f;
+
+        // Noise Generation
+        for (int i = 0; i < vertices.Count; i++)
+        {
+            // Normalize
+            vertices[i] = vertices[i].normalized * planetRadius;
+            var noise = Mathf.Max(planetRadius, planetRadius + _renderer.noise.Evaluate(vertices[i]) * amplitude);
+            vertices[i] = vertices[i] * noise;
+        }
+
         mesh = GetComponent<MeshFilter>().mesh;
-        mesh.vertices = this.vertices.ToArray();
+        mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
         mesh.RecalculateNormals();
     }
@@ -38,11 +50,11 @@ public class PlanetMeshChunk : MonoBehaviour
      * @param b - Bottom Right
      * @param c - Bottom Left
      */
-    private void SubdivideFace(int top, int bottomRight, int bottomLeft, int n)
+    private void SubdivideFace(int _top, int _bottomRight, int _bottomLeft, int n)
     {
-        vertices.Add(PlanetUtils.GetMidPointVertex(vertices[top], vertices[bottomRight]));
-        vertices.Add(PlanetUtils.GetMidPointVertex(vertices[bottomRight], vertices[bottomLeft]));
-        vertices.Add(PlanetUtils.GetMidPointVertex(vertices[bottomLeft], vertices[top]));
+        vertices.Add(PlanetUtils.GetMidPointVertex(vertices[_top], vertices[_bottomRight]));
+        vertices.Add(PlanetUtils.GetMidPointVertex(vertices[_bottomRight], vertices[_bottomLeft]));
+        vertices.Add(PlanetUtils.GetMidPointVertex(vertices[_bottomLeft], vertices[_top]));
 
         var middleRight = vertices.Count - 3;
         var middleBottom = vertices.Count - 2;
@@ -51,18 +63,18 @@ public class PlanetMeshChunk : MonoBehaviour
         // Only draw the last recursion
         if (n == 1)
         {
-            triangles.AddRange(new List<int> { top, middleRight, middleLeft }); // Upper Top
-            triangles.AddRange(new List<int> { middleLeft, middleBottom, bottomLeft }); // Lower Left
+            triangles.AddRange(new List<int> { _top, middleRight, middleLeft }); // Upper Top
+            triangles.AddRange(new List<int> { middleLeft, middleBottom, _bottomLeft }); // Lower Left
             triangles.AddRange(new List<int> { middleBottom, middleLeft, middleRight }); // Lower Mid
-            triangles.AddRange(new List<int> { middleRight, bottomRight, middleBottom }); // Lower Right
+            triangles.AddRange(new List<int> { middleRight, _bottomRight, middleBottom }); // Lower Right
 
             return;
         }
 
-        SubdivideFace(top, middleRight, middleLeft, n - 1);
-        SubdivideFace(middleLeft, middleBottom, bottomLeft, n - 1);
+        SubdivideFace(_top, middleRight, middleLeft, n - 1);
+        SubdivideFace(middleLeft, middleBottom, _bottomLeft, n - 1);
         SubdivideFace(middleBottom, middleLeft, middleRight, n - 1);
-        SubdivideFace(middleRight, bottomRight, middleBottom, n - 1);
+        SubdivideFace(middleRight, _bottomRight, middleBottom, n - 1);
     }
 
     public Vector3 GetCenterPoint() => PlanetUtils.GetCenterPoint(vertices[0], vertices[1], vertices[2]);
