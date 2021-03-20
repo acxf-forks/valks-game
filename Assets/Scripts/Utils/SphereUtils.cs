@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class PlanetUtils
+public static class SphereUtils
 {
     /*!
      * Calculate the gravityUp with respect to the given transform.
@@ -24,12 +24,12 @@ public static class PlanetUtils
     /*!
      * Align a transform to planets surface and rotate towards a specific target on that planet surface.
      */
-    public static void AlignToPlanetSurface(Transform transform, Transform planet)
+    public static void AlignToSphereSurface(Transform transform, Transform planet)
     {
         var gravityUp = GravityUp(transform, planet);
 
         // Snap back to planets surface
-        var planetRadius = planet.GetComponent<Planet>().planetSettings.radius;
+        var planetRadius = planet.GetComponent<Sphere>().sphereSettings.radius;
         transform.position = gravityUp * (planetRadius + 1);
     }
 

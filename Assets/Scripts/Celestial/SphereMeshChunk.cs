@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class PlanetMeshChunk : MonoBehaviour
+public class SphereMeshChunk : MonoBehaviour
 {
     private List<Vector3> vertices;
     private List<int> triangles;
@@ -13,7 +13,7 @@ public class PlanetMeshChunk : MonoBehaviour
 
     private static int count = 0;
 
-    public void Create(PlanetMeshChunkRenderer _renderer, List<Vector3> _vertices) 
+    public void Create(SphereMeshChunkRenderer _renderer, List<Vector3> _vertices) 
     {
         vertices = _vertices;
 
@@ -54,9 +54,9 @@ public class PlanetMeshChunk : MonoBehaviour
      */
     private void SubdivideFace(int _top, int _bottomRight, int _bottomLeft, int n)
     {
-        vertices.Add(PlanetUtils.GetMidPointVertex(vertices[_top], vertices[_bottomRight]));
-        vertices.Add(PlanetUtils.GetMidPointVertex(vertices[_bottomRight], vertices[_bottomLeft]));
-        vertices.Add(PlanetUtils.GetMidPointVertex(vertices[_bottomLeft], vertices[_top]));
+        vertices.Add(SphereUtils.GetMidPointVertex(vertices[_top], vertices[_bottomRight]));
+        vertices.Add(SphereUtils.GetMidPointVertex(vertices[_bottomRight], vertices[_bottomLeft]));
+        vertices.Add(SphereUtils.GetMidPointVertex(vertices[_bottomLeft], vertices[_top]));
 
         var middleRight = vertices.Count - 3;
         var middleBottom = vertices.Count - 2;
@@ -79,5 +79,5 @@ public class PlanetMeshChunk : MonoBehaviour
         SubdivideFace(middleRight, _bottomRight, middleBottom, n - 1);
     }
 
-    public Vector3 GetCenterPoint() => PlanetUtils.GetCenterPoint(vertices[0], vertices[1], vertices[2]);
+    public Vector3 GetCenterPoint() => SphereUtils.GetCenterPoint(vertices[0], vertices[1], vertices[2]);
 }

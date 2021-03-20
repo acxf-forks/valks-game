@@ -434,7 +434,7 @@ Transform:
   m_GameObject: {fileID: 1751311909}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 40, y: 40, z: 40}
+  m_LocalScale: {x: 20, y: 20, z: 20}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
@@ -450,7 +450,7 @@ GameObject:
   - component: {fileID: 1910900043}
   - component: {fileID: 1910900040}
   m_Layer: 0
-  m_Name: (0) Planet - Tester
+  m_Name: (1) Planet - Tester
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -468,12 +468,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fae2d876ed547d74296a3fda0f2d2db2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  planetSettings:
-    name: Tester
-    renderRadius: 50
-    radius: 20
-    chunks: 3
-    chunkTriangles: 2
+  sphereSettings:
+    name: 
+    renderRadius: 10
+    radius: 10
+    chunks: 1
+    chunkTriangles: 1
     material: {fileID: 2100000, guid: 638b547811a3fed489d7c8060aacb2a1, type: 2}
 --- !u!4 &1910900043
 Transform:

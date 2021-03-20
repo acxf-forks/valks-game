@@ -27,7 +27,7 @@ public class UnitGroup
     {
         this.units = units;
         this.planet = planet;
-        planetRadius = planet.GetComponent<Planet>().planetSettings.radius;
+        planetRadius = planet.GetComponent<Sphere>().sphereSettings.radius;
 
         // Initialize group origin, all units will align with respect to this origin
         groupOrigin = new GameObject().transform;
@@ -48,8 +48,8 @@ public class UnitGroup
     {
         if (unitGroupTask == UnitGroupTask.MoveToTarget) 
         {
-            PlanetUtils.AlignToPlanetSurface(groupOrigin, planet);
-            PlanetUtils.LookAtTarget(groupOrigin, planet, target);
+            SphereUtils.AlignToSphereSurface(groupOrigin, planet);
+            SphereUtils.LookAtTarget(groupOrigin, planet, target);
 
             AlignWithGroupOrigin();
 

@@ -12,7 +12,7 @@ public enum UnitTask
 public class Unit : MonoBehaviour
 {
     public Transform planet;
-    private Planet planetScript;
+    private Sphere planetScript;
 
     private float planetRadius;
 
@@ -39,8 +39,8 @@ public class Unit : MonoBehaviour
 
     private void Start()
     {
-        planetScript = planet.GetComponent<Planet>();
-        planetRadius = planetScript.planetSettings.radius;
+        planetScript = planet.GetComponent<Sphere>();
+        planetRadius = planetScript.sphereSettings.radius;
 
         transform.position = new Vector3(0, planetRadius + 1, 0);
 
@@ -56,8 +56,8 @@ public class Unit : MonoBehaviour
     private void Update()
     {
         //Separation();
-        PlanetUtils.AlignToPlanetSurface(transform, planet);
-        PlanetUtils.LookAtTarget(transform, planet, target);
+        SphereUtils.AlignToSphereSurface(transform, planet);
+        SphereUtils.LookAtTarget(transform, planet, target);
 
         if (unitTask == UnitTask.MoveToTarget)
         {

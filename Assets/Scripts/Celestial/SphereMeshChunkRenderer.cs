@@ -2,20 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlanetMeshChunkRenderer
+public class SphereMeshChunkRenderer
 {
     private List<Vector3> baseFormVertices;
-    private List<PlanetMeshChunk> chunks;
+    private List<SphereMeshChunk> chunks;
 
-    public PlanetSettings settings;
-    private Planet planet;
+    public SphereSettings settings;
+    private Sphere planet;
 
-    public List<Vector3> planetVertices;
+    public List<Vector3> sphereVertices;
     public Noise noise;
 
     private GameObject test;
 
-    public PlanetMeshChunkRenderer(Planet _planet, PlanetSettings _settings) 
+    public SphereMeshChunkRenderer(Sphere _planet, SphereSettings _settings) 
     {
         test = GameObject.Find("Render Debug Point");
 
@@ -44,8 +44,8 @@ public class PlanetMeshChunkRenderer
             new Vector3(-t, 0, 1).normalized * radius
         };
 
-        chunks = new List<PlanetMeshChunk>();
-        planetVertices = new List<Vector3>();
+        chunks = new List<SphereMeshChunk>();
+        sphereVertices = new List<Vector3>();
 
         HandleBaseFormFaces();
     }
@@ -99,9 +99,9 @@ public class PlanetMeshChunkRenderer
      */
     private void GenerateChunks(List<Vector3> _vertices, int n)
     {
-        _vertices.Add(PlanetUtils.GetMidPointVertex(_vertices[0], _vertices[1])); // Right Middle (3)
-        _vertices.Add(PlanetUtils.GetMidPointVertex(_vertices[1], _vertices[2])); // Bottom Middle (4)
-        _vertices.Add(PlanetUtils.GetMidPointVertex(_vertices[2], _vertices[0])); // Left middle (5)
+        _vertices.Add(SphereUtils.GetMidPointVertex(_vertices[0], _vertices[1])); // Right Middle (3)
+        _vertices.Add(SphereUtils.GetMidPointVertex(_vertices[1], _vertices[2])); // Bottom Middle (4)
+        _vertices.Add(SphereUtils.GetMidPointVertex(_vertices[2], _vertices[0])); // Left middle (5)
 
         // Only draw the last recursion
         if (n == 1) 
@@ -129,7 +129,7 @@ public class PlanetMeshChunkRenderer
         chunkObj.transform.parent = planet.transform;
 
         // Add PlanetMeshChunk script to chunk gameObject
-        var chunk = chunkObj.AddComponent<PlanetMeshChunk>();
+        var chunk = chunkObj.AddComponent<SphereMeshChunk>();
         chunk.Create(this, _vertices);
         chunks.Add(chunk);
     }
