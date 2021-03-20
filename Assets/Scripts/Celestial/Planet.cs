@@ -20,7 +20,7 @@ public class Planet : MonoBehaviour
 
     private void Update()
     {
-        planetChunkRenderer.RenderNearbyChunks(1000);
+        planetChunkRenderer.RenderNearbyChunks(planetSettings.renderRadius);
     }
 
     private void GeneratePlanet() 
