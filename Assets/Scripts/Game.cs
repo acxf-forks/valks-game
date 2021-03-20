@@ -7,7 +7,7 @@ public class Game : MonoBehaviour
     public static List<GameObject> units = new List<GameObject>();
     public static List<UnitGroup> groups = new List<UnitGroup>();
 
-    public int planetRadius = 50;
+    public int planetRadius = 19;
     private Transform planet;
 
     private void Awake()
@@ -19,9 +19,12 @@ public class Game : MonoBehaviour
 
         // Create planet
         /*var planetGo = new GameObject();
-        var planet = planetGo.AddComponent<PlanetIco>();
-        planet.planetName = "Yomolla";
-        planet.radius = planetRadius;
+        var planet = planetGo.AddComponent<Planet>();
+        planet.planetSettings.name = "Yomolla";
+        planet.sphereSettings.radius = planetRadius;
+        planet.sphereSettings.generateNoise = true;
+        planet.sphereSettings.renderRadius = 1000;
+        planet.sphereSettings.material = Resources.Load<Material>("Materials/Water");
         this.planet = planetGo.transform;
         camera.FocusOnPlanet(planetGo);
 

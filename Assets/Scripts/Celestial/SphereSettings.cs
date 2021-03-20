@@ -5,9 +5,9 @@ using UnityEngine;
 [System.Serializable]
 public class SphereSettings
 {
-    public string name;
-
     public int renderRadius = 10;
+
+    public bool generateNoise = false;
 
     [Range(1, 20)]
     public int radius = 10;
@@ -22,4 +22,6 @@ public class SphereSettings
 
     [Tooltip("The material of the planet.")]
     public Material material;
+
+    public float amplitude = 0.5f;
 }

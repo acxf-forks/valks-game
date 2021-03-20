@@ -8,18 +8,21 @@ public class SphereMeshChunkRenderer
     private List<SphereMeshChunk> chunks;
 
     public SphereSettings settings;
-    private Sphere planet;
+    private Transform objTransform;
 
     public List<Vector3> sphereVertices;
     public Noise noise;
 
     private GameObject test;
 
-    public SphereMeshChunkRenderer(Sphere _planet, SphereSettings _settings) 
+    private Transform cam;
+
+    public SphereMeshChunkRenderer(Transform _objTransform, SphereSettings _settings) 
     {
+        cam = Camera.main.transform;
         test = GameObject.Find("Render Debug Point");
 
-        planet = _planet;
+        objTransform = _objTransform;
         settings = _settings;
 
         noise = new Noise();
@@ -58,7 +61,7 @@ public class SphereMeshChunkRenderer
         // Check which chunks to render
         for (int i = 0; i < chunks.Count; i++)
         {
-            if (Vector3.Distance(chunks[i].GetCenterPoint(), test.transform.position) < _distance)
+            if (Vector3.Distance(chunks[i].GetCenterPoint(), cam.position) < _distance)
             {
                 chunks[i].gameObject.SetActive(true);
             }
@@ -126,7 +129,7 @@ public class SphereMeshChunkRenderer
         var chunkObj = new GameObject();
 
         // Set parent
-        chunkObj.transform.parent = planet.transform;
+        chunkObj.transform.parent = objTransform.transform;
 
         // Add PlanetMeshChunk script to chunk gameObject
         var chunk = chunkObj.AddComponent<SphereMeshChunk>();

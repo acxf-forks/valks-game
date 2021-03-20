@@ -13,6 +13,8 @@ public class SphereMeshChunk : MonoBehaviour
 
     private static int count = 0;
 
+    private MeshRenderer meshRenderer;
+
     public void Create(SphereMeshChunkRenderer _renderer, List<Vector3> _vertices) 
     {
         vertices = _vertices;
@@ -20,22 +22,24 @@ public class SphereMeshChunk : MonoBehaviour
         count++;
         gameObject.name = $"Chunk {count}";
         gameObject.SetActive(false);
-        GetComponent<MeshRenderer>().material = _renderer.settings.material;
+        meshRenderer = GetComponent<MeshRenderer>();
+        meshRenderer.material = _renderer.settings.material;
+        meshRenderer.receiveShadows = false;
         vertices = new List<Vector3> { _vertices[0], _vertices[1], _vertices[2] };
         triangles = new List<int>();
 
         SubdivideFace(0, 1, 2, _renderer.settings.chunkTriangles);
 
         var planetRadius = _renderer.settings.radius;
-        var amplitude = 0.5f;
+        var amplitude = _renderer.settings.amplitude;
 
-        // Noise Generation
         for (int i = 0; i < vertices.Count; i++)
         {
-            // Normalize
-            vertices[i] = vertices[i].normalized;
-            var noise = planetRadius + _renderer.noise.Evaluate(vertices[i]) * amplitude;
-            vertices[i] = vertices[i] * noise;
+            float elevation = 0;
+            if (_renderer.settings.generateNoise)
+                elevation = Mathf.Max(0, _renderer.noise.Evaluate(vertices[i]));
+            elevation = planetRadius * (1 + elevation) * amplitude;
+            vertices[i] = vertices[i].normalized * elevation;
         }
 
         mesh = GetComponent<MeshFilter>().mesh;
