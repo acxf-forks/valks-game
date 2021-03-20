@@ -7,6 +7,8 @@ public class PlanetSettings
 {
     public string name;
 
+    public int renderRadius = 10;
+
     [Range(1, 20)]
     public int radius = 10;
 
