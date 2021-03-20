@@ -27,14 +27,14 @@ public class PlanetMeshChunk : MonoBehaviour
         SubdivideFace(0, 1, 2, _renderer.settings.chunkTriangles);
 
         var planetRadius = _renderer.settings.radius;
-        var amplitude = 1.0f;
+        var amplitude = 0.5f;
 
         // Noise Generation
         for (int i = 0; i < vertices.Count; i++)
         {
             // Normalize
-            vertices[i] = vertices[i].normalized * planetRadius;
-            var noise = Mathf.Max(planetRadius, planetRadius + _renderer.noise.Evaluate(vertices[i]) * amplitude);
+            vertices[i] = vertices[i].normalized;
+            var noise = planetRadius + _renderer.noise.Evaluate(vertices[i]) * amplitude;
             vertices[i] = vertices[i] * noise;
         }
 
