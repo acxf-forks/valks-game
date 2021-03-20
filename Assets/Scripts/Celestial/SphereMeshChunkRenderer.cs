@@ -8,7 +8,7 @@ public class SphereMeshChunkRenderer
     private List<SphereMeshChunk> chunks;
 
     public SphereSettings settings;
-    private Transform objTransform;
+    private Transform parent;
 
     public List<Vector3> sphereVertices;
     public Noise noise;
@@ -17,12 +17,12 @@ public class SphereMeshChunkRenderer
 
     private Transform cam;
 
-    public SphereMeshChunkRenderer(Transform _objTransform, SphereSettings _settings)
+    public SphereMeshChunkRenderer(Transform _parent, SphereSettings _settings)
     {
         cam = Camera.main.transform;
         test = GameObject.Find("Render Debug Point");
 
-        objTransform = _objTransform;
+        parent = _parent;
         settings = _settings;
 
         noise = new Noise();
@@ -51,6 +51,8 @@ public class SphereMeshChunkRenderer
         sphereVertices = new List<Vector3>();
 
         HandleBaseFormFaces();
+
+        SphereMeshChunk.count = 0;
     }
 
     public void RenderNearbyChunks(float _distance) 
@@ -129,7 +131,7 @@ public class SphereMeshChunkRenderer
         var chunkObj = new GameObject();
 
         // Set parent
-        chunkObj.transform.parent = objTransform.transform;
+        chunkObj.transform.parent = parent.transform;
 
         // Add PlanetMeshChunk script to chunk gameObject
         var chunk = chunkObj.AddComponent<SphereMeshChunk>();

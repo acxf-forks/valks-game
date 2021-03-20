@@ -14,8 +14,15 @@ public class Planet : MonoBehaviour
     public void Create()
     {
         gameObject.name = $"({planetCount++}) Planet - " + planetSettings.name;
-        planetSphere = new SphereMeshChunkRenderer(transform, terrainSphereSettings);
-        waterSphere = new SphereMeshChunkRenderer(transform, waterSphereSettings);
+
+        var parentTerrainChunks = new GameObject("Terrain Chunks").transform;
+        parentTerrainChunks.parent = transform;
+
+        var parentWaterChunks = new GameObject("Water Chunks").transform;
+        parentWaterChunks.parent = transform;
+
+        planetSphere = new SphereMeshChunkRenderer(parentTerrainChunks, terrainSphereSettings);
+        waterSphere = new SphereMeshChunkRenderer(parentWaterChunks, waterSphereSettings);
     }
 
     private void Update()
