@@ -17,7 +17,7 @@ public class PlanetMeshChunkRenderer
 
     public PlanetMeshChunkRenderer(Planet _planet, PlanetSettings _settings) 
     {
-        test = GameObject.Find("Test");
+        test = GameObject.Find("Render Debug Point");
 
         planet = _planet;
         settings = _settings;
