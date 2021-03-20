@@ -17,7 +17,7 @@ public class SphereMeshChunkRenderer
 
     private Transform cam;
 
-    public SphereMeshChunkRenderer(Transform _objTransform, SphereSettings _settings) 
+    public SphereMeshChunkRenderer(Transform _objTransform, SphereSettings _settings)
     {
         cam = Camera.main.transform;
         test = GameObject.Find("Render Debug Point");

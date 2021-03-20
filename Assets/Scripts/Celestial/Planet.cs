@@ -4,25 +4,23 @@ using UnityEngine;
 public class Planet : MonoBehaviour
 {
     public PlanetSettings planetSettings;
-    public SphereSettings sphereSettings;
+    public SphereSettings terrainSphereSettings;
+    public SphereSettings waterSphereSettings;
 
     private static int planetCount = 0;
-    private SphereMeshChunkRenderer sphere;
+    private SphereMeshChunkRenderer planetSphere;
+    private SphereMeshChunkRenderer waterSphere;
 
-    private void Awake()
+    public void Create()
     {
-        planetCount++;
-    }
-
-    private void Start()
-    {
-        gameObject.name = $"({planetCount}) Planet - " + planetSettings.name;
-
-        sphere = new SphereMeshChunkRenderer(transform, sphereSettings);
+        gameObject.name = $"({planetCount++}) Planet - " + planetSettings.name;
+        planetSphere = new SphereMeshChunkRenderer(transform, terrainSphereSettings);
+        waterSphere = new SphereMeshChunkRenderer(transform, waterSphereSettings);
     }
 
     private void Update()
     {
-        sphere.RenderNearbyChunks(sphereSettings.renderRadius);
+        planetSphere.RenderNearbyChunks(terrainSphereSettings.renderRadius);
+        waterSphere.RenderNearbyChunks(waterSphereSettings.renderRadius);
     }
 }

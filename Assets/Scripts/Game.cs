@@ -18,16 +18,34 @@ public class Game : MonoBehaviour
         var camera = cameraGo.AddComponent<CameraController>();
 
         // Create planet
-        /*var planetGo = new GameObject();
+        var planetGo = new GameObject();
         var planet = planetGo.AddComponent<Planet>();
-        planet.planetSettings.name = "Yomolla";
-        planet.sphereSettings.radius = planetRadius;
-        planet.sphereSettings.generateNoise = true;
-        planet.sphereSettings.renderRadius = 1000;
-        planet.sphereSettings.material = Resources.Load<Material>("Materials/Water");
+
+        var planetSettings = new PlanetSettings();
+        planetSettings.name = "Yomolla";
+        planet.planetSettings = planetSettings;
+
+        var terrainSphereSettings = new SphereSettings();
+        terrainSphereSettings.radius = planetRadius;
+        terrainSphereSettings.generateNoise = true;
+        terrainSphereSettings.renderRadius = 1000;
+        terrainSphereSettings.material = Resources.Load<Material>("Materials/Planet");
+        planet.terrainSphereSettings = terrainSphereSettings;
+
+        var waterSphereSettings = new SphereSettings();
+        waterSphereSettings.radius = planetRadius + 2;
+        waterSphereSettings.generateNoise = false;
+        waterSphereSettings.renderRadius = 1000;
+        waterSphereSettings.material = Resources.Load<Material>("Materials/Water");
+        planet.waterSphereSettings = waterSphereSettings;
+
+        planet.Create();
+
         this.planet = planetGo.transform;
+
         camera.FocusOnPlanet(planetGo);
 
+        /*
         // Create units
         var unitGoPrefab = Resources.Load<GameObject>("Prefabs/Unit");
         for (int i = 0; i < 100; i++) 

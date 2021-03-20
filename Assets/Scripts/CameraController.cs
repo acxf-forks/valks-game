@@ -71,6 +71,6 @@ public class CameraController : MonoBehaviour
     {
         planet = _planetGo.transform;
         planetScript = planet.GetComponent<Planet>();
-        cam.transform.Translate(new Vector3(0, 0, -planetScript.sphereSettings.radius - distanceFromPlanetSurface));
+        cam.transform.Translate(new Vector3(0, 0, -planetScript.terrainSphereSettings.radius - distanceFromPlanetSurface));
     }
 }
