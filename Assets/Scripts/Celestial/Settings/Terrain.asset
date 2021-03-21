@@ -12,10 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26ed191b0fc0b0049b3f13daa21563a1, type: 3}
   m_Name: Terrain
   m_EditorClassIdentifier: 
-  renderRadius: 1000
-  generateNoise: 1
-  radius: 10
-  chunks: 2
+  renderRadius: 100
+  renderEverything: 0
+  chunks: 1
   chunkTriangles: 1
-  material: {fileID: 2100000, guid: 638b547811a3fed489d7c8060aacb2a1, type: 2}
-  amplitude: 0.396
+  terrainMaterial: {fileID: 2100000, guid: 638b547811a3fed489d7c8060aacb2a1, type: 2}
+  oceanMaterial: {fileID: 2100000, guid: 91fd2d24e39448245a46036b16897629, type: 2}
+  radius: 2.17
+  ocean: 1
+  oceanDepth: 0.143
+  frequency: 1
+  minValue: 0
+  center: {x: 0, y: 0, z: 0}

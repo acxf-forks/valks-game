@@ -6,23 +6,30 @@ using UnityEngine;
 public class ShapeSettings : ScriptableObject
 {
     public float renderRadius = 10;
-
-    public bool generateNoise = false;
-
-    [Range(1, 20)]
-    public float radius = 10;
+    public bool renderEverything = false;
 
     [Tooltip("The number of chunk recursions per base face.")]
-    [Range(1, 3)]
     public int chunks = 1;
 
     [Tooltip("The number of triangle recursions per chunk.")]
-    [Range(1, 3)]
     public int chunkTriangles = 1;
 
-    [Tooltip("The material of the planet.")]
-    public Material material;
+    [Tooltip("The terrain material of the planet.")]
+    public Material terrainMaterial;
+    [Tooltip("The ocean material of the planet.")]
+    public Material oceanMaterial;
+
+    public float radius = 10;
+
+    public bool ocean = true;
 
     [Range(0, 1)]
-    public float amplitude = 0.5f;
+    public float oceanDepth = 0f;
+
+    [Range(0, 1f)]
+    public float frequency = 1f;
+
+    public float minValue;
+
+    public Vector3 center;
 }

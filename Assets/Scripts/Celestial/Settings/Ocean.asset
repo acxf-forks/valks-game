@@ -13,9 +13,13 @@ MonoBehaviour:
   m_Name: Ocean
   m_EditorClassIdentifier: 
   renderRadius: 1000
-  generateNoise: 0
-  radius: 10
   chunks: 2
   chunkTriangles: 1
-  material: {fileID: 2100000, guid: 91fd2d24e39448245a46036b16897629, type: 2}
-  amplitude: 0.476
+  terrainMaterial: {fileID: 0}
+  oceanMaterial: {fileID: 0}
+  radius: 6.58
+  ocean: 1
+  oceanDepth: 0
+  frequency: 1
+  minValue: 0
+  center: {x: 0, y: 0, z: 0}

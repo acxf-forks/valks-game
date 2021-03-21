@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a89d9c96ab380f4ab931faa9229983e, type: 3}
   m_Name: Colour
   m_EditorClassIdentifier: 
-  terrainColour: {r: 0, g: 0, b: 0, a: 0}
+  terrainColour: {r: 0.4198113, g: 1, b: 0.45162475, a: 0}

@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlanetMeshChunkRenderer
 {
     private List<Vector3> baseFormVertices;
-    private List<PlanetMeshChunk> chunks;
+    public List<PlanetMeshChunk> chunks;
 
     public ShapeSettings settings;
     private Transform parent;
@@ -17,11 +17,13 @@ public class PlanetMeshChunkRenderer
 
     private Transform cam;
 
-    public List<MeshRenderer> meshRenderers;
+    public enum ShapeType { Terrain, Ocean }
+    public ShapeType shapeType;
 
-    public PlanetMeshChunkRenderer(Transform _parent, ShapeSettings _settings)
+    public PlanetMeshChunkRenderer(Transform _parent, ShapeSettings _settings, ShapeType _shapeType)
     {
-        meshRenderers = new List<MeshRenderer>();
+
+        shapeType = _shapeType;
         
         test = GameObject.Find("Render Debug Point");
 
@@ -69,7 +71,7 @@ public class PlanetMeshChunkRenderer
         // Check which chunks to render
         for (int i = 0; i < chunks.Count; i++)
         {
-            if (Vector3.Distance(chunks[i].GetCenterPoint(), new Vector3(0, 0, 0)) < _distance)
+            if ((Vector3.Distance(chunks[i].GetCenterPoint(), test.transform.position) < _distance) || settings.renderEverything)
             {
                 chunks[i].gameObject.SetActive(true);
             }

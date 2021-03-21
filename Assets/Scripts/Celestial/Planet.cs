@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class Planet : MonoBehaviour
 {
     public PlanetSettings planetSettings;
     public ShapeSettings terrainShapeSettings;
-    public ShapeSettings oceanShapeSettings;
     public ColourSettings colourSettings;
 
     private static int planetCount = 0;
@@ -31,7 +31,6 @@ public class Planet : MonoBehaviour
         gameObject.name = $"({planetCount++}) Planet - " + planetSettings.name;
 
         GenerateTerrainMesh();
-        GenerateOceanMesh();
         GenerateColours();
     }
 
@@ -48,14 +47,6 @@ public class Planet : MonoBehaviour
         if (autoUpdate)
         {
             GenerateTerrainMesh();
-        }
-    }
-
-    public void OnOceanShapeSettingsUpdated() 
-    {
-        if (autoUpdate) 
-        {
-            GenerateOceanMesh();
         }
     }
 
@@ -79,7 +70,9 @@ public class Planet : MonoBehaviour
             parentTerrainChunks.parent = transform;
         }
 
-        terrain = new PlanetMeshChunkRenderer(parentTerrainChunks, terrainShapeSettings);
+        terrain = new PlanetMeshChunkRenderer(parentTerrainChunks, terrainShapeSettings, PlanetMeshChunkRenderer.ShapeType.Terrain);
+
+        GenerateOceanMesh();
     }
 
     private void GenerateOceanMesh() 
@@ -88,23 +81,32 @@ public class Planet : MonoBehaviour
         if (parentOceanChunks)
             DestroyImmediate(parentOceanChunks.gameObject);
 
+        if (!terrainShapeSettings.ocean)
+            return;
+
         if (!parentOceanChunks)
         {
             parentOceanChunks = new GameObject("Ocean Chunks").transform;
             parentOceanChunks.parent = transform;
         }
 
-        ocean = new PlanetMeshChunkRenderer(parentOceanChunks, oceanShapeSettings);
+        ocean = new PlanetMeshChunkRenderer(parentOceanChunks, terrainShapeSettings, PlanetMeshChunkRenderer.ShapeType.Ocean);
     }
 
     private void GenerateColours()
     {
-        
+        foreach (var chunk in terrain.chunks) 
+        {
+            chunk.meshRenderer.sharedMaterial.color = colourSettings.terrainColour;
+        }
     }
 
     private void Update()
     {
-        terrain.RenderNearbyChunks(terrainShapeSettings.renderRadius);
-        ocean.RenderNearbyChunks(oceanShapeSettings.renderRadius);
+        if (terrain != null)
+            terrain.RenderNearbyChunks(terrainShapeSettings.renderRadius);
+        if (ocean != null)
+            if (terrainShapeSettings.ocean)
+                ocean.RenderNearbyChunks(terrainShapeSettings.renderRadius);
     }
 }

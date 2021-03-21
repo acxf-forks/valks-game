@@ -13,7 +13,7 @@ public class PlanetMeshChunk : MonoBehaviour
 
     public static int count = 0;
 
-    private MeshRenderer meshRenderer;
+    public MeshRenderer meshRenderer;
 
     public MinMax elevationMinMax;
     public Texture2D texture;
@@ -21,7 +21,7 @@ public class PlanetMeshChunk : MonoBehaviour
 
     public void Create(PlanetMeshChunkRenderer _renderer, List<Vector3> _vertices) 
     {
-        gameObject.SetActive(true); 
+        
 
 
 
@@ -32,34 +32,42 @@ public class PlanetMeshChunk : MonoBehaviour
         gameObject.name = $"Chunk {count}";
         
         meshRenderer = GetComponent<MeshRenderer>();
-        meshRenderer.sharedMaterial = _renderer.settings.material;
+
+        if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Terrain)
+            meshRenderer.material = _renderer.settings.terrainMaterial;
+
+        if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Ocean)
+            meshRenderer.material = _renderer.settings.oceanMaterial;
+
         meshRenderer.receiveShadows = false;
         vertices = new List<Vector3> { _vertices[0], _vertices[1], _vertices[2] };
         triangles = new List<int>();
 
         SubdivideFace(0, 1, 2, _renderer.settings.chunkTriangles);
 
-        var planetRadius = _renderer.settings.radius;
-        var amplitude = _renderer.settings.amplitude;
+        var settings = _renderer.settings;
+        var radius = settings.radius;
 
         for (int i = 0; i < vertices.Count; i++)
         {
             float elevation = 0;
-            if (_renderer.settings.generateNoise)
-                elevation = Mathf.Max(0, _renderer.noise.Evaluate(vertices[i]));
-            elevation = planetRadius * (1 + elevation) * amplitude;
+            if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Terrain)
+                elevation = Mathf.Max(0, _renderer.noise.Evaluate(vertices[i] * settings.frequency + settings.center));
+            elevation = radius * (1 + elevation + (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Ocean ? settings.oceanDepth : 0));
+            elevation -= settings.minValue * -1;
             elevationMinMax.AddValue(elevation);
             vertices[i] = vertices[i].normalized * elevation;
         }
 
-        meshRenderer.sharedMaterial.SetVector("_elevationMinMax", new Vector4(elevationMinMax.Min, elevationMinMax.Max));
+        //meshRenderer.sharedMaterial.SetVector("_elevationMinMax", new Vector4(elevationMinMax.Min, elevationMinMax.Max));
 
         mesh = new Mesh();
         GetComponent<MeshFilter>().sharedMesh = mesh;
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
         mesh.normals = vertices.Select(s => s.normalized).ToArray();
-        _renderer.meshRenderers.Add(meshRenderer);
+
+        gameObject.SetActive(false);
     }
 
     /*!
