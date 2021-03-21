@@ -70,7 +70,7 @@ public class EntitySelector : MonoBehaviour
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, camScript.distanceFromPlanetSurface + planetScript.terrainShapeSettings.radius, LayerMask.GetMask("Planets")))
+            if (Physics.Raycast(ray, out hit, camScript.distanceFromPlanetSurface + planetScript.shapeSettings.radius, LayerMask.GetMask("Planets")))
             {
                 var selectedGroups = Game.groups.Where(group => group.IsSelected()).ToList();
 
@@ -145,7 +145,7 @@ public class EntitySelector : MonoBehaviour
         for (int i = 0; i < cornersScreenSpace.Length; i++)
         {
             Ray ray = cam.ScreenPointToRay(cornersScreenSpace[i]);
-            cornersWorldSpace[i] = ray.GetPoint(camScript.distanceFromPlanetSurface + planetScript.terrainShapeSettings.radius);
+            cornersWorldSpace[i] = ray.GetPoint(camScript.distanceFromPlanetSurface + planetScript.shapeSettings.radius);
 
             // DEBUG: Draw visual of 3D selection box.
             if (debugEnabled) Debug.DrawLine(camPos, cornersWorldSpace[i], Color.yellow, debugDrawTime);
@@ -180,7 +180,7 @@ public class EntitySelector : MonoBehaviour
 
             if (topPlane.GetSide(unitPos) && leftPlane.GetSide(unitPos) && rightPlane.GetSide(unitPos) && bottomPlane.GetSide(unitPos))
             {
-                if (Vector3.Distance(camPos, unitPos) < (planetScript.terrainShapeSettings.radius + camScript.distanceFromPlanetSurface))
+                if (Vector3.Distance(camPos, unitPos) < (planetScript.shapeSettings.radius + camScript.distanceFromPlanetSurface))
                 {
                     AddSelected(unit);
                 }

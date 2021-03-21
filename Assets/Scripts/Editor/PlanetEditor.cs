@@ -29,7 +29,7 @@ public class PlanetEditor : Editor
         }
 
         DrawSettingsEditor(planet.planetSettings, planet.OnPlanetSettingsUpdated, ref planet.planetSettingsFoldout, ref planetEditor);
-        DrawSettingsEditor(planet.terrainShapeSettings, planet.OnTerrainShapeSettingsUpdated, ref planet.terrainShapeSettingsFoldout, ref terrainShapeEditor);
+        DrawSettingsEditor(planet.shapeSettings, planet.OnShapeSettingsUpdated, ref planet.shapeSettingsFoldout, ref terrainShapeEditor);
         DrawSettingsEditor(planet.colourSettings, planet.OnColourSettingsUpdated, ref planet.colourSettingsFoldout, ref colourEditor);
     }
 

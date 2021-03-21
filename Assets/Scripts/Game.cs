@@ -25,12 +25,12 @@ public class Game : MonoBehaviour
         planetSettings.name = "Yomolla";
         planet.planetSettings = planetSettings;
 
-        var terrainShapeSettings = new ShapeSettings();
-        terrainShapeSettings.radius = planetRadius;
-        terrainShapeSettings.generateNoise = true;
-        terrainShapeSettings.renderRadius = 1000;
-        terrainShapeSettings.material = Resources.Load<Material>("Materials/Planet");
-        planet.terrainShapeSettings = terrainShapeSettings;
+        var shapeSettings = new ShapeSettings();
+        shapeSettings.radius = planetRadius;
+        shapeSettings.generateNoise = true;
+        shapeSettings.renderRadius = 1000;
+        shapeSettings.material = Resources.Load<Material>("Materials/Planet");
+        planet.shapeSettings = shapeSettings;
 
         var waterShapeSettings = new ShapeSettings();
         waterShapeSettings.radius = planetRadius + 2;

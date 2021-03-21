@@ -5,14 +5,14 @@ using UnityEngine;
 public class Planet : MonoBehaviour
 {
     public PlanetSettings planetSettings;
-    public ShapeSettings terrainShapeSettings;
+    public ShapeSettings shapeSettings;
     public ColourSettings colourSettings;
 
-    private static int planetCount = 0;
+    public bool autoUpdate = true;
+
     private PlanetMeshChunkRenderer terrain;
     private PlanetMeshChunkRenderer ocean;
-
-    public bool autoUpdate = true;
+    private static int planetCount = 0;
 
     private Transform parentTerrainChunks;
     private Transform parentOceanChunks;
@@ -20,17 +20,20 @@ public class Planet : MonoBehaviour
     [HideInInspector]
     public bool planetSettingsFoldout;
     [HideInInspector]
-    public bool terrainShapeSettingsFoldout;
-    [HideInInspector]
-    public bool oceanShapeSettingsFoldout;
+    public bool shapeSettingsFoldout;
     [HideInInspector]
     public bool colourSettingsFoldout;
 
     public void GeneratePlanet()
     {
-        gameObject.name = $"({planetCount++}) Planet - " + planetSettings.name;
-
+        if (CheckSettingsInvalid()) 
+        {
+            Debug.LogWarning("One or more settings for a planet is undefined. Please define the appropriate settings.");
+            return;
+        }
+        GeneratePlanetSettings();
         GenerateTerrainMesh();
+        GenerateOceanMesh();
         GenerateColours();
     }
 
@@ -38,15 +41,26 @@ public class Planet : MonoBehaviour
     {
         if (autoUpdate) 
         {
-            
+            if (CheckSettingsInvalid())
+            {
+                Debug.LogWarning("One or more settings for a planet is undefined. Please define the appropriate settings.");
+                return;
+            }
+            GeneratePlanetSettings();
         }
     }
 
-    public void OnTerrainShapeSettingsUpdated()
+    public void OnShapeSettingsUpdated()
     {
         if (autoUpdate)
         {
+            if (CheckSettingsInvalid())
+            {
+                Debug.LogWarning("One or more settings for a planet is undefined. Please define the appropriate settings.");
+                return;
+            }
             GenerateTerrainMesh();
+            GenerateOceanMesh();
         }
     }
 
@@ -54,8 +68,18 @@ public class Planet : MonoBehaviour
     {
         if (autoUpdate)
         {
+            if (CheckSettingsInvalid())
+            {
+                Debug.LogWarning("One or more settings for a planet is undefined. Please define the appropriate settings.");
+                return;
+            }
             GenerateColours();
         }
+    }
+
+    private void GeneratePlanetSettings() 
+    {
+        gameObject.name = $"({planetCount++}) Planet - " + planetSettings.name;
     }
 
     private void GenerateTerrainMesh()
@@ -70,9 +94,7 @@ public class Planet : MonoBehaviour
             parentTerrainChunks.parent = transform;
         }
 
-        terrain = new PlanetMeshChunkRenderer(parentTerrainChunks, terrainShapeSettings, PlanetMeshChunkRenderer.ShapeType.Terrain);
-
-        GenerateOceanMesh();
+        terrain = new PlanetMeshChunkRenderer(parentTerrainChunks, shapeSettings, PlanetMeshChunkRenderer.ShapeType.Terrain);
     }
 
     private void GenerateOceanMesh() 
@@ -81,7 +103,7 @@ public class Planet : MonoBehaviour
         if (parentOceanChunks)
             DestroyImmediate(parentOceanChunks.gameObject);
 
-        if (!terrainShapeSettings.ocean)
+        if (!shapeSettings.ocean)
             return;
 
         if (!parentOceanChunks)
@@ -90,7 +112,7 @@ public class Planet : MonoBehaviour
             parentOceanChunks.parent = transform;
         }
 
-        ocean = new PlanetMeshChunkRenderer(parentOceanChunks, terrainShapeSettings, PlanetMeshChunkRenderer.ShapeType.Ocean);
+        ocean = new PlanetMeshChunkRenderer(parentOceanChunks, shapeSettings, PlanetMeshChunkRenderer.ShapeType.Ocean);
     }
 
     private void GenerateColours()
@@ -101,12 +123,14 @@ public class Planet : MonoBehaviour
         }
     }
 
+    private bool CheckSettingsInvalid() => !planetSettings || !shapeSettings || !colourSettings;
+
     private void Update()
     {
         if (terrain != null)
-            terrain.RenderNearbyChunks(terrainShapeSettings.renderRadius);
+            terrain.RenderNearbyChunks(shapeSettings.renderRadius);
         if (ocean != null)
-            if (terrainShapeSettings.ocean)
-                ocean.RenderNearbyChunks(terrainShapeSettings.renderRadius);
+            if (shapeSettings.ocean)
+                ocean.RenderNearbyChunks(shapeSettings.renderRadius);
     }
 }

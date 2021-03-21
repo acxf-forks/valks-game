@@ -23,6 +23,8 @@ public class PlanetMeshChunkRenderer
     public PlanetMeshChunkRenderer(Transform _parent, ShapeSettings _settings, ShapeType _shapeType)
     {
 
+
+
         shapeType = _shapeType;
         
         test = GameObject.Find("Render Debug Point");
