@@ -17,6 +17,8 @@ public class Planet : MonoBehaviour
     private Transform parentTerrainChunks;
     private Transform parentOceanChunks;
 
+    public MinMax elevationMinMax = new MinMax();
+
     [HideInInspector]
     public bool planetSettingsFoldout;
     [HideInInspector]
@@ -149,6 +151,9 @@ public class Planet : MonoBehaviour
         {
             GenerateOceanMesh();
         }
+
+        if (!shapeSettings.ocean)
+            return;
 
         foreach (var chunk in ocean.chunks) 
         {

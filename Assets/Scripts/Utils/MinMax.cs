@@ -1,13 +1,12 @@
 public class MinMax
 {
 
-    public float Min { get; private set; }
-    public float Max { get; private set; }
+    public float Min { get; set; }
+    public float Max { get; set; }
 
     public MinMax()
     {
-        Min = float.MaxValue;
-        Max = float.MinValue;
+        ResetValues();
     }
 
     public void AddValue(float v)
@@ -20,5 +19,11 @@ public class MinMax
         {
             Min = v;
         }
+    }
+
+    public void ResetValues() 
+    {
+        Min = float.MaxValue;
+        Max = float.MinValue;
     }
 }

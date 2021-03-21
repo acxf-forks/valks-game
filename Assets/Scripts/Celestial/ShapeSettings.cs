@@ -36,6 +36,5 @@ public class ShapeSettings : ScriptableObject
 
     public Vector3 center;
 
-    [HideInInspector]
     public MinMax elevationMinMax = new MinMax();
 }

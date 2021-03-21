@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Terrain
   m_EditorClassIdentifier: 
   renderRadius: 100
-  renderEverything: 0
+  renderEverything: 1
   chunks: 1
   chunkTriangles: 1
   oceanChunks: 1
   oceanTriangles: 1
   terrainMaterial: {fileID: 2100000, guid: 638b547811a3fed489d7c8060aacb2a1, type: 2}
   oceanMaterial: {fileID: 2100000, guid: 91fd2d24e39448245a46036b16897629, type: 2}
-  radius: 3.58
+  radius: 20.6
   ocean: 1
-  oceanDepth: 0.059
+  oceanDepth: 0.18
   frequency: 0.495
-  minValue: 1.54
+  minValue: 100
   center: {x: 0, y: 0, z: 0}
