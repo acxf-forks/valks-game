@@ -14,6 +14,9 @@ public class ShapeSettings : ScriptableObject
     [Tooltip("The number of triangle recursions per chunk.")]
     public int chunkTriangles = 1;
 
+    public int oceanChunks = 1;
+    public int oceanTriangles = 1;
+
     [Tooltip("The terrain material of the planet.")]
     public Material terrainMaterial;
     [Tooltip("The ocean material of the planet.")]
@@ -32,4 +35,7 @@ public class ShapeSettings : ScriptableObject
     public float minValue;
 
     public Vector3 center;
+
+    [HideInInspector]
+    public MinMax elevationMinMax = new MinMax();
 }

@@ -22,9 +22,6 @@ public class PlanetMeshChunkRenderer
 
     public PlanetMeshChunkRenderer(Transform _parent, ShapeSettings _settings, ShapeType _shapeType)
     {
-
-
-
         shapeType = _shapeType;
         
         test = GameObject.Find("Render Debug Point");
@@ -87,6 +84,10 @@ public class PlanetMeshChunkRenderer
     private void HandleBaseFormFaces()
     {
         var chunks = settings.chunks; // number of chunk recursions per base face
+
+        if (shapeType == ShapeType.Ocean)
+            chunks = settings.oceanChunks;
+
         GenerateChunks(new List<Vector3> { baseFormVertices[0], baseFormVertices[11], baseFormVertices[5] }, chunks);
         GenerateChunks(new List<Vector3> { baseFormVertices[0], baseFormVertices[5], baseFormVertices[1] }, chunks);
         GenerateChunks(new List<Vector3> { baseFormVertices[0], baseFormVertices[1], baseFormVertices[7] }, chunks);

@@ -79,7 +79,7 @@ public class Planet : MonoBehaviour
 
     private void GeneratePlanetSettings() 
     {
-        gameObject.name = $"({planetCount++}) Planet - " + planetSettings.name;
+        gameObject.name = $"({planetCount++}) Planet - " + planetSettings.planetName;
     }
 
     private void GenerateTerrainMesh()
@@ -115,11 +115,44 @@ public class Planet : MonoBehaviour
         ocean = new PlanetMeshChunkRenderer(parentOceanChunks, shapeSettings, PlanetMeshChunkRenderer.ShapeType.Ocean);
     }
 
+    Texture2D texture;
+    const int textureResolution = 50;
+
     private void GenerateColours()
     {
-        foreach (var chunk in terrain.chunks) 
+        if (texture == null)
         {
-            chunk.meshRenderer.sharedMaterial.color = colourSettings.terrainColour;
+            texture = new Texture2D(textureResolution, 1);
+        }
+
+        Color[] colours = new Color[textureResolution];
+        for (int i = 0; i < textureResolution; i++)
+        {
+            colours[i] = colourSettings.terrainGradient.Evaluate(i / (textureResolution - 1f));
+        }
+        texture.SetPixels(colours);
+        texture.Apply();
+
+        if (terrain == null) 
+        {
+            GenerateTerrainMesh();
+        }
+
+        foreach (var chunk in terrain.chunks)
+        {
+            chunk.meshRenderer.sharedMaterial.SetVector("_elevationMinMax", new Vector4(shapeSettings.elevationMinMax.Min, shapeSettings.elevationMinMax.Max));
+            chunk.meshRenderer.sharedMaterial.SetTexture("_texture", texture);
+        }
+
+        if (ocean == null) 
+        {
+            GenerateOceanMesh();
+        }
+
+        foreach (var chunk in ocean.chunks) 
+        {
+            chunk.meshRenderer.sharedMaterial.SetColor("_deepOceanColor", colourSettings.deepOceanColour);
+            chunk.meshRenderer.sharedMaterial.SetColor("_shallowOceanColor", colourSettings.shallowOceanColour);
         }
     }
 

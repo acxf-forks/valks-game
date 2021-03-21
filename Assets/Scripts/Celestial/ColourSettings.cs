@@ -5,5 +5,7 @@ using UnityEngine;
 [CreateAssetMenu()]
 public class ColourSettings : ScriptableObject
 {
-    public Color terrainColour;
+    public Gradient terrainGradient;
+    public Color deepOceanColour;
+    public Color shallowOceanColour;
 }

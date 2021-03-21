@@ -5,4 +5,6 @@ using UnityEngine;
 public class PlanetSettings : ScriptableObject
 {
     public string planetName;
+    [TextArea]
+    public string description;
 }

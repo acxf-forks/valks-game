@@ -15,19 +15,13 @@ public class PlanetMeshChunk : MonoBehaviour
 
     public MeshRenderer meshRenderer;
 
-    public MinMax elevationMinMax;
     public Texture2D texture;
     public int textureResolution = 50;
 
     public void Create(PlanetMeshChunkRenderer _renderer, List<Vector3> _vertices) 
     {
-        
-
-
-
         texture = new Texture2D(textureResolution, 1);
         vertices = _vertices;
-        elevationMinMax = new MinMax();
         count++;
         gameObject.name = $"Chunk {count}";
         
@@ -43,9 +37,15 @@ public class PlanetMeshChunk : MonoBehaviour
         vertices = new List<Vector3> { _vertices[0], _vertices[1], _vertices[2] };
         triangles = new List<int>();
 
-        SubdivideFace(0, 1, 2, _renderer.settings.chunkTriangles);
-
         var settings = _renderer.settings;
+
+        var chunkTriangles = settings.chunkTriangles;
+        if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Ocean)
+            chunkTriangles = settings.oceanTriangles;
+
+        SubdivideFace(0, 1, 2, chunkTriangles);
+
+        
         var radius = settings.radius;
 
         for (int i = 0; i < vertices.Count; i++)
@@ -55,11 +55,9 @@ public class PlanetMeshChunk : MonoBehaviour
                 elevation = Mathf.Max(0, _renderer.noise.Evaluate(vertices[i] * settings.frequency + settings.center));
             elevation = radius * (1 + elevation + (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Ocean ? settings.oceanDepth : 0));
             elevation -= settings.minValue * -1;
-            elevationMinMax.AddValue(elevation);
+            settings.elevationMinMax.AddValue(elevation);
             vertices[i] = vertices[i].normalized * elevation;
         }
-
-        //meshRenderer.sharedMaterial.SetVector("_elevationMinMax", new Vector4(elevationMinMax.Min, elevationMinMax.Max));
 
         mesh = new Mesh();
         GetComponent<MeshFilter>().sharedMesh = mesh;

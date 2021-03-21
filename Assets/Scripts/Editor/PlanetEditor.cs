@@ -22,15 +22,34 @@ public class PlanetEditor : Editor
                 planet.GeneratePlanet();
             }
         }
-
+        GUILayout.Space(10);
         if (GUILayout.Button("Generate Planet"))
         {
             planet.GeneratePlanet();
         }
+        GUILayout.Space(10);
 
         DrawSettingsEditor(planet.planetSettings, planet.OnPlanetSettingsUpdated, ref planet.planetSettingsFoldout, ref planetEditor);
+        GUILayout.Space(10);
+        if (GUILayout.Button("Update Planet"))
+        {
+            planet.OnPlanetSettingsUpdated();
+        }
+        GUILayout.Space(10);
         DrawSettingsEditor(planet.shapeSettings, planet.OnShapeSettingsUpdated, ref planet.shapeSettingsFoldout, ref terrainShapeEditor);
+        GUILayout.Space(10);
+        if (GUILayout.Button("Update Shape"))
+        {
+            planet.OnShapeSettingsUpdated();
+        }
+        GUILayout.Space(10);
         DrawSettingsEditor(planet.colourSettings, planet.OnColourSettingsUpdated, ref planet.colourSettingsFoldout, ref colourEditor);
+        GUILayout.Space(10);
+        if (GUILayout.Button("Update Colours"))
+        {
+            planet.OnColourSettingsUpdated();
+        }
+        GUILayout.Space(10);
     }
 
     private void DrawSettingsEditor(Object settings, System.Action onSettingsUpdated, ref bool foldout, ref Editor editor)
