@@ -61,6 +61,7 @@ public class Planet : MonoBehaviour
             }
             GenerateTerrainMesh();
             GenerateOceanMesh();
+            GenerateColours();
         }
     }
 
