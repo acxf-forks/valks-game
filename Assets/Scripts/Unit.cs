@@ -40,7 +40,7 @@ public class Unit : MonoBehaviour
     private void Start()
     {
         planetScript = planet.GetComponent<Planet>();
-        planetRadius = planetScript.terrainSphereSettings.radius;
+        planetRadius = planetScript.terrainShapeSettings.radius;
 
         transform.position = new Vector3(0, planetRadius + 1, 0);
 

@@ -4,30 +4,107 @@ using UnityEngine;
 public class Planet : MonoBehaviour
 {
     public PlanetSettings planetSettings;
-    public SphereSettings terrainSphereSettings;
-    public SphereSettings waterSphereSettings;
+    public ShapeSettings terrainShapeSettings;
+    public ShapeSettings oceanShapeSettings;
+    public ColourSettings colourSettings;
 
     private static int planetCount = 0;
-    private SphereMeshChunkRenderer planetSphere;
-    private SphereMeshChunkRenderer waterSphere;
+    private PlanetMeshChunkRenderer terrain;
+    private PlanetMeshChunkRenderer ocean;
 
-    public void Create()
+    public bool autoUpdate = true;
+
+    private Transform parentTerrainChunks;
+    private Transform parentOceanChunks;
+
+    [HideInInspector]
+    public bool planetSettingsFoldout;
+    [HideInInspector]
+    public bool terrainShapeSettingsFoldout;
+    [HideInInspector]
+    public bool oceanShapeSettingsFoldout;
+    [HideInInspector]
+    public bool colourSettingsFoldout;
+
+    public void GeneratePlanet()
     {
         gameObject.name = $"({planetCount++}) Planet - " + planetSettings.name;
 
-        var parentTerrainChunks = new GameObject("Terrain Chunks").transform;
-        parentTerrainChunks.parent = transform;
+        GenerateTerrainMesh();
+        GenerateOceanMesh();
+        GenerateColours();
+    }
 
-        var parentWaterChunks = new GameObject("Water Chunks").transform;
-        parentWaterChunks.parent = transform;
+    public void OnPlanetSettingsUpdated()
+    {
+        if (autoUpdate) 
+        {
+            
+        }
+    }
 
-        planetSphere = new SphereMeshChunkRenderer(parentTerrainChunks, terrainSphereSettings);
-        waterSphere = new SphereMeshChunkRenderer(parentWaterChunks, waterSphereSettings);
+    public void OnTerrainShapeSettingsUpdated()
+    {
+        if (autoUpdate)
+        {
+            GenerateTerrainMesh();
+        }
+    }
+
+    public void OnOceanShapeSettingsUpdated() 
+    {
+        if (autoUpdate) 
+        {
+            GenerateOceanMesh();
+        }
+    }
+
+    public void OnColourSettingsUpdated()
+    {
+        if (autoUpdate)
+        {
+            GenerateColours();
+        }
+    }
+
+    private void GenerateTerrainMesh()
+    {
+        // Remove old chunks
+        if (parentTerrainChunks)
+            DestroyImmediate(parentTerrainChunks.gameObject);
+
+        if (!parentTerrainChunks)
+        {
+            parentTerrainChunks = new GameObject("Terrain Chunks").transform;
+            parentTerrainChunks.parent = transform;
+        }
+
+        terrain = new PlanetMeshChunkRenderer(parentTerrainChunks, terrainShapeSettings);
+    }
+
+    private void GenerateOceanMesh() 
+    {
+        // Remove old chunks
+        if (parentOceanChunks)
+            DestroyImmediate(parentOceanChunks.gameObject);
+
+        if (!parentOceanChunks)
+        {
+            parentOceanChunks = new GameObject("Ocean Chunks").transform;
+            parentOceanChunks.parent = transform;
+        }
+
+        ocean = new PlanetMeshChunkRenderer(parentOceanChunks, oceanShapeSettings);
+    }
+
+    private void GenerateColours()
+    {
+        
     }
 
     private void Update()
     {
-        planetSphere.RenderNearbyChunks(terrainSphereSettings.renderRadius);
-        waterSphere.RenderNearbyChunks(waterSphereSettings.renderRadius);
+        terrain.RenderNearbyChunks(terrainShapeSettings.renderRadius);
+        ocean.RenderNearbyChunks(oceanShapeSettings.renderRadius);
     }
 }

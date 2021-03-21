@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[System.Serializable]
-public class PlanetSettings
+[CreateAssetMenu()]
+public class PlanetSettings : ScriptableObject
 {
-    public string name;
+    public string planetName;
 }

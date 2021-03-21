@@ -18,32 +18,32 @@ public class Game : MonoBehaviour
         var camera = cameraGo.AddComponent<CameraController>();
 
         // Create planet
-        var planetGo = new GameObject();
+        /*var planetGo = new GameObject();
         var planet = planetGo.AddComponent<Planet>();
 
         var planetSettings = new PlanetSettings();
         planetSettings.name = "Yomolla";
         planet.planetSettings = planetSettings;
 
-        var terrainSphereSettings = new SphereSettings();
-        terrainSphereSettings.radius = planetRadius;
-        terrainSphereSettings.generateNoise = true;
-        terrainSphereSettings.renderRadius = 1000;
-        terrainSphereSettings.material = Resources.Load<Material>("Materials/Planet");
-        planet.terrainSphereSettings = terrainSphereSettings;
+        var terrainShapeSettings = new ShapeSettings();
+        terrainShapeSettings.radius = planetRadius;
+        terrainShapeSettings.generateNoise = true;
+        terrainShapeSettings.renderRadius = 1000;
+        terrainShapeSettings.material = Resources.Load<Material>("Materials/Planet");
+        planet.terrainShapeSettings = terrainShapeSettings;
 
-        var waterSphereSettings = new SphereSettings();
-        waterSphereSettings.radius = planetRadius + 2;
-        waterSphereSettings.generateNoise = false;
-        waterSphereSettings.renderRadius = 1000;
-        waterSphereSettings.material = Resources.Load<Material>("Materials/Water");
-        planet.waterSphereSettings = waterSphereSettings;
+        var waterShapeSettings = new ShapeSettings();
+        waterShapeSettings.radius = planetRadius + 2;
+        waterShapeSettings.generateNoise = false;
+        waterShapeSettings.renderRadius = 1000;
+        waterShapeSettings.material = Resources.Load<Material>("Materials/Water");
+        planet.waterShapeSettings = waterShapeSettings;
 
         planet.Create();
 
         this.planet = planetGo.transform;
 
-        camera.FocusOnPlanet(planetGo);
+        camera.FocusOnPlanet(planetGo);*/
 
         /*
         // Create units
