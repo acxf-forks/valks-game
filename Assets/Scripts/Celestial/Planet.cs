@@ -26,8 +26,12 @@ public class Planet : MonoBehaviour
     [HideInInspector]
     public bool colourSettingsFoldout;
 
+    private ShapeGenerator shapeGenerator = new ShapeGenerator();
+
     public void GeneratePlanet()
     {
+        shapeGenerator.UpdateSettings(shapeSettings);
+
         if (CheckSettingsInvalid()) 
         {
             Debug.LogWarning("One or more settings for a planet is undefined. Please define the appropriate settings.");
@@ -61,6 +65,7 @@ public class Planet : MonoBehaviour
                 Debug.LogWarning("One or more settings for a planet is undefined. Please define the appropriate settings.");
                 return;
             }
+            shapeGenerator.UpdateSettings(shapeSettings);
             GenerateTerrainMesh();
             GenerateOceanMesh();
             GenerateColours();
@@ -97,7 +102,7 @@ public class Planet : MonoBehaviour
             parentTerrainChunks.parent = transform;
         }
 
-        terrain = new PlanetMeshChunkRenderer(parentTerrainChunks, shapeSettings, PlanetMeshChunkRenderer.ShapeType.Terrain);
+        terrain = new PlanetMeshChunkRenderer(parentTerrainChunks, shapeGenerator, PlanetMeshChunkRenderer.ShapeType.Terrain);
     }
 
     private void GenerateOceanMesh() 
@@ -115,7 +120,7 @@ public class Planet : MonoBehaviour
             parentOceanChunks.parent = transform;
         }
 
-        ocean = new PlanetMeshChunkRenderer(parentOceanChunks, shapeSettings, PlanetMeshChunkRenderer.ShapeType.Ocean);
+        ocean = new PlanetMeshChunkRenderer(parentOceanChunks, shapeGenerator, PlanetMeshChunkRenderer.ShapeType.Ocean);
     }
 
     Texture2D texture;
@@ -143,7 +148,7 @@ public class Planet : MonoBehaviour
 
         foreach (var chunk in terrain.chunks)
         {
-            chunk.meshRenderer.sharedMaterial.SetVector("_elevationMinMax", new Vector4(shapeSettings.elevationMinMax.Min, shapeSettings.elevationMinMax.Max));
+            chunk.meshRenderer.sharedMaterial.SetVector("_elevationMinMax", new Vector4(shapeGenerator.elevationMinMax.Min, shapeGenerator.elevationMinMax.Max));
             chunk.meshRenderer.sharedMaterial.SetTexture("_texture", texture);
         }
 

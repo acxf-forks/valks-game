@@ -24,39 +24,42 @@ public class PlanetMeshChunk : MonoBehaviour
         vertices = _vertices;
         count++;
         gameObject.name = $"Chunk {count}";
-        
+
         meshRenderer = GetComponent<MeshRenderer>();
-
-        if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Terrain)
-            meshRenderer.material = _renderer.settings.terrainMaterial;
-
-        if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Ocean)
-            meshRenderer.material = _renderer.settings.oceanMaterial;
-
         meshRenderer.receiveShadows = false;
         vertices = new List<Vector3> { _vertices[0], _vertices[1], _vertices[2] };
         triangles = new List<int>();
 
-        var settings = _renderer.settings;
+        var settings = _renderer.shapeSettings;
+
+        if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Terrain)
+            meshRenderer.material = settings.terrainMaterial;
+
+        if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Ocean)
+            meshRenderer.material = settings.oceanMaterial;
 
         var chunkTriangles = settings.chunkTriangles;
         if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Ocean)
             chunkTriangles = settings.oceanTriangles;
 
         SubdivideFace(0, 1, 2, chunkTriangles);
-
         
         var radius = settings.radius;
 
         for (int i = 0; i < vertices.Count; i++)
         {
-            float elevation = 0;
-            if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Terrain)
-                elevation = Mathf.Max(0, _renderer.noise.Evaluate(vertices[i] * settings.frequency + settings.center));
-            elevation = radius * (1 + elevation + (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Ocean ? settings.oceanDepth : 0));
-            elevation -= settings.minValue * -1;
-            settings.elevationMinMax.AddValue(elevation);
-            vertices[i] = vertices[i].normalized * elevation;
+            vertices[i] = vertices[i].normalized;
+
+            switch (_renderer.shapeType) 
+            {
+                case PlanetMeshChunkRenderer.ShapeType.Terrain:
+                    float unscaledElevation = _renderer.shapeGenerator.CalculateUnscaledElevation(vertices[i]);
+                    vertices[i] = vertices[i] * _renderer.shapeGenerator.GetScaledElevation(unscaledElevation);
+                    break;
+                case PlanetMeshChunkRenderer.ShapeType.Ocean:
+                    vertices[i] = vertices[i] * radius * (1 + settings.oceanDepth);
+                    break;
+            }
         }
 
         mesh = new Mesh();

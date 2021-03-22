@@ -7,7 +7,9 @@ public class PlanetMeshChunkRenderer
     private List<Vector3> baseFormVertices;
     public List<PlanetMeshChunk> chunks;
 
-    public ShapeSettings settings;
+    public ShapeGenerator shapeGenerator;
+    public ShapeSettings shapeSettings;
+
     private Transform parent;
 
     public List<Vector3> sphereVertices;
@@ -20,18 +22,19 @@ public class PlanetMeshChunkRenderer
     public enum ShapeType { Terrain, Ocean }
     public ShapeType shapeType;
 
-    public PlanetMeshChunkRenderer(Transform _parent, ShapeSettings _settings, ShapeType _shapeType)
+    public PlanetMeshChunkRenderer(Transform _parent, ShapeGenerator _shapeGenerator, ShapeType _shapeType)
     {
         shapeType = _shapeType;
         
         test = GameObject.Find("Render Debug Point");
 
         parent = _parent;
-        settings = _settings;
+        shapeGenerator = _shapeGenerator;
+        shapeSettings = _shapeGenerator.shapeSettings;
 
         noise = new Noise();
 
-        var radius = settings.radius;
+        var radius = shapeGenerator.shapeSettings.radius;
         var t = (1.0f + Mathf.Sqrt(5.0f)) / 2.0f;
 
         // The base vertices that make up a base form icosahedron
@@ -70,7 +73,7 @@ public class PlanetMeshChunkRenderer
         // Check which chunks to render
         for (int i = 0; i < chunks.Count; i++)
         {
-            if ((Vector3.Distance(chunks[i].GetCenterPoint(), test.transform.position) < _distance) || settings.renderEverything)
+            if ((Vector3.Distance(chunks[i].GetCenterPoint(), test.transform.position) < _distance) || shapeSettings.renderEverything)
             {
                 chunks[i].gameObject.SetActive(true);
             }
@@ -83,10 +86,10 @@ public class PlanetMeshChunkRenderer
 
     private void HandleBaseFormFaces()
     {
-        var chunks = settings.chunks; // number of chunk recursions per base face
+        var chunks = shapeSettings.chunks; // number of chunk recursions per base face
 
         if (shapeType == ShapeType.Ocean)
-            chunks = settings.oceanChunks;
+            chunks = shapeSettings.oceanChunks;
 
         GenerateChunks(new List<Vector3> { baseFormVertices[0], baseFormVertices[11], baseFormVertices[5] }, chunks);
         GenerateChunks(new List<Vector3> { baseFormVertices[0], baseFormVertices[5], baseFormVertices[1] }, chunks);
