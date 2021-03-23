@@ -28,12 +28,12 @@ public class Planet : MonoBehaviour
 
     private ShapeGenerator shapeGenerator = new ShapeGenerator();
 
-	// Planet meshes are not saved so have to be regenerated
+	// Planet meshes are generated at the start of the game or when the level is loaded.
 	void Awake(){
 		GeneratePlanet();
 	}
 
-	// Destroy procedurally generated meshes for file size reduction
+	// Destroy procedurally generated meshes for file size reduction. Called in `DestroyOnSave.cs`
 	public void DestroyTemp(){
 		while (transform.childCount > 0) {
 			DestroyImmediate(transform.GetChild(0).gameObject);
@@ -41,6 +41,7 @@ public class Planet : MonoBehaviour
 		terrain=null;
 		ocean=null;
 	}
+
     public void GeneratePlanet()
     {
         shapeGenerator.UpdateSettings(shapeSettings);
