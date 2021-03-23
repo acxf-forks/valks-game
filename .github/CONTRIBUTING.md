@@ -4,7 +4,7 @@ Current project Unity version `2020.2.1f1`, if there is a newer version of Unity
 ## Coding Style
 ### Methods
 - Methods should follow PascalFormat
-- Try to keep accessor and mutator methods at bottom of classes.
+- Try to keep accessor (getter) and mutator (setter) methods at bottom of classes. (This is more of like a guide, you do not have to follow this rule by the book)
 - Add `private` to MonoBehavior methods
 ### Properties
 - Use a `_` in front of all properties in methods and constructors.
