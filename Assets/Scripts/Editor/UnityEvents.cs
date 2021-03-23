@@ -18,14 +18,14 @@ public class UnityEvents : UnityEditor.AssetModificationProcessor
 {
 	static string[] OnWillSaveAssets(string[] paths)
 	{
-		UnityEventsHandler.HandleSaving();
+		UnityEventsHandler.HandlePlanetSaving();
 		return paths;
 	}
 }
 
 public class UnityEventsHandler
 {
-	public static void HandleSaving(){
+	public static void HandlePlanetSaving(){
 		var planets = Object.FindObjectsOfType<Planet>();
 
 		foreach (var planet in planets)
