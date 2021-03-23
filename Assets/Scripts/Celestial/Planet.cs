@@ -102,7 +102,7 @@ public class Planet : MonoBehaviour
             parentTerrainChunks.parent = transform;
         }
 
-        terrain = new PlanetMeshChunkRenderer(parentTerrainChunks, shapeGenerator, PlanetMeshChunkRenderer.ShapeType.Terrain);
+        terrain = new PlanetMeshChunkRenderer(parentTerrainChunks, shapeGenerator, PlanetMeshChunkRenderer.ShapeType.Noise);
     }
 
     private void GenerateOceanMesh() 
@@ -120,7 +120,7 @@ public class Planet : MonoBehaviour
             parentOceanChunks.parent = transform;
         }
 
-        ocean = new PlanetMeshChunkRenderer(parentOceanChunks, shapeGenerator, PlanetMeshChunkRenderer.ShapeType.Ocean);
+        ocean = new PlanetMeshChunkRenderer(parentOceanChunks, shapeGenerator, PlanetMeshChunkRenderer.ShapeType.Sphere);
     }
 
     Texture2D texture;

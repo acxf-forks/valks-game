@@ -23,6 +23,12 @@ MonoBehaviour:
   oceanDepth: 0.071
   oceanChunks: 1
   oceanTriangles: 1
+  spheres:
+  - ocean: 1
+    oceanMaterial: {fileID: 0}
+    oceanDepth: 0
+    oceanChunks: 1
+    oceanTriangles: 1
   noiseLayers:
   - enabled: 1
     useFirstLayerAsMask: 0

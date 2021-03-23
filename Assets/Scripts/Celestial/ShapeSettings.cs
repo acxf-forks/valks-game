@@ -16,7 +16,7 @@ public class ShapeSettings : ScriptableObject
     [Tooltip("The terrain material of the planet.")]
     public float radius = 10;
 
-    [Header("Ocean")]
+    //
     public bool ocean = true;
     [Tooltip("The ocean material of the planet.")]
     public Material oceanMaterial;
@@ -26,6 +26,23 @@ public class ShapeSettings : ScriptableObject
     public int oceanChunks = 1;
     [Range(1, 2)]
     public int oceanTriangles = 1;
+    //
+
+    public Sphere[] spheres;
+
+    [System.Serializable]
+    public class Sphere 
+    {
+        public bool ocean = true;
+        [Tooltip("The ocean material of the planet.")]
+        public Material oceanMaterial;
+        [Range(0, 1)]
+        public float oceanDepth = 0f;
+        [Range(1, 2)]
+        public int oceanChunks = 1;
+        [Range(1, 2)]
+        public int oceanTriangles = 1;
+    }
 
     public NoiseLayer[] noiseLayers;
 

@@ -32,14 +32,14 @@ public class PlanetMeshChunk : MonoBehaviour
 
         var settings = _renderer.shapeSettings;
 
-        if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Terrain)
+        if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Noise)
             meshRenderer.material = settings.terrainMaterial;
 
-        if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Ocean)
+        if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Sphere)
             meshRenderer.material = settings.oceanMaterial;
 
         var chunkTriangles = settings.chunkTriangles;
-        if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Ocean)
+        if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Sphere)
             chunkTriangles = settings.oceanTriangles;
 
         SubdivideFace(0, 1, 2, chunkTriangles);
@@ -52,11 +52,11 @@ public class PlanetMeshChunk : MonoBehaviour
 
             switch (_renderer.shapeType) 
             {
-                case PlanetMeshChunkRenderer.ShapeType.Terrain:
+                case PlanetMeshChunkRenderer.ShapeType.Noise:
                     float unscaledElevation = _renderer.shapeGenerator.CalculateUnscaledElevation(vertices[i]);
                     vertices[i] = vertices[i] * _renderer.shapeGenerator.GetScaledElevation(unscaledElevation);
                     break;
-                case PlanetMeshChunkRenderer.ShapeType.Ocean:
+                case PlanetMeshChunkRenderer.ShapeType.Sphere:
                     vertices[i] = vertices[i] * radius * (1 + settings.oceanDepth);
                     break;
             }

@@ -19,7 +19,7 @@ public class PlanetMeshChunkRenderer
 
     private Transform cam;
 
-    public enum ShapeType { Terrain, Ocean }
+    public enum ShapeType { Noise, Sphere }
     public ShapeType shapeType;
 
     public PlanetMeshChunkRenderer(Transform _parent, ShapeGenerator _shapeGenerator, ShapeType _shapeType)
@@ -75,7 +75,8 @@ public class PlanetMeshChunkRenderer
         {
             if ((Vector3.Distance(chunks[i].GetCenterPoint(), test.transform.position) < _distance) || shapeSettings.renderEverything)
             {
-                chunks[i].gameObject.SetActive(true);
+                if (chunks[i])
+                    chunks[i].gameObject.SetActive(true);
             }
             else
             {
@@ -88,7 +89,7 @@ public class PlanetMeshChunkRenderer
     {
         var chunks = shapeSettings.chunks; // number of chunk recursions per base face
 
-        if (shapeType == ShapeType.Ocean)
+        if (shapeType == ShapeType.Sphere)
             chunks = shapeSettings.oceanChunks;
 
         GenerateChunks(new List<Vector3> { baseFormVertices[0], baseFormVertices[11], baseFormVertices[5] }, chunks);
