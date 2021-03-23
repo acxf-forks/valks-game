@@ -2,9 +2,10 @@
 Current project Unity version `2020.2.1f1`, if there is a newer version of Unity please inform me.
 
 ## Coding Style
-### Generic
+### Methods
 - Methods should follow PascalFormat
 - Try to keep accessor and mutator methods at bottom of classes.
+- Add `private` to MonoBehavior methods
 ### Properties
 - Use a `_` in front of all properties in methods and constructors.
 ### Comments
