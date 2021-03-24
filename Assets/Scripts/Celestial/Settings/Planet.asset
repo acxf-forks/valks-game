@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed5ac1211de065f4dad80bd88db82a87, type: 3}
   m_Name: Planet
   m_EditorClassIdentifier: 
-  planetName: Lush
+  planetName: Yomilla
   description: The starting planet.
+  treeDensity: 0.2

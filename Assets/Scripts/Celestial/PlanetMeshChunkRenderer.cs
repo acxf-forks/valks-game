@@ -24,6 +24,19 @@ public class PlanetMeshChunkRenderer
 
     public PlanetMeshChunkRenderer(Transform _parent, ShapeGenerator _shapeGenerator, ShapeType _shapeType)
     {
+		if(_shapeGenerator==null)
+		{
+			Debug.LogError("Shape generator is null");
+			return;
+		}
+
+		if(_shapeGenerator.shapeSettings==null)
+		{
+			Debug.LogError("Shape generator settings is null");
+			return;
+		}
+
+
         shapeType = _shapeType;
         
         test = GameObject.Find("Render Debug Point");
@@ -34,7 +47,7 @@ public class PlanetMeshChunkRenderer
 
         noise = new Noise();
 
-        var radius = shapeGenerator.shapeSettings.radius;
+        var radius = shapeSettings.radius;
         var t = (1.0f + Mathf.Sqrt(5.0f)) / 2.0f;
 
         // The base vertices that make up a base form icosahedron

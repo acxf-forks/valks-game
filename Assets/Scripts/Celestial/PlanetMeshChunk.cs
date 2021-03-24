@@ -46,6 +46,7 @@ public class PlanetMeshChunk : MonoBehaviour
         
         var radius = settings.radius;
 
+		_renderer.shapeGenerator.elevationMinMax.ResetValues();
         for (int i = 0; i < vertices.Count; i++)
         {
             vertices[i] = vertices[i].normalized;
@@ -53,8 +54,10 @@ public class PlanetMeshChunk : MonoBehaviour
             switch (_renderer.shapeType) 
             {
                 case PlanetMeshChunkRenderer.ShapeType.Noise:
-                    float unscaledElevation = _renderer.shapeGenerator.CalculateUnscaledElevation(vertices[i]);
-                    vertices[i] = vertices[i] * _renderer.shapeGenerator.GetScaledElevation(unscaledElevation);
+					
+					Vector3 seaLevel = vertices[i] * radius * (1 + settings.oceanDepth);
+					float offset = _renderer.shapeGenerator.CalculateAdditionalElevation(vertices[i]);
+                    vertices[i] = seaLevel + vertices[i]*offset;
                     break;
                 case PlanetMeshChunkRenderer.ShapeType.Sphere:
                     vertices[i] = vertices[i] * radius * (1 + settings.oceanDepth);
@@ -68,7 +71,7 @@ public class PlanetMeshChunk : MonoBehaviour
         mesh.triangles = triangles.ToArray();
         mesh.normals = vertices.Select(s => s.normalized).ToArray();
 
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
     }
 
     /*!
