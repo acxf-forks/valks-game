@@ -38,6 +38,27 @@ public class Planet : MonoBehaviour
 		ocean = null;
 	}
 
+	private void AssignParentObjects(){
+		if(parentTerrainChunks==null)
+			parentTerrainChunks = transform.Find("Terrain Chunks");
+		if(parentOceanChunks==null)
+			parentOceanChunks = transform.Find("Ocean Chunks");
+	}
+	// Planet meshes are generated at the start of the game or when the level is loaded.
+	private void Awake(){
+		AssignParentObjects();
+		GeneratePlanet();
+	}
+
+	// Destroy procedurally generated meshes for file size reduction. Called in `DestroyOnSave.cs`
+	public void DestroyTemp(){
+		while (parentTerrainChunks.childCount > 0) {
+			DestroyImmediate(parentTerrainChunks.GetChild(0).gameObject);
+		}
+		while (parentOceanChunks.childCount > 0) {
+			DestroyImmediate(parentOceanChunks.GetChild(0).gameObject);
+		}
+	}
     public void GeneratePlanet()
     {
         shapeGenerator.UpdateSettings(shapeSettings);
