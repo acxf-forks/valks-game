@@ -56,7 +56,7 @@ public class PlanetMeshChunk : MonoBehaviour
                 case PlanetMeshChunkRenderer.ShapeType.Noise:
 					
 					Vector3 seaLevel = vertices[i] * radius * (1 + settings.oceanDepth);
-					float offset = _renderer.shapeGenerator.CalculateAdditionalElevation(vertices[i]);
+					float offset = _renderer.shapeGenerator.CalculateAdditionalElevation(vertices[i]) * _renderer.shapeGenerator.amplitude;
                     vertices[i] = seaLevel + vertices[i]*offset;
                     break;
                 case PlanetMeshChunkRenderer.ShapeType.Sphere:

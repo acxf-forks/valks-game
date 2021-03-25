@@ -7,6 +7,9 @@ public class ShapeGenerator
     public ShapeSettings shapeSettings;
     public MinMax elevationMinMax;
 
+
+	[Range(0.1f,5)]
+	public float amplitude = 2;
     private INoiseFilter[] noiseFilters;
 
     public void UpdateSettings(ShapeSettings _shapeSettings) 
