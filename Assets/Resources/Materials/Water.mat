@@ -117,13 +117,13 @@ Material:
     - _Surface: 0
     - _WorkflowMode: 1
     - _ZWrite: 1
-    - _depth: 0.765
-    - _depthStrength: 2
-    - _displacement: 0.07
-    - _noiseScale: 10
-    - _normalStrength: 1
-    - _smoothness: 0.497
-    - _waveSpeed: 0.05
+    - _depth: 0.439
+    - _depthStrength: 0.94
+    - _displacement: 0.05
+    - _noiseScale: 20
+    - _normalStrength: 0.69
+    - _smoothness: 0.255
+    - _waveSpeed: 0.01
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 0}
@@ -131,9 +131,9 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _ShallowWaterColor: {r: 0.3160377, g: 0.8961043, b: 1, a: 0.5254902}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _deepOceanColor: {r: 0.078431375, g: 0.34901962, b: 1, a: 0.2}
+    - _deepOceanColor: {r: 0, g: 0.10248896, b: 0.3490566, a: 0.2}
     - _deepWaterColor: {r: 1, g: 1, b: 1, a: 0}
-    - _shallowOceanColor: {r: 0, g: 0.30146715, b: 0.50980395, a: 0.5529412}
+    - _shallowOceanColor: {r: 0, g: 0.27380258, b: 0.46226418, a: 0.4392157}
     - _shallowWaterColor: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &856620249299177137

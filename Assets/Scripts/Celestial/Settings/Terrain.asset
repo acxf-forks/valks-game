@@ -17,14 +17,14 @@ MonoBehaviour:
   terrainMaterial: {fileID: 2100000, guid: 638b547811a3fed489d7c8060aacb2a1, type: 2}
   chunks: 3
   chunkTriangles: 3
-  radius: 10.13
+  radius: 10
   ocean: 1
   oceanMaterial: {fileID: 2100000, guid: 91fd2d24e39448245a46036b16897629, type: 2}
   oceanDepth: 0.071
-  oceanChunks: 1
-  oceanTriangles: 1
+  oceanChunks: 3
+  oceanTriangles: 3
   spheres:
-  - ocean: 1
+  - ocean: 0
     oceanMaterial: {fileID: 0}
     oceanDepth: 0
     oceanChunks: 1
@@ -41,7 +41,7 @@ MonoBehaviour:
         roughness: 1.24
         persistence: 0.16
         minValue: 0.59
-        centre: {x: 0.36, y: 0, z: 0}
+        centre: {x: 0, y: 0, z: 0}
       ridgidNoiseSettings:
         strength: 0
         numLayers: 0
@@ -56,13 +56,13 @@ MonoBehaviour:
     noiseSettings:
       filterType: 0
       simpleNoiseSettings:
-        strength: 0.916
+        strength: 0.183
         numLayers: 1
         baseRoughness: 2
         roughness: 10
         persistence: 0.16
         minValue: 0
-        centre: {x: 0.36, y: 0, z: 0}
+        centre: {x: 0, y: 0, z: 0}
       ridgidNoiseSettings:
         strength: 0
         numLayers: 0

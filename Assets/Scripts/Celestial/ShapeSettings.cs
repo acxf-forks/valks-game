@@ -22,16 +22,16 @@ public class ShapeSettings : ScriptableObject
     public Material oceanMaterial;
     [Range(0, 1)]
     public float oceanDepth = 0f;
-    [Range(1, 2)]
+    [Range(1, 3)]
     public int oceanChunks = 1;
-    [Range(1, 2)]
+    [Range(1, 3)]
     public int oceanTriangles = 1;
     //
 
     public Sphere[] spheres;
 
     [System.Serializable]
-    public class Sphere 
+    public class Sphere  // Currently not in use!
     {
         public bool ocean = true;
         [Tooltip("The ocean material of the planet.")]
