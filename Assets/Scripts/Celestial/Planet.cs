@@ -121,6 +121,7 @@ public class Planet : MonoBehaviour
         // Remove old chunks
         if (parentTerrainChunks)
             DestroyImmediate(parentTerrainChunks.gameObject);
+		
 
         if (!parentTerrainChunks)
         {
@@ -128,6 +129,8 @@ public class Planet : MonoBehaviour
             parentTerrainChunks.parent = transform;
         }
 
+		if(shapeGenerator == null)
+			Debug.LogError("no shape generator");
         terrain = new PlanetMeshChunkRenderer(parentTerrainChunks, shapeGenerator, PlanetMeshChunkRenderer.ShapeType.Noise);
     }
 
@@ -146,6 +149,8 @@ public class Planet : MonoBehaviour
             parentOceanChunks.parent = transform;
         }
 
+		if(shapeGenerator == null)
+			Debug.LogError("no shape generator");
         ocean = new PlanetMeshChunkRenderer(parentOceanChunks, shapeGenerator, PlanetMeshChunkRenderer.ShapeType.Sphere);
     }
 
@@ -167,14 +172,19 @@ public class Planet : MonoBehaviour
         texture.SetPixels(colours);
         texture.Apply();
 
-        if (terrain == null) 
-        {
+        if (terrain == null || terrain.chunks==null)
             GenerateTerrainMesh();
-        }
+
+		if (terrain.chunks==null)
+		{
+			Debug.LogError("Terrain chunks not generated!");
+			return;
+		}
 
         foreach (var chunk in terrain.chunks)
         {
-            chunk.meshRenderer.sharedMaterial.SetVector("_elevationMinMax", new Vector4(shapeGenerator.elevationMinMax.Min, shapeGenerator.elevationMinMax.Max));
+            chunk.meshRenderer.sharedMaterial.SetVector("_elevationMinMax", new Vector4(shapeGenerator.elevationMinMax.Max,shapeGenerator.elevationMinMax.Min));
+			chunk.meshRenderer.sharedMaterial.SetFloat("_planetRadius", shapeGenerator.shapeSettings.radius);
             chunk.meshRenderer.sharedMaterial.SetTexture("_texture", texture);
         }
 

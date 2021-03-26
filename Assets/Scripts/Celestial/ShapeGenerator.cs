@@ -7,6 +7,9 @@ public class ShapeGenerator
     public ShapeSettings shapeSettings;
     public MinMax elevationMinMax;
 
+
+	[Range(0.1f,5)]
+	public float amplitude = 2;
     private INoiseFilter[] noiseFilters;
 
     public void UpdateSettings(ShapeSettings _shapeSettings) 
@@ -22,38 +25,18 @@ public class ShapeGenerator
         elevationMinMax = new MinMax();
     }
 
-    public float CalculateUnscaledElevation(Vector3 pointOnUnitSphere)
+    public float CalculateAdditionalElevation(Vector3 pointOnUnitSphere)
     {
-        float firstLayerValue = 0;
-        float unscaledElevation = 0;
+        float elevation = 0;
 
-        if (noiseFilters.Length > 0)
-        {
-            firstLayerValue = noiseFilters[0].Evaluate(pointOnUnitSphere);
-            if (shapeSettings.noiseLayers[0].enabled)
-            {
-                unscaledElevation = firstLayerValue;
-            }
-        }
-
-        for (int i = 1; i < noiseFilters.Length; i++)
+        for (int i = 0; i < noiseFilters.Length; i++)
         {
             if (shapeSettings.noiseLayers[i].enabled)
             {
-                float mask = (shapeSettings.noiseLayers[i].useFirstLayerAsMask) ? firstLayerValue : 1;
-                unscaledElevation += noiseFilters[i].Evaluate(pointOnUnitSphere) * mask;
+                elevation += noiseFilters[i].Evaluate(pointOnUnitSphere);
             }
         }
-        elevationMinMax.AddValue(unscaledElevation);
-        return unscaledElevation;
-    }
-
-    public float GetScaledElevation(float unscaledElevation) 
-    {
-        float scaledElevation = Mathf.Max(0, unscaledElevation);
-        scaledElevation = shapeSettings.radius * (1 + scaledElevation);
-        elevationMinMax.AddValue(scaledElevation);
-
-        return scaledElevation;
+		elevationMinMax.AddValue(elevation);
+        return elevation;
     }
 }
