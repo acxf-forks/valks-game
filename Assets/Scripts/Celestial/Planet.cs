@@ -32,8 +32,8 @@ public class Planet : MonoBehaviour
 	private void Awake()
 	{
 		AssignParentObjects();
-		GeneratePlanet();
-	}
+        GeneratePlanet();
+    }
 
     private void AssignParentObjects()
     {
@@ -45,6 +45,7 @@ public class Planet : MonoBehaviour
 	
     public void GeneratePlanet()
     {
+        transform.localPosition = Vector3.zero; // This is very important!
         shapeGenerator.UpdateSettings(shapeSettings);
 
         if (CheckSettingsInvalid()) 
