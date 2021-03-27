@@ -27,14 +27,6 @@ public class Planet : MonoBehaviour
     public bool colourSettingsFoldout;
 
     private ShapeGenerator shapeGenerator = new ShapeGenerator();
-
-	private void AssignParentObjects()
-	{
-		if(parentTerrainChunks==null)
-			parentTerrainChunks = transform.Find("Terrain Chunks");
-		if(parentOceanChunks==null)
-			parentOceanChunks = transform.Find("Ocean Chunks");
-	}
 	
 	// Planet meshes are generated at the start of the game or when the level is loaded.
 	private void Awake()
@@ -43,16 +35,13 @@ public class Planet : MonoBehaviour
 		GeneratePlanet();
 	}
 
-	// Destroy procedurally generated meshes for file size reduction. Called in `DestroyOnSave.cs`
-	public void Destroy()
-	{
-		while (parentTerrainChunks.childCount > 0) {
-			DestroyImmediate(parentTerrainChunks.GetChild(0).gameObject);
-		}
-		while (parentOceanChunks.childCount > 0) {
-			DestroyImmediate(parentOceanChunks.GetChild(0).gameObject);
-		}
-	}
+    private void AssignParentObjects()
+    {
+        if (parentTerrainChunks == null)
+            parentTerrainChunks = transform.Find("Terrain Chunks");
+        if (parentOceanChunks == null)
+            parentOceanChunks = transform.Find("Ocean Chunks");
+    }
 	
     public void GeneratePlanet()
     {
@@ -121,7 +110,6 @@ public class Planet : MonoBehaviour
         // Remove old chunks
         if (parentTerrainChunks)
             DestroyImmediate(parentTerrainChunks.gameObject);
-		
 
         if (!parentTerrainChunks)
         {
@@ -129,7 +117,7 @@ public class Planet : MonoBehaviour
             parentTerrainChunks.parent = transform;
         }
 
-		if(shapeGenerator == null)
+		if (shapeGenerator == null)
 			Debug.LogError("no shape generator");
         terrain = new PlanetMeshChunkRenderer(parentTerrainChunks, shapeGenerator, PlanetMeshChunkRenderer.ShapeType.Noise);
     }
@@ -160,22 +148,20 @@ public class Planet : MonoBehaviour
     private void GenerateColours()
     {
         if (texture == null)
-        {
             texture = new Texture2D(textureResolution, 1);
-        }
 
         Color[] colours = new Color[textureResolution];
+
         for (int i = 0; i < textureResolution; i++)
-        {
             colours[i] = colourSettings.terrainGradient.Evaluate(i / (textureResolution - 1f));
-        }
+
         texture.SetPixels(colours);
         texture.Apply();
 
-        if (terrain == null || terrain.chunks==null)
+        if (terrain == null || terrain.chunks == null)
             GenerateTerrainMesh();
 
-		if (terrain.chunks==null)
+		if (terrain.chunks == null)
 		{
 			Debug.LogError("Terrain chunks not generated!");
 			return;
@@ -183,15 +169,13 @@ public class Planet : MonoBehaviour
 
         foreach (var chunk in terrain.chunks)
         {
-            chunk.meshRenderer.sharedMaterial.SetVector("_elevationMinMax", new Vector4(shapeGenerator.elevationMinMax.Max,shapeGenerator.elevationMinMax.Min));
+            chunk.meshRenderer.sharedMaterial.SetVector("_elevationMinMax", new Vector4(shapeGenerator.elevationMinMax.Max, shapeGenerator.elevationMinMax.Min));
 			chunk.meshRenderer.sharedMaterial.SetFloat("_planetRadius", shapeGenerator.shapeSettings.radius);
             chunk.meshRenderer.sharedMaterial.SetTexture("_texture", texture);
         }
 
         if (ocean == null) 
-        {
             GenerateOceanMesh();
-        }
 
         if (!shapeSettings.ocean)
             return;
@@ -212,5 +196,14 @@ public class Planet : MonoBehaviour
         if (ocean != null)
             if (shapeSettings.ocean)
                 ocean.RenderNearbyChunks(shapeSettings.renderRadius);
+    }
+
+    // Destroy procedurally generated meshes for file size reduction. Called in `DestroyOnSave.cs`
+    public void Destroy()
+    {
+        while (parentTerrainChunks.childCount > 0)
+            DestroyImmediate(parentTerrainChunks.GetChild(0).gameObject);
+        while (parentOceanChunks.childCount > 0)
+            DestroyImmediate(parentOceanChunks.GetChild(0).gameObject);
     }
 }

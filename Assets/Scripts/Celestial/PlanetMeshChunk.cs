@@ -71,7 +71,7 @@ public class PlanetMeshChunk : MonoBehaviour
         mesh.triangles = triangles.ToArray();
         mesh.normals = vertices.Select(s => s.normalized).ToArray();
 
-        //gameObject.SetActive(false);
+        gameObject.SetActive(false);
     }
 
     /*!

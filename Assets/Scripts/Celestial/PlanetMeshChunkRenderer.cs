@@ -24,13 +24,13 @@ public class PlanetMeshChunkRenderer
 
     public PlanetMeshChunkRenderer(Transform _parent, ShapeGenerator _shapeGenerator, ShapeType _shapeType)
     {
-		if(_shapeGenerator==null)
+		if(_shapeGenerator == null)
 		{
 			Debug.LogError("Shape generator is null");
 			return;
 		}
 
-		if(_shapeGenerator.shapeSettings==null)
+		if(_shapeGenerator.shapeSettings == null)
 		{
 			Debug.LogError("Shape generator settings is null");
 			return;
