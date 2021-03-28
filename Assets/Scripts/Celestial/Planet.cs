@@ -150,7 +150,7 @@ public class Planet : MonoBehaviour
     private void GenerateColours()
     {
         if (texture == null)
-            texture = new Texture2D(textureResolution, 1);
+            texture = new Texture2D(textureResolution, 1, TextureFormat.RGBA32, false);
 
         Color[] colours = new Color[textureResolution];
 
