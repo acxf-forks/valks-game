@@ -160,18 +160,18 @@ public class Planet : MonoBehaviour
         texture.SetPixels(colours);
         texture.Apply();
 
-        if (terrain == null || terrain.chunks == null)
-            GenerateTerrainMesh();
+        //if (terrain == null || terrain.chunks == null)
+        //    GenerateTerrainMesh();
 
         foreach (var chunk in terrain.chunks)
         {
-            chunk.meshRenderer.sharedMaterial.SetVector("_elevationMinMax", new Vector4(shapeGenerator.elevationMinMax.Max, shapeGenerator.elevationMinMax.Min));
+            chunk.meshRenderer.sharedMaterial.SetVector("_elevationMinMax", new Vector4(shapeGenerator.elevationMinMax.Min, shapeGenerator.elevationMinMax.Max));
 			chunk.meshRenderer.sharedMaterial.SetFloat("_planetRadius", shapeGenerator.shapeSettings.radius);
             chunk.meshRenderer.sharedMaterial.SetTexture("_texture", texture);
         }
 
-        if (ocean == null) 
-            GenerateOceanMesh();
+        //if (ocean == null) 
+        //    GenerateOceanMesh();
 
         if (!shapeSettings.ocean)
             return;

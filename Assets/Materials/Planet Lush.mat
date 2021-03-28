@@ -92,7 +92,10 @@ Material:
     - _planetRadius: 10
     m_Colors:
     - Vector2_77c1f84213a742d386ef33746572aa9a: {r: -1.25, g: 1.19, b: 0, a: 0}
+    - Vector3_8f971973a3f74757853c0dabae88ed5c: {r: -10, g: 0, b: 0, a: 0}
     - _Color: {r: 0.504717, g: 1, b: 0.5690925, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _elevationMinMax: {r: -3.4028235e+38, g: 3.4028235e+38, b: 0, a: 0}
+    - _elevationMinMax: {r: 9.5, g: 11.6, b: 0, a: 0}
+    - _elevationMinMax3: {r: 0, g: 0, b: 0, a: 0}
+    - _renderOffset: {r: -0, g: -0, b: -0, a: 0}
   m_BuildTextureStacks: []

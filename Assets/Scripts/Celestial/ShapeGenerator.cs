@@ -36,7 +36,7 @@ public class ShapeGenerator
                 elevation += noiseFilters[i].Evaluate(pointOnUnitSphere);
             }
         }
-		elevationMinMax.AddValue(elevation);
+		//elevationMinMax.AddValue(elevation);
         return elevation;
     }
 }

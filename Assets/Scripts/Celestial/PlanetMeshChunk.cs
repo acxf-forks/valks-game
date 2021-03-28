@@ -32,8 +32,12 @@ public class PlanetMeshChunk : MonoBehaviour
 
         var settings = _renderer.shapeSettings;
 
-        if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Noise)
+        if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Noise) 
+        {
             meshRenderer.material = settings.terrainMaterial;
+            meshRenderer.sharedMaterial.SetVector("_renderOffset", settings.renderOffset * -1);
+        }
+            
 
         if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Sphere)
             meshRenderer.material = settings.oceanMaterial;
@@ -47,7 +51,6 @@ public class PlanetMeshChunk : MonoBehaviour
         var radius = settings.radius;
         var renderOffset = settings.renderOffset;
 
-        _renderer.shapeGenerator.elevationMinMax.ResetValues();
         for (int i = 0; i < vertices.Count; i++)
         {
             vertices[i] = vertices[i].normalized;
@@ -58,6 +61,7 @@ public class PlanetMeshChunk : MonoBehaviour
 					Vector3 seaLevel = vertices[i] * radius * (1 + settings.oceanDepth);
 					float elevation = _renderer.shapeGenerator.CalculateAdditionalElevation(vertices[i]) * _renderer.shapeGenerator.amplitude;
                     vertices[i] = renderOffset + seaLevel + vertices[i] * elevation;
+                    _renderer.shapeGenerator.elevationMinMax.AddValue(elevation * 10);
                     break;
                 case PlanetMeshChunkRenderer.ShapeType.Sphere:
                     vertices[i] = renderOffset + vertices[i] * radius * (1 + settings.oceanDepth);
