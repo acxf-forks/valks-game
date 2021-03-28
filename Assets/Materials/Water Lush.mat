@@ -121,7 +121,7 @@ Material:
     - _depthStrength: 0.94
     - _displacement: 0.05
     - _noiseScale: 20
-    - _normalStrength: 0.69
+    - _normalStrength: 0.147
     - _smoothness: 0.255
     - _waveSpeed: 0.01
     m_Colors:

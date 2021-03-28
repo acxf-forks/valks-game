@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26ed191b0fc0b0049b3f13daa21563a1, type: 3}
   m_Name: Lush Terrain
   m_EditorClassIdentifier: 
-  renderOffset: {x: 0, y: 0, z: 0}
+  pos: {x: -1000, y: 0, z: 0}
   renderRadius: 10
   renderEverything: 1
   terrainMaterial: {fileID: 2100000, guid: 638b547811a3fed489d7c8060aacb2a1, type: 2}

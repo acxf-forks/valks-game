@@ -45,7 +45,7 @@ public class Planet : MonoBehaviour
 	
     public void GeneratePlanet()
     {
-        shapeSettings.renderOffset = transform.parent.localPosition + transform.localPosition; // Mesh render offset needs to be set to the local position otherwise mesh will always render at (0, 0, 0)
+        transform.position = new Vector3(0, 0, 0); // Set the transform position to zero vector so no funny business happens when generating the mesh.
 
         shapeGenerator.UpdateSettings(shapeSettings);
 
@@ -58,6 +58,8 @@ public class Planet : MonoBehaviour
         GenerateTerrainMesh();
         GenerateOceanMesh();
         GenerateColours();
+
+        transform.localPosition = shapeSettings.pos;
     }
 
     public void OnPlanetSettingsUpdated()

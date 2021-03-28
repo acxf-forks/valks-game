@@ -35,7 +35,6 @@ public class PlanetMeshChunk : MonoBehaviour
         if (_renderer.shapeType == PlanetMeshChunkRenderer.ShapeType.Noise) 
         {
             meshRenderer.material = settings.terrainMaterial;
-            meshRenderer.sharedMaterial.SetVector("_renderOffset", settings.renderOffset * -1);
         }
             
 
@@ -49,7 +48,8 @@ public class PlanetMeshChunk : MonoBehaviour
         SubdivideFace(0, 1, 2, chunkTriangles);
         
         var radius = settings.radius;
-        var renderOffset = settings.renderOffset;
+        //var renderOffset = settings.renderOffset;
+        var renderOffset = Vector3.zero;
 
         for (int i = 0; i < vertices.Count; i++)
         {

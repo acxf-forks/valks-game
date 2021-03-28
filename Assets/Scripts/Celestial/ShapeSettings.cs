@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu()]
 public class ShapeSettings : ScriptableObject
 {
-    public Vector3 renderOffset;
+    public Vector3 pos;
 
     [Header("Terrain")]
     public float renderRadius = 10;
