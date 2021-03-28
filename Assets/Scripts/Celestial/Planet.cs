@@ -45,7 +45,8 @@ public class Planet : MonoBehaviour
 	
     public void GeneratePlanet()
     {
-        transform.localPosition = Vector3.zero; // This is very important!
+        shapeSettings.renderOffset = transform.parent.localPosition + transform.localPosition; // Mesh render offset needs to be set to the local position otherwise mesh will always render at (0, 0, 0)
+
         shapeGenerator.UpdateSettings(shapeSettings);
 
         if (CheckSettingsInvalid()) 
@@ -161,12 +162,6 @@ public class Planet : MonoBehaviour
 
         if (terrain == null || terrain.chunks == null)
             GenerateTerrainMesh();
-
-		if (terrain.chunks == null)
-		{
-			Debug.LogError("Terrain chunks not generated!");
-			return;
-		}
 
         foreach (var chunk in terrain.chunks)
         {

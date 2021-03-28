@@ -45,8 +45,9 @@ public class PlanetMeshChunk : MonoBehaviour
         SubdivideFace(0, 1, 2, chunkTriangles);
         
         var radius = settings.radius;
+        var renderOffset = settings.renderOffset;
 
-		_renderer.shapeGenerator.elevationMinMax.ResetValues();
+        _renderer.shapeGenerator.elevationMinMax.ResetValues();
         for (int i = 0; i < vertices.Count; i++)
         {
             vertices[i] = vertices[i].normalized;
@@ -54,13 +55,12 @@ public class PlanetMeshChunk : MonoBehaviour
             switch (_renderer.shapeType) 
             {
                 case PlanetMeshChunkRenderer.ShapeType.Noise:
-					
 					Vector3 seaLevel = vertices[i] * radius * (1 + settings.oceanDepth);
-					float offset = _renderer.shapeGenerator.CalculateAdditionalElevation(vertices[i]) * _renderer.shapeGenerator.amplitude;
-                    vertices[i] = seaLevel + vertices[i]*offset;
+					float elevation = _renderer.shapeGenerator.CalculateAdditionalElevation(vertices[i]) * _renderer.shapeGenerator.amplitude;
+                    vertices[i] = renderOffset + seaLevel + vertices[i] * elevation;
                     break;
                 case PlanetMeshChunkRenderer.ShapeType.Sphere:
-                    vertices[i] = vertices[i] * radius * (1 + settings.oceanDepth);
+                    vertices[i] = renderOffset + vertices[i] * radius * (1 + settings.oceanDepth);
                     break;
             }
         }

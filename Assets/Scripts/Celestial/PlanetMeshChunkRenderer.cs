@@ -53,18 +53,18 @@ public class PlanetMeshChunkRenderer
         // The base vertices that make up a base form icosahedron
         baseFormVertices = new List<Vector3>()
         {
-            new Vector3(-1, t, 0).normalized * radius,
-            new Vector3(1, t, 0).normalized * radius ,
-            new Vector3(-1, -t, 0).normalized * radius,
-            new Vector3(1, -t, 0).normalized * radius,
-            new Vector3(0, -1, t).normalized * radius,
-            new Vector3(0, 1, t).normalized * radius ,
-            new Vector3(0, -1, -t).normalized * radius,
-            new Vector3(0, 1, -t).normalized * radius,
-            new Vector3(t, 0, -1).normalized * radius,
-            new Vector3(t, 0, 1).normalized * radius ,
-            new Vector3(-t, 0, -1).normalized * radius,
-            new Vector3(-t, 0, 1).normalized * radius
+            new Vector3(-1, t, 0).normalized  * radius  ,
+            new Vector3(1, t, 0).normalized   * radius   ,
+            new Vector3(-1, -t, 0).normalized * radius ,
+            new Vector3(1, -t, 0).normalized  * radius  ,
+            new Vector3(0, -1, t).normalized  * radius  ,
+            new Vector3(0, 1, t).normalized   * radius   ,
+            new Vector3(0, -1, -t).normalized * radius ,
+            new Vector3(0, 1, -t).normalized  * radius  ,
+            new Vector3(t, 0, -1).normalized  * radius  ,
+            new Vector3(t, 0, 1).normalized   * radius   ,
+            new Vector3(-t, 0, -1).normalized * radius ,
+            new Vector3(-t, 0, 1).normalized  * radius  
         };
 
         chunks = new List<PlanetMeshChunk>();
