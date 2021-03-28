@@ -61,7 +61,7 @@ public class PlanetMeshChunk : MonoBehaviour
 					Vector3 seaLevel = vertices[i] * radius * (1 + settings.oceanDepth);
 					float elevation = _renderer.shapeGenerator.CalculateAdditionalElevation(vertices[i]) * _renderer.shapeGenerator.amplitude;
                     vertices[i] = renderOffset + seaLevel + vertices[i] * elevation;
-                    _renderer.shapeGenerator.elevationMinMax.AddValue(elevation * 10);
+                    _renderer.shapeGenerator.elevationMinMax.AddValue((1 + settings.oceanDepth) * radius + elevation);
                     break;
                 case PlanetMeshChunkRenderer.ShapeType.Sphere:
                     vertices[i] = renderOffset + vertices[i] * radius * (1 + settings.oceanDepth);
